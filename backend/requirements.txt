@@ -1,0 +1,17 @@
+﻿fastapi
+uvicorn[standard]
+
+pydantic
+pydantic-settings
+
+SQLAlchemy
+asyncpg
+alembic
+
+python-dotenv
+python-multipart
+aiofiles
+python-json-logger
+
+pytest==9.0.2
+httpx==0.28.1

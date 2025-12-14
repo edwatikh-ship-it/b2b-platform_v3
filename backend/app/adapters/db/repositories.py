@@ -1,0 +1,304 @@
+from app.adapters.db.models import AttachmentModel, UserModel
+from sqlalchemy import delete
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.adapters.db.models import RequestKeyModel, RequestModel, UserBlacklistInnModel, UserModel
+from app.domain.ports import RequestRepositoryPort, UserBlacklistInnRepositoryPort
+
+
+class RequestRepository(RequestRepositoryPort):
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def create_draft(self, title: str | None, keys: list[dict]) -> int:
+        req = RequestModel(title=title, filename=None, status="draft")
+        self._session.add(req)
+        await self._session.flush()
+
+        for k in keys:
+            self._session.add(
+                RequestKeyModel(
+                    request_id=req.id,
+                    pos=int(k["pos"]),
+                    text=str(k["text"]),
+                    qty=k.get("qty"),
+                    unit=k.get("unit"),
+                )
+            )
+
+        await self._session.commit()
+        return int(req.id)
+
+    async def list_requests(self, limit: int, offset: int) -> dict:
+        total = await self._session.scalar(
+            select(func.count()).select_from(RequestModel)
+        )
+
+        rows = await self._session.execute(
+            select(RequestModel)
+            .order_by(RequestModel.id.desc())
+            .limit(limit)
+            .offset(offset)
+        )
+        items = []
+        for r in rows.scalars().all():
+            items.append(
+                {
+                    "id": int(r.id),
+                    "filename": r.filename,
+                    "status": r.status,
+                    "createdat": r.created_at.isoformat()
+                    if getattr(r, "created_at", None)
+                    else None,
+                    "keyscount": 0,
+                }
+            )
+
+        return {"items": items, "total": int(total or 0)}
+
+    async def get_detail(self, request_id: int) -> dict | None:
+        req = await self._session.get(RequestModel, request_id)
+        if req is None:
+            return None
+
+        rows = await self._session.execute(
+            select(RequestKeyModel)
+            .where(RequestKeyModel.request_id == request_id)
+            .order_by(RequestKeyModel.pos.asc())
+        )
+        keys = []
+        for k in rows.scalars().all():
+            keys.append(
+                {
+                    "id": int(k.id),
+                    "pos": int(k.pos),
+                    "rawtext": str(k.text),
+                    "normalizedtext": str(k.text),
+                    "qty": float(k.qty) if k.qty is not None else None,
+                    "unit": k.unit,
+                    "suppliers": [],
+                }
+            )
+
+        return {
+            "id": int(req.id),
+            "filename": req.filename,
+            "status": req.status,
+            "createdat": req.created_at.isoformat()
+            if getattr(req, "created_at", None)
+            else None,
+            "keys": keys,
+        }
+
+    async def update_keys(self, request_id: int, keys: list[dict]) -> None:
+        # Ensure request exists
+        req = await self._session.get(RequestModel, request_id)
+        if req is None:
+            raise ValueError("not_found")
+
+        # Replace strategy: delete all keys then insert new
+        await self._session.execute(
+            select(RequestKeyModel.id).where(RequestKeyModel.request_id == request_id)
+        )
+        await self._session.execute(
+            __import__("sqlalchemy")
+            .delete(RequestKeyModel)
+            .where(RequestKeyModel.request_id == request_id)
+        )
+
+        for k in keys:
+            self._session.add(
+                RequestKeyModel(
+                    request_id=req.id,
+                    pos=int(k["pos"]),
+                    text=str(k["text"]),
+                    qty=k.get("qty"),
+                    unit=k.get("unit"),
+                )
+            )
+
+        await self._session.commit()
+
+    async def submit_request(self, request_id: int) -> dict:
+        req = await self._session.get(RequestModel, request_id)
+        if req is None:
+            raise ValueError("not_found")
+
+        # MVP rule: only draft can be submitted
+        if str(req.status) != "draft":
+            raise ValueError("invalid_state")
+
+        req.status = "confirmed"
+        self._session.add(req)
+        await self._session.commit()
+
+        return {
+            "requestid": int(req.id),
+            "newstatus": "confirmed",
+            "matchedsuppliers": 0,
+            "message": None,
+        }
+
+
+class AttachmentRepository:
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def create(
+        self,
+        *,
+        title: str | None,
+        original_filename: str,
+        content_type: str | None,
+        size_bytes: int,
+        sha256: str | None,
+        storage_key: str | None,
+    ) -> dict:
+        row = AttachmentModel(
+            title=title,
+            original_filename=original_filename,
+            content_type=content_type,
+            size_bytes=int(size_bytes),
+            sha256=sha256,
+            storage_key=storage_key,
+            is_deleted=False,
+        )
+        self._session.add(row)
+        await self._session.commit()
+        await self._session.refresh(row)
+        return self._to_dict(row)
+
+    async def list(self, *, limit: int, offset: int) -> dict:
+        from sqlalchemy import select, func
+
+        total = await self._session.scalar(
+            select(func.count())
+            .select_from(AttachmentModel)
+            .where(AttachmentModel.is_deleted.is_(False))
+        )  # noqa: E712
+        rows = (
+            (
+                await self._session.execute(
+                    select(AttachmentModel)
+                    .where(AttachmentModel.is_deleted.is_(False))  # noqa: E712
+                    .order_by(AttachmentModel.id.desc())
+                    .limit(int(limit))
+                    .offset(int(offset))
+                )
+            )
+            .scalars()
+            .all()
+        )
+
+        return {
+            "items": [self._to_dict(r) for r in rows],
+            "limit": int(limit),
+            "offset": int(offset),
+            "total": int(total or 0),
+        }
+
+    async def get(self, attachment_id: int) -> dict | None:
+        row = await self._session.get(AttachmentModel, attachment_id)
+        if row is None or row.is_deleted:
+            return None
+        return self._to_dict(row)
+
+    async def soft_delete(self, attachment_id: int) -> None:
+        row = await self._session.get(AttachmentModel, attachment_id)
+        if row is None:
+            raise ValueError("not_found")
+        row.is_deleted = True
+        self._session.add(row)
+        await self._session.commit()
+
+    def _to_dict(self, row: AttachmentModel) -> dict:
+        return {
+            "id": int(row.id),
+            "title": row.title,
+            "originalfilename": row.original_filename,
+            "contenttype": row.content_type,
+            "sizebytes": int(row.size_bytes),
+            "sha256": row.sha256,
+            "storagekey": row.storage_key,
+            "isdeleted": bool(row.is_deleted),
+            "createdat": row.created_at.isoformat() if row.created_at else None,
+        }
+
+
+class UserBlacklistInnRepository(UserBlacklistInnRepositoryPort):
+    def __init__(self, session: AsyncSession):
+        self._session = session
+
+    async def add_inn(self, user_id: int, inn: str, reason: str | None) -> None:
+        exists_stmt = select(UserBlacklistInnModel.id).where(
+            UserBlacklistInnModel.user_id == user_id,
+            UserBlacklistInnModel.inn == inn,
+        )
+        existing_id = await self._session.scalar(exists_stmt)
+        if existing_id is not None:
+            return
+
+        obj = UserBlacklistInnModel(user_id=user_id, inn=inn, reason=reason)
+        self._session.add(obj)
+        try:
+            await self._session.commit()
+        except Exception:
+            await self._session.rollback()
+            raise
+
+    async def remove_inn(self, user_id: int, inn: str) -> None:
+        stmt = delete(UserBlacklistInnModel).where(
+            UserBlacklistInnModel.user_id == user_id,
+            UserBlacklistInnModel.inn == inn,
+        )
+        await self._session.execute(stmt)
+        await self._session.commit()
+
+    async def list_inns(self, user_id: int, limit: int) -> list[dict]:
+        stmt = (
+            select(UserBlacklistInnModel)
+            .where(UserBlacklistInnModel.user_id == user_id)
+            .order_by(UserBlacklistInnModel.id.desc())
+            .limit(limit)
+        )
+        res = await self._session.execute(stmt)
+        rows = res.scalars().all()
+
+        return [
+            {
+                "id": r.id,
+                "inn": r.inn,
+                "supplierid": None,
+                "suppliername": None,
+                "checkodata": None,
+                "reason": r.reason,
+                "createdat": r.created_at.isoformat(),
+            }
+            for r in rows
+        ]
+
+class UserRepository:
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
+    async def get_or_create(self, userid: int, email: str) -> UserModel:
+        obj = await self.session.get(UserModel, userid)
+        if obj is not None:
+            return obj
+        obj = UserModel(id=userid, email=email, emailpolicy="appendonly")
+        self.session.add(obj)
+        await self.session.commit()
+        await self.session.refresh(obj)
+        return obj
+
+    async def get(self, userid: int) -> UserModel | None:
+        return await self.session.get(UserModel, userid)
+
+    async def set_emailpolicy(self, userid: int, emailpolicy: str) -> UserModel:
+        obj = await self.get_or_create(userid=userid, email="dev@example.com")
+        obj.emailpolicy = emailpolicy
+        self.session.add(obj)
+        await self.session.commit()
+        await self.session.refresh(obj)
+        return obj

@@ -1,0 +1,20 @@
+from pydantic import Field, AliasChoices
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    APP_HOST: str = "0.0.0.0"
+    APP_PORT: int = 8000
+    API_PREFIX: str = "/api/v1"
+
+    # Canonical for this project: DATABASEURL (PROJECT-RULES).
+    # Back-compat: accept DATABASE_URL too.
+    DATABASEURL: str = Field(default="", validation_alias=AliasChoices("DATABASEURL", "DATABASE_URL"))
+
+    ALLOWED_ORIGINS: str = ""
+    JWT_SECRET: str = "change_me_dev_only"
+
+
+settings = Settings()

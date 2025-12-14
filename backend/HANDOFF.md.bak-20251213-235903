@@ -1,0 +1,8 @@
+﻿
+
+
+
+- 2025-12-13 23:49 MSK Fixed pytest Windows "Event loop is closed": added FastAPI lifespan in app/main.py to dispose SQLAlchemy async engine on shutdown; tests pass (python -m pytest -q => 2 passed).
+- 2025-12-13 23:56 MSK Implemented GET /api/v1/user/requests/{requestId} (RequestDetail) + integration test; verified: python -m pytest -q.
+
+- If step failed: log it in INCIDENTS.md (rules live there).
