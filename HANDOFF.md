@@ -189,3 +189,11 @@ Rule:
 - 2025-12-14 17:25 MSK User blacklist by INN: added contract paths/schemas and enabled backend endpoints GET/POST/DELETE /apiv1/user/blacklist-inn. Verified: Invoke-RestMethod GET returned total=1 after POST and DELETE returned success=true on port 8002.
 - 2025-12-14 17:25 MSK User blacklist by INN: added contract paths/schemas and enabled backend endpoints GET/POST/DELETE /apiv1/user/blacklist-inn. Verified: Invoke-RestMethod GET returned total=1 after POST and DELETE returned success=true on port 8002.
 - 2025-12-14 17:36 MSK DB aligned: using role b2b_user and database b2b_platform; set DATABASEURL in backend\\.env. Verified: GET /apiv1/health = ok, GET /apiv1/user/blacklist-inn returns total=1.
+
+## 2025-12-15 00:06:35 MSK
+- What: Removed backup/tmp files and rewrote update_project_tree.ps1 to filter junk reliably
+- Why: Avoid repo clutter and keep PROJECT-TREE.txt useful for new chats
+- Verify: Select-String PROJECT-TREE.txt -Pattern '\.bak|\.tmp|~$' -Quiet
+- Expected: False (no junk entries); PROJECT-TREE.txt regenerated
+- Now: Repo hygiene is fixed; ready to pick next endpoint
+- Next: Pick next endpoint from api-contracts.yaml and implement first slice

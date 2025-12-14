@@ -10,15 +10,28 @@ $excludeDirNames = @(
   ".git", ".venv", "venv", "__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache",
   ".idea", ".vscode", "node_modules", "dist", "build", ".tox", ".eggs"
 )
-$excludeFileNames = @(".env", ".env.local", ".env.production", ".env.development")
+
+$excludeFileNames = @(
+  ".env", ".env.local", ".env.production", ".env.development"
+)
+
+$excludePatterns = @(
+  "*.bak", "*.bak.*", "*.tmp", "*.log", "*~"
+)
 
 function Should-Exclude([string]$fullPath) {
   foreach ($d in $excludeDirNames) {
     if ($fullPath -match [regex]::Escape([System.IO.Path]::DirectorySeparatorChar + $d + [System.IO.Path]::DirectorySeparatorChar)) { return $true }
     if ($fullPath.EndsWith([System.IO.Path]::DirectorySeparatorChar + $d)) { return $true }
   }
+
   $name = [System.IO.Path]::GetFileName($fullPath)
   if ($excludeFileNames -contains $name) { return $true }
+
+  foreach ($pat in $excludePatterns) {
+    if ($name -like $pat) { return $true }
+  }
+
   return $false
 }
 

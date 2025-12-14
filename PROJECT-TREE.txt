@@ -1,20 +1,12 @@
 PROJECT TREE (curated)
-Generated: 2025-12-14 23:59:46
+Generated: 2025-12-15 00:06:35
 
 .gitattributes
 .github\workflows\ci.yml
 .gitignore
 .pre-commit-config.yaml
 add-user-blacklist-inn.ps1
-api-contracrts_yaml.txt
 api-contracts.yaml
-api-contracts.yaml.bak
-api-contracts.yaml.bak.20251214-154934
-api-contracts.yaml.bak2
-api-contracts.yaml.bak-20251214-100959
-api-contracts.yaml.bak-20251214-101133
-api-contracts.yaml.bak3
-api-contracts.yaml.bak4
 backend\.env.example
 backend\alembic.ini
 backend\alembic\env.py
@@ -28,7 +20,6 @@ backend\alembic\versions\552d97f8cc92_create_requests_and_keys_tables.py
 backend\alembic\versions\687ead051921_create_request_recipients_table.py
 backend\alembic\versions\6fdf6afd7f77_rename_userid_createdat_columns_in_user_.py
 backend\alembic\versions\9458942023a4_merge_heads.py
-backend\alembic\versions\9458942023a4_merge_heads.py.bak.20251214-152345
 backend\alembic\versions\a291dc92b69a_create_users_and_otp_codes.py
 backend\alembic\versions\bbff04c57403_create_attachments_table.py
 backend\alembic\versions\be4136aa1c68_request_recipients_defaults.py
@@ -74,7 +65,6 @@ backend\app\domain\ports.py
 backend\app\domain\ports\user_blacklist_inn.py
 backend\app\domain\ports_auth.py
 backend\app\main.py
-backend\app\main.py.bak
 backend\app\main.py.bak2
 backend\app\transport\__init__.py
 backend\app\transport\errors.py
@@ -145,25 +135,17 @@ backend\tests\integration\test_auth_policy.py
 backend\tests\integration\test_auth_policy_persist.py
 backend\tests\integration\test_create_request_manual.py
 backend\tests\integration\test_get_user_request_detail.py
-backend\tests\integration\test_get_user_request_detail.py.bak.20251214-154523
-backend\tests\integration\test_get_user_request_detail.py.bak.20251214-154601
 backend\tests\integration\test_list_user_requests.py
 backend\tests\integration\test_messaging_not_implemented.py
-backend\tests\integration\test_messaging_not_implemented.py.bak.20251214-154523
 backend\tests\integration\test_moderator_blacklist_domains.py
 backend\tests\integration\test_moderator_suppliers.py
 backend\tests\integration\test_moderator_tasks.py
 backend\tests\integration\test_recipients_replace_all.py
 backend\tests\integration\test_submit_request.py
-backend\tests\integration\test_submit_request.py.bak.20251214-154523
-backend\tests\integration\test_submit_request.py.bak.20251214-154601
 backend\tests\integration\test_suppliers_search.py
 backend\tests\integration\test_update_request_keys.py
-backend\tests\integration\test_update_request_keys.py.bak.20251214-154523
-backend\tests\integration\test_update_request_keys.py.bak.20251214-154601
 backend\tests\integration\test_user_blacklist_inn.py
 backend\tests\integration\test_user_blacklist_inn.py.bak2
-backend\tests\integration\test_user_messaging_stubs.py.bak.20251214-154523
 backend\tests\integration\test_user_upload_and_create.py
 backend\tests\unit\test_auth_otp_usecases.py
 backend\tmp-attachment.txt
