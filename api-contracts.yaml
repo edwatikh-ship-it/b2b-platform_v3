@@ -185,12 +185,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /user/requests/{requestId}/recipients:
+  /userrequests/{requestId}/recipients:
     put:
       tags:
       - UserMessaging
       summary: Update Recipients
-      operationId: update_recipients_apiv1_user_requests__requestId__recipients_put
+      operationId: update_recipients_apiv1_userrequests__requestId__recipients_put
       parameters:
       - name: requestId
         in: path
@@ -203,27 +203,20 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: true
-              title: Payload
+              $ref: '#/components/schemas/UpdateRecipientsRequest'
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
-              schema: {}
-        '422':
-          description: Validation Error
-          content:
-            application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /user/requests/{requestId}/send:
+                $ref: '#/components/schemas/RecipientsResponse'
+  /userrequests/{requestId}/send:
     post:
       tags:
       - UserMessaging
       summary: Send Request Messages
-      operationId: send_request_messages_apiv1_user_requests__requestId__send_post
+      operationId: send_request_messages_apiv1_userrequests__requestId__send_post
       parameters:
       - name: requestId
         in: path
@@ -251,12 +244,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /user/requests/{requestId}/send-new:
+  /userrequests/{requestId}/send-new:
     post:
       tags:
       - UserMessaging
       summary: Send Request Messages New
-      operationId: send_request_messages_new_apiv1_user_requests__requestId__send_new_post
+      operationId: send_request_messages_new_apiv1_userrequests__requestId__send_new_post
       parameters:
       - name: requestId
         in: path
@@ -284,12 +277,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /user/requests/{requestId}/messages:
+  /userrequests/{requestId}/messages:
     get:
       tags:
       - UserMessaging
       summary: List Request Messages
-      operationId: list_request_messages_apiv1_user_requests__requestId__messages_get
+      operationId: list_request_messages_apiv1_userrequests__requestId__messages_get
       parameters:
       - name: requestId
         in: path
@@ -330,12 +323,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /user/messages/{messageId}:
+  /usermessages/{messageId}:
     delete:
       tags:
       - UserMessaging
       summary: Delete Message
-      operationId: delete_message_apiv1_user_messages__messageId__delete
+      operationId: delete_message_apiv1_usermessages__messageId__delete
       parameters:
       - name: messageId
         in: path
@@ -457,7 +450,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/app__transport__schemas__attachments__GenericOkResponseDTO'
+                $ref: '#/components/schemas/GenericOkResponseDTO'
         '422':
           description: Validation Error
           content:
@@ -483,6 +476,261 @@ paths:
           content:
             application/json:
               schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+  /user/blacklist-inn:
+    get:
+      tags:
+      - UserBlacklist
+      summary: List User Blacklist Inn
+      operationId: list_user_blacklist_inn_apiv1_user_blacklist_inn_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 200
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBlacklistInnListResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - UserBlacklist
+      summary: Add User Blacklist Inn
+      operationId: add_user_blacklist_inn_apiv1_user_blacklist_inn_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserBlacklistInnRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericOkResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /user/blacklist-inn/{inn}:
+    delete:
+      tags:
+      - UserBlacklist
+      summary: Delete User Blacklist Inn
+      operationId: delete_user_blacklist_inn_apiv1_user_blacklist_inn__inn__delete
+      parameters:
+      - name: inn
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Inn
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericOkResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+  /user/blacklist-inn:
+    get:
+      tags:
+      - UserBlacklist
+      summary: List User Blacklist Inn
+      operationId: list_user_blacklist_inn_apiv1_user_blacklist_inn_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 200
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBlacklistInnListResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - UserBlacklist
+      summary: Add User Blacklist Inn
+      operationId: add_user_blacklist_inn_apiv1_user_blacklist_inn_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserBlacklistInnRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericOkResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /user/blacklist-inn/{inn}:
+    delete:
+      tags:
+      - UserBlacklist
+      summary: Delete User Blacklist Inn
+      operationId: delete_user_blacklist_inn_apiv1_user_blacklist_inn__inn__delete
+      parameters:
+      - name: inn
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Inn
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericOkResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+  /user/blacklist-inn:
+    get:
+      tags:
+      - UserBlacklist
+      summary: List User Blacklist Inn
+      operationId: list_user_blacklist_inn_apiv1_user_blacklist_inn_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 200
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBlacklistInnListResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - UserBlacklist
+      summary: Add User Blacklist Inn
+      operationId: add_user_blacklist_inn_apiv1_user_blacklist_inn_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserBlacklistInnRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericOkResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /user/blacklist-inn/{inn}:
+    delete:
+      tags:
+      - UserBlacklist
+      summary: Delete User Blacklist Inn
+      operationId: delete_user_blacklist_inn_apiv1_user_blacklist_inn__inn__delete
+      parameters:
+      - name: inn
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Inn
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericOkResponseDTO'
         '422':
           description: Validation Error
           content:
@@ -543,12 +791,27 @@ paths:
       - Auth
       summary: Auth Me
       operationId: auth_me_apiv1_auth_me_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
               schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /suppliers/search:
     get:
       tags:
@@ -864,101 +1127,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /userblacklistinn:
-    post:
-      tags:
-      - Blacklist
-      summary: Add User Blacklist Inn
-      operationId: add_user_blacklist_inn_apiv1_userblacklistinn_post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddUserBlacklistInnRequestDTO'
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/app__transport__schemas__common__GenericOkResponseDTO'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-    get:
-      tags:
-      - Blacklist
-      summary: List User Blacklist Inn
-      operationId: list_user_blacklist_inn_apiv1_userblacklistinn_get
-      parameters:
-      - name: limit
-        in: query
-        required: false
-        schema:
-          type: integer
-          default: 200
-          title: Limit
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserBlacklistInnListResponseDTO'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /userblacklistinn/{inn}:
-    delete:
-      tags:
-      - Blacklist
-      summary: Remove User Blacklist Inn
-      operationId: remove_user_blacklist_inn_apiv1_userblacklistinn__inn__delete
-      parameters:
-      - name: inn
-        in: path
-        required: true
-        schema:
-          type: string
-          title: Inn
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/app__transport__schemas__common__GenericOkResponseDTO'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    AddUserBlacklistInnRequestDTO:
-      properties:
-        inn:
-          type: string
-          maxLength: 12
-          minLength: 10
-          title: Inn
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-      type: object
-      required:
-      - inn
-      title: AddUserBlacklistInnRequestDTO
     AttachmentDTO:
       properties:
         id:
@@ -1005,11 +1175,16 @@ components:
       - sizebytes
       - createdat
       title: AttachmentDTO
-      description: "SSoT: api-contracts.yaml /components/schemas/Attachment\n\nÐ\x92\
-        Ð\x90Ð\x96Ð\x9DÐ\x9E:\n- Ð½Ð°Ñ\x80Ñ\x83Ð¶Ñ\x83 Ð¾Ñ\x82Ð´Ð°Ñ\x91Ð¼ lower-without-separators:\
-        \ originalfilename, contenttype, sizebytes, storagekey, isdeleted, createdat\n\
-        - Ð²Ð½Ñ\x83Ñ\x82Ñ\x80Ð¸ Ð´ÐµÑ\x80Ð¶Ð¸Ð¼ snake_case: original_filename, content_type,\
-        \ size_bytes, storage_key, is_deleted, created_at"
+      description: 'SSoT: api-contracts.yaml /components/schemas/Attachment
+
+
+        Р’РђР–РќРћ:
+
+        - РЅР°СЂСѓР¶Сѓ РѕС‚РґР°С‘Рј lower-without-separators: originalfilename, contenttype, sizebytes,
+        storagekey, isdeleted, createdat
+
+        - РІРЅСѓС‚СЂРё РґРµСЂР¶РёРј snake_case: original_filename, content_type, size_bytes, storage_key,
+        is_deleted, created_at'
     AttachmentListResponseDTO:
       properties:
         items:
@@ -1129,6 +1304,20 @@ components:
       - requestid
       - status
       title: CreateRequestResponseDTO
+    GenericOkResponseDTO:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          default: true
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+      additionalProperties: false
+      type: object
+      title: GenericOkResponseDTO
     HTTPValidationError:
       properties:
         detail:
@@ -1138,6 +1327,91 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+
+  /user/blacklist-inn:
+    get:
+      tags:
+      - UserBlacklist
+      summary: List User Blacklist Inn
+      operationId: list_user_blacklist_inn_apiv1_user_blacklist_inn_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 200
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBlacklistInnListResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - UserBlacklist
+      summary: Add User Blacklist Inn
+      operationId: add_user_blacklist_inn_apiv1_user_blacklist_inn_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserBlacklistInnRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericOkResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /user/blacklist-inn/{inn}:
+    delete:
+      tags:
+      - UserBlacklist
+      summary: Delete User Blacklist Inn
+      operationId: delete_user_blacklist_inn_apiv1_user_blacklist_inn__inn__delete
+      parameters:
+      - name: inn
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Inn
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericOkResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
     HealthResponse:
       properties:
         status:
@@ -1324,55 +1598,234 @@ components:
       required:
       - keys
       title: UpdateRequestKeysRequestDTO
-    UserBlacklistInnItemDTO:
+    AddUserBlacklistInnRequest:
+      type: object
       properties:
-        id:
-          type: integer
-          title: Id
+        inn:
+          type: string
+          minLength: 10
+          maxLength: 12
+          title: Inn
+        comment:
+          anyOf:
+          - type: string
+          - type: null
+          title: Comment
+      required:
+      - inn
+      additionalProperties: false
+    UserBlacklistInnItem:
+      type: object
+      properties:
         inn:
           type: string
           title: Inn
-        supplierid:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Supplierid
-        suppliername:
+        comment:
           anyOf:
           - type: string
-          - type: 'null'
-          title: Suppliername
-        checkodata:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Checkodata
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-        createdat:
+          - type: null
+          title: Comment
+        created_at:
           type: string
-          title: Createdat
-      type: object
+          title: Created At
       required:
-      - id
       - inn
-      - createdat
-      title: UserBlacklistInnItemDTO
-    UserBlacklistInnListResponseDTO:
+      - created_at
+      additionalProperties: false
+    UserBlacklistInnListResponse:
+      type: object
       properties:
         items:
-          items:
-            $ref: '#/components/schemas/UserBlacklistInnItemDTO'
           type: array
+          items:
+            $ref: '#/components/schemas/UserBlacklistInnItem'
           title: Items
-      type: object
+        limit:
+          type: integer
+          title: Limit
+        offset:
+          type: integer
+          title: Offset
+        total:
+          type: integer
+          title: Total
       required:
       - items
-      title: UserBlacklistInnListResponseDTO
+      - limit
+      - offset
+      - total
+      additionalProperties: false
+    AddUserBlacklistInnRequest:
+      type: object
+      properties:
+        inn:
+          type: string
+          minLength: 10
+          maxLength: 12
+          title: Inn
+        comment:
+          anyOf:
+          - type: string
+          - type: null
+          title: Comment
+      required:
+      - inn
+      additionalProperties: false
+    UserBlacklistInnItem:
+      type: object
+      properties:
+        inn:
+          type: string
+          title: Inn
+        comment:
+          anyOf:
+          - type: string
+          - type: null
+          title: Comment
+        created_at:
+          type: string
+          title: Created At
+      required:
+      - inn
+      - created_at
+      additionalProperties: false
+    UserBlacklistInnListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserBlacklistInnItem'
+          title: Items
+        limit:
+          type: integer
+          title: Limit
+        offset:
+          type: integer
+          title: Offset
+        total:
+          type: integer
+          title: Total
+      required:
+      - items
+      - limit
+      - offset
+      - total
+      additionalProperties: false
+    AddUserBlacklistInnRequest:
+      type: object
+      properties:
+        inn:
+          type: string
+          minLength: 10
+          maxLength: 12
+          title: Inn
+        comment:
+          anyOf:
+          - type: string
+          - type: null
+          title: Comment
+      required:
+      - inn
+      additionalProperties: false
+    UserBlacklistInnItem:
+      type: object
+      properties:
+        inn:
+          type: string
+          title: Inn
+        comment:
+          anyOf:
+          - type: string
+          - type: null
+          title: Comment
+        created_at:
+          type: string
+          title: Created At
+      required:
+      - inn
+      - created_at
+      additionalProperties: false
+    UserBlacklistInnListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserBlacklistInnItem'
+          title: Items
+        limit:
+          type: integer
+          title: Limit
+        offset:
+          type: integer
+          title: Offset
+        total:
+          type: integer
+          title: Total
+      required:
+      - items
+      - limit
+      - offset
+      - total
+      additionalProperties: false
+    AddUserBlacklistInnRequest:
+      type: object
+      properties:
+        inn:
+          type: string
+          minLength: 10
+          maxLength: 12
+          title: Inn
+        comment:
+          anyOf:
+          - type: string
+          - type: null
+          title: Comment
+      required:
+      - inn
+      additionalProperties: false
+    UserBlacklistInnItem:
+      type: object
+      properties:
+        inn:
+          type: string
+          title: Inn
+        comment:
+          anyOf:
+          - type: string
+          - type: null
+          title: Comment
+        created_at:
+          type: string
+          title: Created At
+      required:
+      - inn
+      - created_at
+      additionalProperties: false
+    UserBlacklistInnListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserBlacklistInnItem'
+          title: Items
+        limit:
+          type: integer
+          title: Limit
+        offset:
+          type: integer
+          title: Offset
+        total:
+          type: integer
+          title: Total
+      required:
+      - items
+      - limit
+      - offset
+      - total
+      additionalProperties: false
     ValidationError:
       properties:
         loc:
@@ -1394,31 +1847,30 @@ components:
       - msg
       - type
       title: ValidationError
-    app__transport__schemas__attachments__GenericOkResponseDTO:
-      properties:
-        success:
-          type: boolean
-          title: Success
-          default: true
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-      additionalProperties: false
+    UpdateRecipientsRequest:
       type: object
-      title: GenericOkResponseDTO
-    app__transport__schemas__common__GenericOkResponseDTO:
       properties:
-        success:
-          type: boolean
-          title: Success
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-      type: object
+        recipients:
+          type: array
+          items:
+            type: object
+            properties:
+              supplierid:
+                type: integer
+              selected:
+                type: boolean
+            required:
+            - supplierid
+            - selected
+            additionalProperties: false
       required:
-      - success
-      title: GenericOkResponseDTO
+      - recipients
+      additionalProperties: false
+    RecipientsResponse:
+      type: object
+      properties:
+        recipients:
+          $ref: '#/components/schemas/UpdateRecipientsRequest/properties/recipients'
+      required:
+      - recipients
+      additionalProperties: false

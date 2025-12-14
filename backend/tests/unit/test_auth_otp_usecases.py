@@ -1,7 +1,8 @@
-import pytest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
-from app.usecases.auth.request_otp import RequestOtpUseCase, RequestOtpConfig
+import pytest
+
+from app.usecases.auth.request_otp import RequestOtpConfig, RequestOtpUseCase
 from app.usecases.auth.verify_otp import VerifyOtpUseCase
 
 
@@ -18,7 +19,7 @@ class FakeOtpRepo:
         rec.attempts = 0
         rec.maxattempts = maxattempts
         rec.expiresat = expiresat
-        rec.createdat = datetime.now(timezone.utc)
+        rec.createdat = datetime.now(UTC)
         self.records.append(rec)
         return rec
 
@@ -55,7 +56,7 @@ class FakeUserRepo:
         self.next_id += 1
         user.email = email
         user.emailpolicy = "appendonly"
-        user.createdat = datetime.now(timezone.utc)
+        user.createdat = datetime.now(UTC)
         self.users[email] = user
         return user
 
@@ -72,7 +73,9 @@ class FakeJwt:
 async def test_request_otp_generates_6_digits_and_sends():
     otp_repo = FakeOtpRepo()
     sender = FakeOtpSender()
-    uc = RequestOtpUseCase(otp_repo=otp_repo, otp_sender=sender, cfg=RequestOtpConfig(ttl_minutes=10, max_attempts=5))
+    uc = RequestOtpUseCase(
+        otp_repo=otp_repo, otp_sender=sender, cfg=RequestOtpConfig(ttl_minutes=10, max_attempts=5)
+    )
 
     await uc.execute("a@example.com")
 
@@ -91,7 +94,7 @@ async def test_verify_otp_increments_attempts_on_wrong_code():
     await RequestOtpUseCase(otp_repo=otp_repo, otp_sender=sender).execute("a@example.com")
 
     # overwrite expiry to be valid
-    otp_repo.records[0].expiresat = datetime.now(timezone.utc) + timedelta(minutes=10)
+    otp_repo.records[0].expiresat = datetime.now(UTC) + timedelta(minutes=10)
 
     uc = VerifyOtpUseCase(otp_repo=otp_repo, user_repo=FakeUserRepo(), jwt=FakeJwt())
 

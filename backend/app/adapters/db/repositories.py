@@ -1,9 +1,14 @@
-from app.adapters.db.models import AttachmentModel, UserModel
-from sqlalchemy import delete
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.adapters.db.models import RequestKeyModel, RequestModel, UserBlacklistInnModel, UserModel
+from app.adapters.db.models import (
+    AttachmentModel,
+    RequestKeyModel,
+    RequestModel,
+    RequestRecipientModel,
+    UserBlacklistInnModel,
+    UserModel,
+)
 from app.domain.ports import RequestRepositoryPort, UserBlacklistInnRepositoryPort
 
 
@@ -31,15 +36,10 @@ class RequestRepository(RequestRepositoryPort):
         return int(req.id)
 
     async def list_requests(self, limit: int, offset: int) -> dict:
-        total = await self._session.scalar(
-            select(func.count()).select_from(RequestModel)
-        )
+        total = await self._session.scalar(select(func.count()).select_from(RequestModel))
 
         rows = await self._session.execute(
-            select(RequestModel)
-            .order_by(RequestModel.id.desc())
-            .limit(limit)
-            .offset(offset)
+            select(RequestModel).order_by(RequestModel.id.desc()).limit(limit).offset(offset)
         )
         items = []
         for r in rows.scalars().all():
@@ -85,9 +85,7 @@ class RequestRepository(RequestRepositoryPort):
             "id": int(req.id),
             "filename": req.filename,
             "status": req.status,
-            "createdat": req.created_at.isoformat()
-            if getattr(req, "created_at", None)
-            else None,
+            "createdat": req.created_at.isoformat() if getattr(req, "created_at", None) else None,
             "keys": keys,
         }
 
@@ -140,6 +138,38 @@ class RequestRepository(RequestRepositoryPort):
             "message": None,
         }
 
+    async def replace_recipients(self, request_id: int, recipients: list[dict]) -> list[dict]:
+        # Ensure request exists
+        req = await self._session.get(RequestModel, request_id)
+        if req is None:
+            raise ValueError("not_found")
+
+        # Replace-all: delete all then insert provided list
+        await self._session.execute(
+            __import__("sqlalchemy")
+            .delete(RequestRecipientModel)
+            .where(RequestRecipientModel.request_id == request_id)
+        )
+
+        for r in recipients:
+            self._session.add(
+                RequestRecipientModel(
+                    request_id=int(request_id),
+                    supplier_id=int(r["supplierid"]),
+                    selected=bool(r["selected"]),
+                )
+            )
+
+        await self._session.commit()
+
+        # Return normalized (sorted) for stable API response + tests
+        out = [
+            {"supplierid": int(r["supplierid"]), "selected": bool(r["selected"])}
+            for r in recipients
+        ]
+        out.sort(key=lambda x: x["supplierid"])
+        return out
+
 
 class AttachmentRepository:
     def __init__(self, session: AsyncSession) -> None:
@@ -170,7 +200,7 @@ class AttachmentRepository:
         return self._to_dict(row)
 
     async def list(self, *, limit: int, offset: int) -> dict:
-        from sqlalchemy import select, func
+        from sqlalchemy import func, select
 
         total = await self._session.scalar(
             select(func.count())
@@ -278,6 +308,7 @@ class UserBlacklistInnRepository(UserBlacklistInnRepositoryPort):
             for r in rows
         ]
 
+
 class UserRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -302,3 +333,7 @@ class UserRepository:
         await self.session.commit()
         await self.session.refresh(obj)
         return obj
+
+
+#
+# __AUTO_INSERT_REPOSITORIES_END__

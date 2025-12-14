@@ -437,3 +437,18 @@ git commit -m "feat: [TAG] описание"
   - "Verification" commands (Select-String / python -c import / pytest / curl/Invoke-RestMethod)
 - No temporary scripts that will be deleted later; if a helper script is introduced, it must live under /tools and be reusable.
 
+
+
+
+## 🛠️ Инструменты проекта (все подключены ✅)
+
+| Инструмент | Роль | Команда запуска |
+|------------|------|-----------------|
+| **Ruff** | Линтер + форматтер | `just fmt` |
+| **pre-commit** | Проверки перед коммитом | `backend\.venv\Scripts\pre-commit.exe run --all-files` |
+| **GitHub Actions** | CI на каждый push/PR | Автоматически в Checks |
+| **just** | Task runner | `just fmt`, `just dev`, `just test` |
+| **pyclean** | Уборка __pycache__ | `pyclean backend` |
+| **uv** | Быстрый pip | `uv pip install -r requirements.txt` |
+
+**Правило**: перед коммитом/пушем всегда `just fmt` + pre-commit.

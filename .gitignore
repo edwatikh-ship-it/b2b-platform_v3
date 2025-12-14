@@ -1,19 +1,27 @@
-# Python
+# Python caches
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
 .pytest_cache/
 .mypy_cache/
 
-# venv
+# Virtualenv
 backend/.venv/
+.venv/
 
-# local env
+# Local env files (do not commit)
 backend/.env
+backend/backend.env
 
-# editor / OS
+# Backups / scratch
+*.bak
+*.bak.*
+*.tmp
+
+# Runtime artifacts
+openapi-runtime.json
+backend/openapi-runtime.json
+
+# OS/IDE
+.DS_Store
 .vscode/
 .idea/
-.DS_Store
-Thumbs.db

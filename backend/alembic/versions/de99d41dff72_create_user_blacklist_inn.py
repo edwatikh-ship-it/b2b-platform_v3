@@ -5,17 +5,18 @@ Revises: a291dc92b69a
 Create Date: 2025-12-14
 
 """
-from typing import Sequence, Union
 
-from alembic import op
+from collections.abc import Sequence
+
 import sqlalchemy as sa
 from sqlalchemy import text
 
+from alembic import op
 
 revision: str = "de99d41dff72"
-down_revision: Union[str, None] = "a291dc92b69a"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "a291dc92b69a"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def _table_exists(conn, name: str) -> bool:
@@ -41,15 +42,27 @@ def upgrade() -> None:
             sa.Column("userid", sa.Integer(), nullable=False),
             sa.Column("inn", sa.String(length=12), nullable=False),
             sa.Column("reason", sa.String(length=512), nullable=True),
-            sa.Column("createdat", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
+            sa.Column(
+                "createdat",
+                sa.DateTime(timezone=True),
+                nullable=False,
+                server_default=sa.text("now()"),
+            ),
             sa.ForeignKeyConstraint(["userid"], ["users.id"], ondelete="CASCADE"),
         )
 
     if not _index_exists(conn, "ux_user_blacklist_inn_userid_inn"):
-        op.create_index("ux_user_blacklist_inn_userid_inn", "user_blacklist_inn", ["userid", "inn"], unique=True)
+        op.create_index(
+            "ux_user_blacklist_inn_userid_inn", "user_blacklist_inn", ["userid", "inn"], unique=True
+        )
 
     if not _index_exists(conn, "ix_user_blacklist_inn_userid_createdat"):
-        op.create_index("ix_user_blacklist_inn_userid_createdat", "user_blacklist_inn", ["userid", "createdat"], unique=False)
+        op.create_index(
+            "ix_user_blacklist_inn_userid_createdat",
+            "user_blacklist_inn",
+            ["userid", "createdat"],
+            unique=False,
+        )
 
 
 def downgrade() -> None:

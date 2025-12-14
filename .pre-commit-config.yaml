@@ -1,0 +1,14 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff (local)
+        entry: cmd /c "backend\.venv\Scripts\python.exe -m ruff check backend --fix"
+        language: system
+        pass_filenames: false
+
+      - id: ruff-format
+        name: ruff-format (local)
+        entry: cmd /c "backend\.venv\Scripts\python.exe -m ruff format backend"
+        language: system
+        pass_filenames: false

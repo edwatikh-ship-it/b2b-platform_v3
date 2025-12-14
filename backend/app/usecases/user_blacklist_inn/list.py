@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.domain.models.user_blacklist_inn import UserBlacklistInnItem
 from app.domain.blacklist_ports.user_blacklist_inn import UserBlacklistInnRepositoryPort
+from app.domain.models.user_blacklist_inn import UserBlacklistInnItem
 
 
 @dataclass(frozen=True, slots=True)

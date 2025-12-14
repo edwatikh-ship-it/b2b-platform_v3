@@ -1,5 +1,3 @@
-﻿from pathlib import Path
-
 from app.adapters.storage.filestorage import LocalAttachmentStorage
 from app.domain.ports import AttachmentRepositoryPort
 

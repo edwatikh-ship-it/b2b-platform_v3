@@ -1,4 +1,5 @@
-﻿from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field
+
 
 # SSoT: api-contracts.yaml
 class RequestKeyInputDTO(BaseModel):
@@ -35,8 +36,6 @@ class RequestListResponseDTO(BaseModel):
     offset: int
     total: int
 
-from pydantic import BaseModel
-
 
 class RequestKeyDTO(BaseModel):
     id: int
@@ -55,8 +54,10 @@ class RequestDetailDTO(BaseModel):
     createdat: str
     keys: list[RequestKeyDTO]
 
+
 class UpdateRequestKeysRequestDTO(BaseModel):
     keys: list[RequestKeyInputDTO]
+
 
 class SubmitRequestResponseDTO(BaseModel):
     success: bool = True

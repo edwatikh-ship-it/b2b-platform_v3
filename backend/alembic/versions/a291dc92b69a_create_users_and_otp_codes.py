@@ -5,18 +5,19 @@ Revises: 3cd1f73d7395
 Create Date: 2025-12-14
 
 """
-from typing import Sequence, Union
 
-from alembic import op
+from collections.abc import Sequence
+
 import sqlalchemy as sa
 from sqlalchemy import text
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "a291dc92b69a"
-down_revision: Union[str, None] = "3cd1f73d7395"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "3cd1f73d7395"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def _table_exists(conn, name: str) -> bool:
@@ -40,8 +41,15 @@ def upgrade() -> None:
             "users",
             sa.Column("id", sa.Integer(), primary_key=True),
             sa.Column("email", sa.String(length=320), nullable=False),
-            sa.Column("emailpolicy", sa.String(length=32), nullable=False, server_default="appendonly"),
-            sa.Column("createdat", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
+            sa.Column(
+                "emailpolicy", sa.String(length=32), nullable=False, server_default="appendonly"
+            ),
+            sa.Column(
+                "createdat",
+                sa.DateTime(timezone=True),
+                nullable=False,
+                server_default=sa.text("now()"),
+            ),
         )
 
     if not _index_exists(conn, "ix_users_email"):
@@ -56,11 +64,18 @@ def upgrade() -> None:
             sa.Column("attempts", sa.Integer(), nullable=False, server_default="0"),
             sa.Column("maxattempts", sa.Integer(), nullable=False, server_default="5"),
             sa.Column("expiresat", sa.DateTime(timezone=True), nullable=False),
-            sa.Column("createdat", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
+            sa.Column(
+                "createdat",
+                sa.DateTime(timezone=True),
+                nullable=False,
+                server_default=sa.text("now()"),
+            ),
         )
 
     if not _index_exists(conn, "ix_otp_codes_email_createdat"):
-        op.create_index("ix_otp_codes_email_createdat", "otp_codes", ["email", "createdat"], unique=False)
+        op.create_index(
+            "ix_otp_codes_email_createdat", "otp_codes", ["email", "createdat"], unique=False
+        )
 
 
 def downgrade() -> None:

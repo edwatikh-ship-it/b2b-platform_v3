@@ -1,6 +1,9 @@
 import re
+
 from fastapi.testclient import TestClient
+
 from app.main import app
+
 
 def test_user_blacklist_inn_list_happy_path():
     headers = {"Authorization": "Bearer dev"}

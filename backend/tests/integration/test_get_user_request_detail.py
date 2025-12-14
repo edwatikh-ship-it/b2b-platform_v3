@@ -8,7 +8,10 @@ def test_get_user_request_detail_ok():
         # create
         r = client.post(
             "/apiv1/user/requests",
-            json={"title": "DetailTest", "keys": [{"pos": 1, "text": "Bolt M8", "qty": 10, "unit": "pcs"}]},
+            json={
+                "title": "DetailTest",
+                "keys": [{"pos": 1, "text": "Bolt M8", "qty": 10, "unit": "pcs"}],
+            },
         )
         assert r.status_code == 200
         request_id = r.json()["requestid"]

@@ -1,5 +1,7 @@
 from fastapi.testclient import TestClient
+
 from app.main import app
+
 
 def test_auth_policy_persists_and_reflects_in_auth_me():
     with TestClient(app) as client:

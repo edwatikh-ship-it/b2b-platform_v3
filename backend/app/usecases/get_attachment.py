@@ -1,4 +1,4 @@
-﻿from app.domain.ports import AttachmentRepositoryPort
+from app.domain.ports import AttachmentRepositoryPort
 
 
 class GetAttachmentUseCase:

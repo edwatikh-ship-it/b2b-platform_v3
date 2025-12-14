@@ -18,3 +18,6 @@ class UserBlacklistInnItemDTO(BaseModel):
 
 class UserBlacklistInnListResponseDTO(BaseModel):
     items: list[UserBlacklistInnItemDTO]
+    limit: int
+    offset: int
+    total: int

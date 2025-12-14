@@ -1,5 +1,3 @@
-﻿from pathlib import Path
-
 from app.adapters.storage.filestorage import LocalAttachmentStorage
 from app.domain.ports import AttachmentRepositoryPort
 
@@ -9,7 +7,9 @@ class UploadAttachmentUseCase:
         self._repo = repo
         self._storage = storage
 
-    async def execute(self, *, title: str | None, original_filename: str, content_type: str | None, content: bytes) -> dict:
+    async def execute(
+        self, *, title: str | None, original_filename: str, content_type: str | None, content: bytes
+    ) -> dict:
         stored = self._storage.save(original_filename=original_filename, content=content)
         return await self._repo.create(
             title=title,

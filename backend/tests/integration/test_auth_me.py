@@ -1,10 +1,13 @@
 from fastapi.testclient import TestClient
+
 from app.main import app
+
 
 def test_auth_me_requires_auth_401():
     with TestClient(app) as client:
         r = client.get("/apiv1/auth/me")
         assert r.status_code == 401
+
 
 def test_auth_me_ok_contract_fields():
     with TestClient(app) as client:

@@ -1,4 +1,4 @@
-﻿from app.domain.ports import RequestRepositoryPort
+from app.domain.ports import RequestRepositoryPort
 
 
 class SubmitRequestUseCase:

@@ -12,7 +12,6 @@ from app.transport.schemas.attachments import (
     AttachmentListResponseDTO,
     GenericOkResponseDTO,
 )
-
 from app.usecases.delete_attachment import DeleteAttachmentUseCase
 from app.usecases.download_attachment import DownloadAttachmentUseCase
 from app.usecases.get_attachment import GetAttachmentUseCase

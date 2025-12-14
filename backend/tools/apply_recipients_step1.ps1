@@ -1,92 +1,87 @@
-# APPLY_RECIPIENTS_STEP1.ps1 (Part A)
-# Creates DB table request_recipients + ORM model + repository method
-# Run from backend root: D:\b2bplatform\backend
-
 param()
 
 $ErrorActionPreference = "Stop"
-$env:PYTHONPATH="."
+Set-StrictMode -Version Latest
+
+$ROOT = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+Set-Location $ROOT
+$env:PYTHONPATH = "."
 
 function Step([string]$msg) { Write-Host "==> $msg" -ForegroundColor Cyan }
 
 function ReadText([string]$path) {
   return [System.IO.File]::ReadAllText($path, [System.Text.UTF8Encoding]::new($false))
 }
-
 function WriteText([string]$path, [string]$content) {
   $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
   [System.IO.File]::WriteAllText($path, $content, $utf8NoBom)
 }
-
 function BackupFile([string]$path) {
   if (Test-Path $path) {
     $ts = Get-Date -Format "yyyyMMdd-HHmmss"
     Copy-Item $path "$path.bak-$ts" -Force
   }
 }
+function InsertBeforeMarker([string]$path, [string]$marker, [string]$insert) {
+  if (-not (Test-Path $path)) { throw "Not found: $path" }
+  $text = ReadText $path
+  $count = ([regex]::Matches($text, [regex]::Escape($marker))).Count
+  if ($count -ne 1) { throw "Marker '$marker' must appear exactly once in $path; found=$count" }
 
-function AppendText([string]$path, [string]$text) {
-  $existing = ""
-  if (Test-Path $path) { $existing = ReadText $path }
-  $nl = if ($existing.Length -eq 0 -or $existing.EndsWith("`r`n") -or $existing.EndsWith("`n")) { "" } else { "`r`n" }
-  WriteText $path ($existing + $nl + $text)
+  if ($text.Contains($insert)) { Step "Already applied in $path, skip"; return }
+
+  BackupFile $path
+  $idx = $text.IndexOf($marker)
+  $before = $text.Substring(0, $idx)
+  $after  = $text.Substring($idx)
+  $fixed = ($before.TrimEnd() + "`r`n`r`n" + $insert.Trim() + "`r`n`r`n" + $after)
+  WriteText $path $fixed
+  Step "Patched $path"
 }
 
-Step "1) Create Alembic revision (request_recipients)"
+Step "1) Detect current head"
+$head = (& .\.venv\Scripts\alembic.exe heads).Split("`n")[0].Split(" ")[0].Trim()
+
+Step "2) Create alembic revision for request_recipients"
 $revOut = & .\.venv\Scripts\alembic.exe revision -m "create request_recipients table"
 $revLine = ($revOut | Select-String -Pattern "Generating " | Select-Object -First 1)
-if (-not $revLine) { throw "Cannot detect Alembic generated file. Output was: $($revOut -join "`n")" }
-
+if (-not $revLine) { throw "Cannot detect alembic generated file path." }
 $revPath = ($revLine.ToString() -replace "^Generating\s+", "") -replace "\s+\.\.\.\s+done$", ""
 $revPath = $revPath.Trim()
-
 if (-not (Test-Path $revPath)) { throw "Revision file not found: $revPath" }
-
 $revFile = Split-Path $revPath -Leaf
 $revId = $revFile.Split("_")[0]
 
-Step "2) Fill revision content: $revFile ($revId)"
+Step "3) Write migration content: $revFile"
 $revContent = @"
-""\"""create request_recipients table
+"""create request_recipients table
 
 Revision ID: $revId
-Revises: bbff04c57403
+Revises: $head
 Create Date: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
-""\""" 
+
+"""
 
 from alembic import op
 import sqlalchemy as sa
 
-
 revision = "$revId"
-down_revision = "bbff04c57403"
+down_revision = "$head"
 branch_labels = None
 depends_on = None
-
 
 def upgrade() -> None:
     op.create_table(
         "request_recipients",
-        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("id", sa.Integer(), primary_key=True),
         sa.Column("request_id", sa.Integer(), nullable=False),
         sa.Column("supplier_id", sa.Integer(), nullable=False),
         sa.Column("selected", sa.Boolean(), nullable=False, server_default=sa.text("false")),
-        sa.Column("send_status", sa.String(length=20), nullable=False, server_default=sa.text("'not_sent'")),
-        sa.Column("reply_status", sa.String(length=20), nullable=False, server_default=sa.text("'no_reply'")),
-        sa.Column("is_new", sa.Boolean(), nullable=False, server_default=sa.text("true")),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
-        sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("request_id", "supplier_id", name="uq_request_recipients_request_supplier"),
     )
-
-    op.create_index(
-        "ix_request_recipients_request_id",
-        "request_recipients",
-        ["request_id"],
-        unique=False,
-    )
-
+    op.create_index("ix_request_recipients_request_id", "request_recipients", ["request_id"], unique=False)
 
 def downgrade() -> None:
     op.drop_index("ix_request_recipients_request_id", table_name="request_recipients")
@@ -94,122 +89,39 @@ def downgrade() -> None:
 "@
 WriteText $revPath $revContent
 
-Step "3) Apply migration: alembic upgrade head"
+Step "4) Apply migration"
 & .\.venv\Scripts\alembic.exe upgrade head | Out-Null
 
-Step "4) Patch ORM model: app\adapters\db\models.py"
-$modelsPath = "app\adapters\db\models.py"
-if (-not (Test-Path $modelsPath)) { throw "Not found: $modelsPath" }
-BackupFile $modelsPath
+# Маркеры должны быть добавлены заранее 1 раз руками:
+$modelsPath = Join-Path $ROOT "app\adapters\db\models.py"
+$repoPath   = Join-Path $ROOT "app\adapters\db\repositories.py"
 
-$modelsText = ReadText $modelsPath
+Step "5) Patch models.py"
+$modelsInsert = @"
+# ---- UserMessaging: request recipients (AUTO) ----
+from sqlalchemy import Boolean, DateTime, Integer
+from sqlalchemy.orm import Mapped, mapped_column
 
-if ($modelsText -notmatch "class\s+RequestRecipientModel") {
-  $block = @"
-
-# ---- UserMessaging: request recipients ----
 class RequestRecipientModel(Base):
     __tablename__ = "request_recipients"
 
-    id = Column(Integer, primary_key=True)
-    request_id = Column(Integer, nullable=False, index=True)
-    supplier_id = Column(Integer, nullable=False)
-
-    selected = Column(Boolean, nullable=False, default=False)
-    send_status = Column(String(20), nullable=False, default="not_sent")
-    reply_status = Column(String(20), nullable=False, default="no_reply")
-    is_new = Column(Boolean, nullable=False, default=True)
-
-    created_at = Column(DateTime(timezone=True), nullable=False)
-    updated_at = Column(DateTime(timezone=True), nullable=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    request_id: Mapped[int] = mapped_column(Integer, index=True, nullable=False)
+    supplier_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    selected: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[object] = mapped_column(DateTime(timezone=True), nullable=False)
+    updated_at: Mapped[object] = mapped_column(DateTime(timezone=True), nullable=False)
 "@
-  AppendText $modelsPath $block
-  Step "   Added RequestRecipientModel block"
-} else {
-  Step "   RequestRecipientModel already present, skip"
-}
+InsertBeforeMarker -path $modelsPath -marker "# __AUTO_INSERT_MODELS_END__" -insert $modelsInsert
 
-Step "5) Patch repository: app\adapters\db\repositories.py"
-$repoPath = "app\adapters\db\repositories.py"
-if (-not (Test-Path $repoPath)) { throw "Not found: $repoPath" }
-BackupFile $repoPath
-
-$repoText = ReadText $repoPath
-
-# Ensure RequestRecipientModel is importable in repositories.py:
-# best-effort: if there is a line importing models, append RequestRecipientModel to it.
-if ($repoText -notmatch "RequestRecipientModel") {
-  $repoText2 = $repoText -replace "(from\s+app\.adapters\.db\.models\s+import\s+[^\r\n]+)", ('$1, RequestRecipientModel')
-  if ($repoText2 -eq $repoText) {
-    # no such import line found; do not guess. We'll require manual fix if project differs.
-    Step "   WARN: could not auto-patch models import in repositories.py (no matching import line)."
-  } else {
-    $repoText = $repoText2
-    Step "   Patched repositories.py import to include RequestRecipientModel"
-  }
-}
-
-if ($repoText -notmatch "from\s+datetime\s+import\s+datetime") {
-  $repoText = "from datetime import datetime`r`n" + $repoText
-  Step "   Added datetime import"
-}
-
-WriteText $repoPath $repoText
-
-# Add method block (append-only)
-$repoText = ReadText $repoPath
-if ($repoText -notmatch "async\s+def\s+upsert_recipients") {
-  $method = @"
-
-    async def upsert_recipients(self, request_id: int, recipients: list[dict]) -> list[dict]:
-        \"\"\"MVP: replace recipients list for a request (no supplier<->request validation yet).\"\"\"
-        now = datetime.utcnow()
-
-        await self.session.execute(
-            delete(RequestRecipientModel).where(RequestRecipientModel.request_id == request_id)
-        )
-
-        for rec in recipients:
-            self.session.add(
-                RequestRecipientModel(
-                    request_id=request_id,
-                    supplier_id=rec["supplier_id"],
-                    selected=rec["selected"],
-                    send_status="not_sent",
-                    reply_status="no_reply",
-                    is_new=True,
-                    created_at=now,
-                    updated_at=now,
-                )
-            )
-
-        await self.session.commit()
-
-        res = await self.session.execute(
-            select(RequestRecipientModel)
-            .where(RequestRecipientModel.request_id == request_id)
-            .order_by(RequestRecipientModel.supplier_id.asc())
-        )
-        items = res.scalars().all()
-        return [
-            {
-                "supplier_id": x.supplier_id,
-                "selected": x.selected,
-                "send_status": x.send_status,
-                "reply_status": x.reply_status,
-                "is_new": x.is_new,
-            }
-            for x in items
-        ]
+Step "6) Patch repositories.py"
+$repoInsert = @"
+# ---- UserMessaging: request recipients (AUTO) ----
+from app.adapters.db.models import RequestRecipientModel
 "@
-  AppendText $repoPath $method
-  Step "   Added upsert_recipients method block"
-} else {
-  Step "   upsert_recipients already present, skip"
-}
+InsertBeforeMarker -path $repoPath -marker "# __AUTO_INSERT_REPOSITORIES_END__" -insert $repoInsert
 
-Step "6) Import smoke checks"
-& .\.venv\Scripts\python.exe -c "from app.adapters.db.models import RequestRecipientModel; print('model ok')" | Out-Null
-& .\.venv\Scripts\python.exe -c "from app.adapters.db.repositories import RequestRepository; print('repo ok')" | Out-Null
-
-Write-Host "PART A DONE" -ForegroundColor Green
+Step "7) Smoke checks"
+& .\.venv\Scripts\python.exe -m compileall -q . | Out-Null
+& .\.venv\Scripts\python.exe -m pytest -q
+Write-Host "DONE" -ForegroundColor Green

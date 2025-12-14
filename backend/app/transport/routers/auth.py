@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, EmailStr, Field
-
 
 router = APIRouter(tags=["Auth"])
 
@@ -52,12 +51,14 @@ async def auth_me(authorization: str | None = Header(default=None)):
         "id": 1,
         "email": "dev@example.com",
         "emailpolicy": _EMAIL_POLICY,
-        "createdat": datetime.now(timezone.utc).isoformat(),
+        "createdat": datetime.now(UTC).isoformat(),
     }
 
 
 @router.put("/auth/policy", include_in_schema=False)
-async def auth_policy_put(payload: AuthPolicyPutDTO, authorization: str | None = Header(default=None)):
+async def auth_policy_put(
+    payload: AuthPolicyPutDTO, authorization: str | None = Header(default=None)
+):
     global _EMAIL_POLICY
     _require_dev_bearer(authorization)
 

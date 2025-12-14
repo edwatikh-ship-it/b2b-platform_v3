@@ -1,13 +1,14 @@
 import datetime as dt
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text
 import sqlalchemy as sa
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.sql import func
 
 
 class Base(DeclarativeBase):
     pass
+
 
 class RequestModel(Base):
     __tablename__ = "requests"
@@ -16,14 +17,18 @@ class RequestModel(Base):
     title: Mapped[str | None] = mapped_column(String(255), nullable=True)
     filename: Mapped[str | None] = mapped_column(String(255), nullable=True)
     status: Mapped[str] = mapped_column(String(50), nullable=False)
-    created_at: Mapped[object] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    created_at: Mapped[object] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
 
 class RequestKeyModel(Base):
     __tablename__ = "request_keys"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    request_id: Mapped[int] = mapped_column(ForeignKey("requests.id", ondelete="CASCADE"), nullable=False)
+    request_id: Mapped[int] = mapped_column(
+        ForeignKey("requests.id", ondelete="CASCADE"), nullable=False
+    )
 
     pos: Mapped[int] = mapped_column(Integer, nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
@@ -45,7 +50,10 @@ class AttachmentModel(Base):
 
     is_deleted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
-    created_at: Mapped[object] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    created_at: Mapped[object] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
 
 class UserBlacklistInnModel(Base):
     __tablename__ = "user_blacklist_inn"
@@ -54,11 +62,14 @@ class UserBlacklistInnModel(Base):
     user_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
     inn: Mapped[str] = mapped_column(String(12), nullable=False)
     reason: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[object] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    created_at: Mapped[object] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
     __table_args__ = (
         sa.UniqueConstraint("user_id", "inn", name="uq_user_blacklist_inn_user_id_inn"),
     )
+
 
 # ---- Users (Auth) ----
 class UserModel(Base):
@@ -67,4 +78,34 @@ class UserModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
     emailpolicy: Mapped[str] = mapped_column(String(32), nullable=False, default="appendonly")
-    createdat: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    createdat: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+# ---- UserMessaging: request recipients (AUTO) ----
+class RequestRecipientModel(Base):
+    __tablename__ = "request_recipients"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    request_id: Mapped[int] = mapped_column(
+        ForeignKey("requests.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    supplier_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    selected: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    created_at: Mapped[object] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[object] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "request_id", "supplier_id", name="uq_request_recipients_request_supplier"
+        ),
+    )
+
+
+# __AUTO_INSERT_MODELS_END__# __AUTO_INSERT_MODELS_END__

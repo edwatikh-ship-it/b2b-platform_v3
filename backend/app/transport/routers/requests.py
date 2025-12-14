@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.db.repositories import RequestRepository
@@ -6,14 +6,18 @@ from app.adapters.db.session import get_db_session
 from app.transport.schemas.requests import (
     CreateRequestManualRequestDTO,
     CreateRequestResponseDTO,
-    RequestListResponseDTO,
-    RequestSummaryDTO,
     RequestDetailDTO,
     RequestKeyDTO,
-    UpdateRequestKeysRequestDTO,
+    RequestListResponseDTO,
+    RequestSummaryDTO,
     SubmitRequestResponseDTO,
+    UpdateRequestKeysRequestDTO,
 )
-from app.usecases.create_request_manual import CreateRequestManualUseCase, KeyInput
+from app.usecases.create_request_manual import CreateRequestManualUseCase
+from app.usecases.create_request_manual import KeyInput as CreateKeyInput
+from app.usecases.submit_request import SubmitRequestUseCase
+from app.usecases.update_request_keys import KeyInput as UpdateKeyInput
+from app.usecases.update_request_keys import UpdateRequestKeysUseCase
 
 router = APIRouter(prefix="/user/requests", tags=["UserRequests"])
 
@@ -28,7 +32,9 @@ async def create_request_manual(
         uc = CreateRequestManualUseCase(repo)
         request_id = await uc.execute(
             title=payload.title,
-            keys=[KeyInput(pos=k.pos, text=k.text, qty=k.qty, unit=k.unit) for k in payload.keys],
+            keys=[
+                CreateKeyInput(pos=k.pos, text=k.text, qty=k.qty, unit=k.unit) for k in payload.keys
+            ],
         )
         return CreateRequestResponseDTO(
             success=True,
@@ -63,7 +69,6 @@ async def list_user_requests(
     return RequestListResponseDTO(items=items, limit=limit, offset=offset, total=data["total"])
 
 
-
 @router.get("/{requestId}", response_model=RequestDetailDTO)
 async def get_user_request_detail(
     requestId: int,
@@ -83,9 +88,6 @@ async def get_user_request_detail(
     )
 
 
-from app.usecases.update_request_keys import UpdateRequestKeysUseCase, KeyInput
-
-
 @router.put("/{requestId}/keys", response_model=RequestDetailDTO)
 async def update_user_request_keys(
     requestId: int,
@@ -97,7 +99,9 @@ async def update_user_request_keys(
     try:
         await uc.execute(
             request_id=requestId,
-            keys=[KeyInput(pos=k.pos, text=k.text, qty=k.qty, unit=k.unit) for k in payload.keys],
+            keys=[
+                UpdateKeyInput(pos=k.pos, text=k.text, qty=k.qty, unit=k.unit) for k in payload.keys
+            ],
         )
     except ValueError as e:
         if str(e) == "not_found":
@@ -115,9 +119,6 @@ async def update_user_request_keys(
         createdat=data["createdat"],
         keys=[RequestKeyDTO(**k) for k in data["keys"]],
     )
-
-
-from app.usecases.submit_request import SubmitRequestUseCase
 
 
 @router.post("/{requestId}/submit", response_model=SubmitRequestResponseDTO)

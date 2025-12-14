@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from app.domain.ports_auth import OtpRepositoryPort, UserRepositoryPort, JwtServicePort
+from app.domain.ports_auth import JwtServicePort, OtpRepositoryPort, UserRepositoryPort
 
 
 @dataclass(frozen=True)
@@ -18,7 +18,7 @@ class VerifyOtpUseCase:
         if rec is None:
             raise ValueError("OTP not requested")
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if rec.expiresat <= now:
             raise ValueError("OTP expired")
 
