@@ -1,5 +1,22 @@
-﻿# Normalize line endings in repo (avoid Windows/CI diffs)
-* text=auto eol=lf
+# Normalize text files (cross-platform repo)
+* text=auto
 
-# Keep Windows scripts in CRLF (optional; if you prefer LF everywhere — убери этот блок)
-*.ps1 text eol=crlf
+# Force LF in files used by Linux CI / tooling
+*.py     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.md     text eol=lf
+*.sh     text eol=lf
+*.ps1    text eol=lf
+
+# Windows-only scripts (if ever added)
+*.bat    text eol=crlf
+*.cmd    text eol=crlf
+
+# Binary files (do not touch)
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.pdf    binary
+*.ico    binary

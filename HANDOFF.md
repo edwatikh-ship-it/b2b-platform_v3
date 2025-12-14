@@ -204,3 +204,10 @@ Rule:
 - Expected: False
 - Now: Repo hygiene complete; ready for next feature
 - Next: Pick next endpoint from api-contracts.yaml and implement first slice
+## 2025-12-15 00:11:01 MSK
+- What: Normalized line endings via .gitattributes and git renormalize
+- Why: Reduce CRLF/LF noise and keep repo consistent across Windows + Linux CI
+- Verify: git status (clean) + pre-commit run --all-files
+- Expected: Working tree clean; hooks pass; fewer CRLF/LF warnings
+- Now: Repo hygiene complete
+- Next: Pick next endpoint from api-contracts.yaml and implement first slice
