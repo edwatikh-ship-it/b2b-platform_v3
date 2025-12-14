@@ -468,3 +468,14 @@ git commit -m "feat: [TAG] описание"
 - Questions must be in simple, human language (без перегруза терминами), с минимумом внутренней кухни.
 - Technical details (типы, пути файлов, команды) давать, но объяснения формулировать так, чтобы их можно было понимать на уровне “что это даёт продукту”.
 - Если нужно спросить про архитектуру/решение, сначала коротко сформулировать суть выбора (вариант A/вариант B) обычным языком, а уже потом — технические детали.
+
+
+## GitHub progress as SSoT (hard rule)
+- Progress and current state are tracked in GitHub (main branch) to avoid losing context between chats.
+- After each completed milestone:
+  - Update HANDOFF.md (append-only) with datetime MSK, what changed, how verified (exact command + expected output).
+  - Commit and push to origin/main.
+- When a milestone fails or causes breakage:
+  - Write to INCIDENTS.md (append-only), then commit and push.
+- Start-of-chat protocol:
+  - Provide raw links to api-contracts.yaml, PROJECT-RULES.md, HANDOFF.md (and INCIDENTS.md if relevant) at HEAD of main.
