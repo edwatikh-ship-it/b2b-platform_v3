@@ -461,3 +461,10 @@ git commit -m "feat: [TAG] описание"
 - Default format for file writes: UTF-8 without BOM via:
   - $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
   - [System.IO.File]::WriteAllText(path, content, $utf8NoBom)
+
+
+## Communication rules for assistant (hard rule)
+- Treat the user as a product owner / заказчик, not as рядовой разработчик.
+- Questions must be in simple, human language (без перегруза терминами), с минимумом внутренней кухни.
+- Technical details (типы, пути файлов, команды) давать, но объяснения формулировать так, чтобы их можно было понимать на уровне “что это даёт продукту”.
+- Если нужно спросить про архитектуру/решение, сначала коротко сформулировать суть выбора (вариант A/вариант B) обычным языком, а уже потом — технические детали.
