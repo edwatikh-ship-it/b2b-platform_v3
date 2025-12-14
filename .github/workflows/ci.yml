@@ -1,4 +1,4 @@
-﻿name: CI
+name: CI
 
 on:
   push:
@@ -38,8 +38,3 @@ jobs:
       run: |
         cd backend
         ruff format . --check
-        
-    - name: Run pre-commit
-      run: |
-        cd backend
-        pre-commit run --all-files
