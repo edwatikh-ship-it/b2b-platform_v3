@@ -197,3 +197,10 @@ Rule:
 - Expected: False (no junk entries); PROJECT-TREE.txt regenerated
 - Now: Repo hygiene is fixed; ready to pick next endpoint
 - Next: Pick next endpoint from api-contracts.yaml and implement first slice
+## 2025-12-15 00:09:24 MSK
+- What: Removed *.bak* artifacts and fixed update_project_tree.ps1 syntax; regenerated clean PROJECT-TREE.txt
+- Why: Keep repo clean and tree reliable for new chats
+- Verify: Select-String PROJECT-TREE.txt -Pattern '\.bak|\.tmp|~$' -Quiet
+- Expected: False
+- Now: Repo hygiene complete; ready for next feature
+- Next: Pick next endpoint from api-contracts.yaml and implement first slice

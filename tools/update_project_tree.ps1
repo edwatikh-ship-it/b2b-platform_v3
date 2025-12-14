@@ -16,7 +16,10 @@ $excludeFileNames = @(
 )
 
 $excludePatterns = @(
-  "*.bak", "*.bak.*", "*.tmp", "*.log", "*~"
+  "*.bak*",
+  "*.tmp",
+  "*.log",
+  "*~"
 )
 
 function Should-Exclude([string]$fullPath) {
