@@ -452,3 +452,12 @@ git commit -m "feat: [TAG] описание"
 | **uv** | Быстрый pip | `uv pip install -r requirements.txt` |
 
 **Правило**: перед коммитом/пушем всегда `just fmt` + pre-commit.
+
+### Absolute rule for assistant
+- If the response implies ANY repo change (code, config, docs, CI, migrations) the assistant MUST provide runnable commands (PowerShell) that:
+  - create/overwrite exact file paths, or
+  - apply exact deterministic patches (no manual editor steps).
+- If commands are not provided, the response is considered invalid and must be rewritten with scripts.
+- Default format for file writes: UTF-8 without BOM via:
+  - $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+  - [System.IO.File]::WriteAllText(path, content, $utf8NoBom)
