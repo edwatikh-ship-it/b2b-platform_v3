@@ -1,1151 +1,1424 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: B2B Platform API
   version: 1.0.0
-  description: >
-    B2B procurement platform API: requests, keys, suppliers, moderation, email sending,
-    inbound reply tracking. Attachments are uploaded separately and referenced by ID.
-
-servers:
-  - url: http://localhost:8000/api/v1
-    description: Local
-  - url: https://{host}/api/v1
-    description: Production
-    variables:
-      host:
-        default: app.example.com
-
-tags:
-  - name: Auth
-  - name: UserRequests
-  - name: Suppliers
-  - name: Attachments
-  - name: UserMessaging
-  - name: ModeratorTasks
-  - name: ModeratorSuppliers
-  - name: Blacklist
-  - name: System
-
-security:
-  - bearerAuth: []
-
 paths:
   /health:
     get:
-      tags: [System]
-      summary: Health check
-      security: []
+      tags:
+      - System
+      summary: Health
+      operationId: health_apiv1_health_get
       responses:
-        "200":
-          description: OK
+        '200':
+          description: Successful Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HealthResponse"
-
-  # ----------------------------
-  # AUTH
-  # ----------------------------
-  /auth/oauth/google/start:
-    get:
-      tags: [Auth]
-      summary: Start Google OAuth login
-      security: []
-      responses:
-        "302":
-          description: Redirect to OAuth provider
-
-  /auth/oauth/google/callback:
-    get:
-      tags: [Auth]
-      summary: OAuth callback (Google)
-      security: []
-      parameters:
-        - in: query
-          name: code
-          required: true
-          schema: { type: string }
-      responses:
-        "200":
-          description: JWT issued
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthTokenResponse"
-
-  /auth/me:
-    get:
-      tags: [Auth]
-      summary: Get current user
-      responses:
-        "200":
-          description: Current user
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/User" }
-
-  /auth/policy:
-    put:
-      tags: [Auth]
-      summary: Update email deletion policy
-      description: >
-        append_only = user cannot delete messages in UI (system remains append-only and auditable).
-        allow_delete = user can hide (soft-delete) messages for their view.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/UpdateEmailPolicyRequest" }
-      responses:
-        "200":
-          description: Updated user
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/User" }
-
-  # ----------------------------
-  # REQUESTS
-  # ----------------------------
-  /user/upload-and-create:
-    post:
-      tags: [UserRequests]
-      summary: Upload procurement file and create a draft request
-      description: >
-        Accepts PDF/DOCX/XLSX/TXT. For PDF: only up to PDF_MAX_PAGES pages are processed via LLM.
-        DOCX/XLSX parsed with free parsers (no tokens).
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              required: [file]
-              properties:
-                file:
-                  type: string
-                  format: binary
-      responses:
-        "200":
-          description: Draft request created
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/CreateRequestResponse" }
-        "413":
-          description: File too large / too many pages
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
-
+                $ref: '#/components/schemas/HealthResponse'
   /user/requests:
-    get:
-      tags: [UserRequests]
-      summary: List user requests
-      parameters:
-        - in: query
-          name: limit
-          schema: { type: integer, default: 50, minimum: 1, maximum: 200 }
-        - in: query
-          name: offset
-          schema: { type: integer, default: 0, minimum: 0 }
-      responses:
-        "200":
-          description: List of requests
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/RequestListResponse" }
-
     post:
-      tags: [UserRequests]
-      summary: Create a draft request from manual keys (no file)
+      tags:
+      - UserRequests
+      summary: Create Request Manual
+      operationId: create_request_manual_apiv1_user_requests_post
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/CreateRequestManualRequest" }
+            schema:
+              $ref: '#/components/schemas/CreateRequestManualRequestDTO'
       responses:
-        "200":
-          description: Draft request created
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/CreateRequestResponse" }
-
+              schema:
+                $ref: '#/components/schemas/CreateRequestResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - UserRequests
+      summary: List User Requests
+      operationId: list_user_requests_apiv1_user_requests_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestListResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /user/requests/{requestId}:
     get:
-      tags: [UserRequests]
-      summary: Get request detail (keys + suppliers + statuses)
+      tags:
+      - UserRequests
+      summary: Get User Request Detail
+      operationId: get_user_request_detail_apiv1_user_requests__requestId__get
       parameters:
-        - $ref: "#/components/parameters/RequestId"
+      - name: requestId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Requestid
       responses:
-        "200":
-          description: Request detail
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/RequestDetail" }
-        "404":
-          description: Not found
+              schema:
+                $ref: '#/components/schemas/RequestDetailDTO'
+        '422':
+          description: Validation Error
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
-
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /user/requests/{requestId}/keys:
     put:
-      tags: [UserRequests]
-      summary: Update/confirm keys for a draft request (after parsing)
+      tags:
+      - UserRequests
+      summary: Update User Request Keys
+      operationId: update_user_request_keys_apiv1_user_requests__requestId__keys_put
       parameters:
-        - $ref: "#/components/parameters/RequestId"
+      - name: requestId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Requestid
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/UpdateRequestKeysRequest" }
+            schema:
+              $ref: '#/components/schemas/UpdateRequestKeysRequestDTO'
       responses:
-        "200":
-          description: Updated request keys
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/RequestDetail" }
-
+              schema:
+                $ref: '#/components/schemas/RequestDetailDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /user/requests/{requestId}/submit:
     post:
-      tags: [UserRequests]
-      summary: Submit request (start matching + create moderation tasks)
-      description: >
-        Matches suppliers by keys (exact + pg_trgm; embeddings later) and creates moderation tasks.
+      tags:
+      - UserRequests
+      summary: Submit User Request
+      operationId: submit_user_request_apiv1_user_requests__requestId__submit_post
       parameters:
-        - $ref: "#/components/parameters/RequestId"
+      - name: requestId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Requestid
       responses:
-        "200":
-          description: Submitted
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/SubmitRequestResponse" }
-        "400":
-          description: Invalid state (e.g., not draft)
+              schema:
+                $ref: '#/components/schemas/SubmitRequestResponseDTO'
+        '422':
+          description: Validation Error
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
-
-  # ----------------------------
-  # SUPPLIERS
-  # ----------------------------
-  /suppliers/search:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /user/upload-and-create:
+    post:
+      tags:
+      - UserRequests
+      summary: Upload And Create
+      operationId: upload_and_create_apiv1_user_upload_and_create_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_and_create_apiv1_user_upload_and_create_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /user/requests/{requestId}/recipients:
+    put:
+      tags:
+      - UserMessaging
+      summary: Update Recipients
+      operationId: update_recipients_apiv1_user_requests__requestId__recipients_put
+      parameters:
+      - name: requestId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Requestid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Payload
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /user/requests/{requestId}/send:
+    post:
+      tags:
+      - UserMessaging
+      summary: Send Request Messages
+      operationId: send_request_messages_apiv1_user_requests__requestId__send_post
+      parameters:
+      - name: requestId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Requestid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Payload
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /user/requests/{requestId}/send-new:
+    post:
+      tags:
+      - UserMessaging
+      summary: Send Request Messages New
+      operationId: send_request_messages_new_apiv1_user_requests__requestId__send_new_post
+      parameters:
+      - name: requestId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Requestid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Payload
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /user/requests/{requestId}/messages:
     get:
-      tags: [Suppliers]
-      summary: Search suppliers by query
+      tags:
+      - UserMessaging
+      summary: List Request Messages
+      operationId: list_request_messages_apiv1_user_requests__requestId__messages_get
       parameters:
-        - in: query
-          name: q
-          required: true
-          schema: { type: string, minLength: 1 }
-        - in: query
-          name: limit
-          schema: { type: integer, default: 20, minimum: 1, maximum: 100 }
+      - name: requestId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Requestid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      - name: includedeleted
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Includedeleted
       responses:
-        "200":
-          description: Search results
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/SupplierSearchResponse" }
-
-  # ----------------------------
-  # ATTACHMENTS (correct way)
-  # ----------------------------
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /user/messages/{messageId}:
+    delete:
+      tags:
+      - UserMessaging
+      summary: Delete Message
+      operationId: delete_message_apiv1_user_messages__messageId__delete
+      parameters:
+      - name: messageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Messageid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /user/attachments:
     post:
-      tags: [Attachments]
-      summary: Upload an attachment (for email sending)
-      description: >
-        Uploads a file and returns attachment_id. Later used in /send endpoints.
+      tags:
+      - Attachments
+      summary: Upload Attachment
+      operationId: upload_attachment_apiv1_user_attachments_post
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
-              type: object
-              required: [file]
-              properties:
-                file:
-                  type: string
-                  format: binary
-                title:
-                  type: string
-                  description: Optional display name
+              $ref: '#/components/schemas/Body_upload_attachment_apiv1_user_attachments_post'
       responses:
-        "200":
-          description: Attachment uploaded
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Attachment" }
-        "413":
-          description: Attachment too large
+              schema:
+                $ref: '#/components/schemas/AttachmentDTO'
+        '422':
+          description: Validation Error
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
-
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
     get:
-      tags: [Attachments]
-      summary: List user attachments
+      tags:
+      - Attachments
+      summary: List Attachments
+      operationId: list_attachments_apiv1_user_attachments_get
       parameters:
-        - in: query
-          name: limit
-          schema: { type: integer, default: 50, minimum: 1, maximum: 200 }
-        - in: query
-          name: offset
-          schema: { type: integer, default: 0, minimum: 0 }
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
       responses:
-        "200":
-          description: Attachments
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/AttachmentListResponse" }
-
+              schema:
+                $ref: '#/components/schemas/AttachmentListResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /user/attachments/{attachmentId}:
     get:
-      tags: [Attachments]
-      summary: Get attachment metadata
+      tags:
+      - Attachments
+      summary: Get Attachment
+      operationId: get_attachment_apiv1_user_attachments__attachmentId__get
       parameters:
-        - $ref: "#/components/parameters/AttachmentId"
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Attachmentid
       responses:
-        "200":
-          description: Attachment
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Attachment" }
-
+              schema:
+                $ref: '#/components/schemas/AttachmentDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
     delete:
-      tags: [Attachments]
-      summary: Delete attachment (soft delete)
+      tags:
+      - Attachments
+      summary: Delete Attachment
+      operationId: delete_attachment_apiv1_user_attachments__attachmentId__delete
       parameters:
-        - $ref: "#/components/parameters/AttachmentId"
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Attachmentid
       responses:
-        "200":
-          description: Deleted
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/GenericOkResponse" }
-
+              schema:
+                $ref: '#/components/schemas/app__transport__schemas__attachments__GenericOkResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /user/attachments/{attachmentId}/download:
     get:
-      tags: [Attachments]
-      summary: Download attachment file
+      tags:
+      - Attachments
+      summary: Download Attachment
+      operationId: download_attachment_apiv1_user_attachments__attachmentId__download_get
       parameters:
-        - $ref: "#/components/parameters/AttachmentId"
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Attachmentid
       responses:
-        "200":
-          description: File stream
+        '200':
+          description: Successful Response
           content:
-            application/octet-stream:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
               schema:
-                type: string
-                format: binary
-
-  # ----------------------------
-  # USER MESSAGING (send + replies)
-  # ----------------------------
-  /user/requests/{requestId}/recipients:
-    put:
-      tags: [UserMessaging]
-      summary: Set selected recipients (checkboxes) for the request
-      parameters:
-        - $ref: "#/components/parameters/RequestId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/UpdateRecipientsRequest" }
-      responses:
-        "200":
-          description: Updated recipients
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/RecipientsResponse" }
-
-  /user/requests/{requestId}/send:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/otp/request:
     post:
-      tags: [UserMessaging]
-      summary: Send inquiry emails to selected suppliers
-      description: >
-        Sends one email per supplier per request (unique requestId+supplierId).
-        Attachments are passed as attachment_ids.
-      parameters:
-        - $ref: "#/components/parameters/RequestId"
+      tags:
+      - Auth
+      summary: Auth Otp Request
+      operationId: auth_otp_request_apiv1_auth_otp_request_post
       requestBody:
-        required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/SendMessageRequestV2" }
+            schema:
+              $ref: '#/components/schemas/AuthOtpRequestDTO'
+        required: true
       responses:
-        "200":
-          description: Send started / completed
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/SendMessageResponse" }
-        "409":
-          description: Already sent to some suppliers
+              schema: {}
+        '422':
+          description: Validation Error
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
-
-  /user/requests/{requestId}/send-new:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/otp/verify:
     post:
-      tags: [UserMessaging]
-      summary: Send only to new suppliers (yellow status)
-      parameters:
-        - $ref: "#/components/parameters/RequestId"
+      tags:
+      - Auth
+      summary: Auth Otp Verify
+      operationId: auth_otp_verify_apiv1_auth_otp_verify_post
       requestBody:
-        required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/SendMessageRequestV2" }
+            schema:
+              $ref: '#/components/schemas/AuthOtpVerifyDTO'
+        required: true
       responses:
-        "200":
-          description: Send started / completed
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/SendMessageResponse" }
-
-  /user/requests/{requestId}/messages:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/me:
     get:
-      tags: [UserMessaging]
-      summary: List messages (thread) for the request (only the user can see)
-      parameters:
-        - $ref: "#/components/parameters/RequestId"
-        - in: query
-          name: limit
-          schema: { type: integer, default: 50, minimum: 1, maximum: 200 }
-        - in: query
-          name: offset
-          schema: { type: integer, default: 0, minimum: 0 }
-        - in: query
-          name: include_deleted
-          schema: { type: boolean, default: false }
+      tags:
+      - Auth
+      summary: Auth Me
+      operationId: auth_me_apiv1_auth_me_get
       responses:
-        "200":
-          description: Messages
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/MessageListResponse" }
-
-  /user/messages/{messageId}:
-
-  /user/blacklist/inn:
-    post:
-      tags: [Blacklist]
-      summary: Add company INN to user's personal blacklist (user-level)
-      description: >
-        Personal blacklist. Prevent sending to this company for this user.
-        UI may display supplier_name and checko_data when available.
-        When added, system must auto-unselect related recipients (selected=false) for this user's requests.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/AddUserBlacklistInnRequest" }
-      responses:
-        "200":
-          description: Added
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/GenericOkResponse" }
+              schema: {}
+  /suppliers/search:
     get:
-      tags: [Blacklist]
-      summary: List user's personal blacklist (by INN)
+      tags:
+      - Suppliers
+      summary: Suppliers Search
+      operationId: suppliers_search_apiv1_suppliers_search_get
       parameters:
-        - in: query
-          name: limit
-          schema: { type: integer, default: 200, minimum: 1, maximum: 500 }
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Q
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 20
+          title: Limit
       responses:
-        "200":
-          description: Blacklist
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/UserBlacklistInnListResponse" }
-
-  /user/blacklist/inn/{inn}:
-    delete:
-      tags: [Blacklist]
-      summary: Remove INN from user's personal blacklist
-      parameters:
-        - in: path
-          name: inn
-          required: true
-          schema: { type: string, minLength: 10, maxLength: 12 }
-      responses:
-        "200":
-          description: Removed
+              schema: {}
+        '422':
+          description: Validation Error
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/GenericOkResponse" }
-
-    delete:
-      tags: [UserMessaging]
-      summary: Delete message (soft delete) if email_policy=allow_delete
-      description: >
-        In append_only mode returns 403.
-        Deletion is soft (hidden for the user), audit stays.
-      parameters:
-        - $ref: "#/components/parameters/MessageId"
-      responses:
-        "200":
-          description: Deleted
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/GenericOkResponse" }
-        "403":
-          description: Not allowed by policy
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
-
-  # ----------------------------
-  # MODERATOR TASKS
-  # ----------------------------
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /moderator/tasks:
     get:
-      tags: [ModeratorTasks]
-      summary: List moderation tasks
+      tags:
+      - ModeratorTasks
+      summary: List Moderator Tasks
+      operationId: list_moderator_tasks_apiv1_moderator_tasks_get
       parameters:
-        - in: query
-          name: status
-          schema:
-            type: string
-            enum: [pending, parsed, needs_manual, done]
-        - in: query
-          name: limit
-          schema: { type: integer, default: 50, minimum: 1, maximum: 200 }
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          title: Limit
       responses:
-        "200":
-          description: Tasks
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/ModeratorTaskListResponse" }
-
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /moderator/tasks/{taskId}:
     get:
-      tags: [ModeratorTasks]
-      summary: Get moderation task detail
+      tags:
+      - ModeratorTasks
+      summary: Get Moderator Task
+      operationId: get_moderator_task_apiv1_moderator_tasks__taskId__get
       parameters:
-        - $ref: "#/components/parameters/TaskId"
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Taskid
       responses:
-        "200":
-          description: Task detail
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/ModeratorTaskDetail" }
-
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /moderator/requests/{requestId}/start-parsing:
     post:
-      tags: [ModeratorTasks]
-      summary: Start parsing URLs for a submitted request
+      tags:
+      - ModeratorTasks
+      summary: Start Parsing
+      operationId: start_parsing_apiv1_moderator_requests__requestId__start_parsing_post
       parameters:
-        - $ref: "#/components/parameters/RequestId"
+      - name: requestId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Requestid
       responses:
-        "200":
-          description: Parsing started
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/GenericOkResponse" }
-
-  # ----------------------------
-  # MODERATOR SUPPLIERS (database view + create)
-  # ----------------------------
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /moderator/suppliers:
     get:
-      tags: [ModeratorSuppliers]
-      summary: Browse/search suppliers database (moderator view)
+      tags:
+      - ModeratorSuppliers
+      summary: List Moderator Suppliers
+      operationId: list_moderator_suppliers_apiv1_moderator_suppliers_get
       parameters:
-        - in: query
-          name: q
-          schema: { type: string, description: "Search by name/INN/domain/key" }
-        - in: query
-          name: limit
-          schema: { type: integer, default: 50, minimum: 1, maximum: 200 }
-        - in: query
-          name: offset
-          schema: { type: integer, default: 0, minimum: 0 }
+      - name: q
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Q
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
       responses:
-        "200":
-          description: Suppliers
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/ModeratorSupplierListResponse" }
-
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
     post:
-      tags: [ModeratorSuppliers]
-      summary: Add supplier to database (moderated)
-      description: >
-        Required fields: url_original, name, inn. After creation, enrich via Checko API.
+      tags:
+      - ModeratorSuppliers
+      summary: Create Moderator Supplier
+      operationId: create_moderator_supplier_apiv1_moderator_suppliers_post
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/CreateSupplierRequest" }
+            schema:
+              type: object
+              additionalProperties: true
+              title: Payload
       responses:
-        "200":
-          description: Supplier created
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Supplier" }
-
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /moderator/suppliers/{supplierId}:
     get:
-      tags: [ModeratorSuppliers]
-      summary: Get supplier detail (with Checko data)
+      tags:
+      - ModeratorSuppliers
+      summary: Get Moderator Supplier
+      operationId: get_moderator_supplier_apiv1_moderator_suppliers__supplierId__get
       parameters:
-        - $ref: "#/components/parameters/SupplierId"
+      - name: supplierId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Supplierid
       responses:
-        "200":
-          description: Supplier
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Supplier" }
-
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
     put:
-      tags: [ModeratorSuppliers]
-      summary: Update supplier (e.g., refresh Checko data)
+      tags:
+      - ModeratorSuppliers
+      summary: Update Moderator Supplier
+      operationId: update_moderator_supplier_apiv1_moderator_suppliers__supplierId__put
       parameters:
-        - $ref: "#/components/parameters/SupplierId"
+      - name: supplierId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Supplierid
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/UpdateSupplierRequest" }
+            schema:
+              type: object
+              additionalProperties: true
+              title: Payload
       responses:
-        "200":
-          description: Updated supplier
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Supplier" }
-
-  # ----------------------------
-  # BLACKLIST
-  # ----------------------------
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /moderator/blacklist/domains:
     post:
-      tags: [Blacklist]
-      summary: Add domain to blacklist (ban entire domain)
+      tags:
+      - Blacklist
+      summary: Add Blacklist Domain
+      operationId: add_blacklist_domain_apiv1_moderator_blacklist_domains_post
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/AddBlacklistDomainRequest" }
+            schema:
+              type: object
+              additionalProperties: true
+              title: Payload
       responses:
-        "200":
-          description: Added
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/GenericOkResponse" }
-
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
     get:
-      tags: [Blacklist]
-      summary: List blacklisted domains
+      tags:
+      - Blacklist
+      summary: List Blacklist Domains
+      operationId: list_blacklist_domains_apiv1_moderator_blacklist_domains_get
       parameters:
-        - in: query
-          name: limit
-          schema: { type: integer, default: 200, minimum: 1, maximum: 500 }
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 200
+          title: Limit
       responses:
-        "200":
-          description: Blacklist
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/BlacklistDomainListResponse" }
-
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /moderator/blacklist/domains/{domain}:
     delete:
-      tags: [Blacklist]
-      summary: Remove domain from blacklist (unban)
+      tags:
+      - Blacklist
+      summary: Delete Blacklist Domain
+      operationId: delete_blacklist_domain_apiv1_moderator_blacklist_domains__domain__delete
       parameters:
-        - in: path
-          name: domain
-          required: true
-          schema: { type: string }
+      - name: domain
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Domain
       responses:
-        "200":
-          description: Removed
+        '200':
+          description: Successful Response
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/GenericOkResponse" }
-
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /userblacklistinn:
+    post:
+      tags:
+      - Blacklist
+      summary: Add User Blacklist Inn
+      operationId: add_user_blacklist_inn_apiv1_userblacklistinn_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserBlacklistInnRequestDTO'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/app__transport__schemas__common__GenericOkResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - Blacklist
+      summary: List User Blacklist Inn
+      operationId: list_user_blacklist_inn_apiv1_userblacklistinn_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 200
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBlacklistInnListResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /userblacklistinn/{inn}:
+    delete:
+      tags:
+      - Blacklist
+      summary: Remove User Blacklist Inn
+      operationId: remove_user_blacklist_inn_apiv1_userblacklistinn__inn__delete
+      parameters:
+      - name: inn
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Inn
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/app__transport__schemas__common__GenericOkResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-  parameters:
-    RequestId:
-      in: path
-      name: requestId
-      required: true
-      schema: { type: integer, minimum: 1 }
-    TaskId:
-      in: path
-      name: taskId
-      required: true
-      schema: { type: integer, minimum: 1 }
-    SupplierId:
-      in: path
-      name: supplierId
-      required: true
-      schema: { type: integer, minimum: 1 }
-    AttachmentId:
-      in: path
-      name: attachmentId
-      required: true
-      schema: { type: integer, minimum: 1 }
-    MessageId:
-      in: path
-      name: messageId
-      required: true
-      schema: { type: integer, minimum: 1 }
-
   schemas:
-  AddUserBlacklistInnRequest:
-    type: object
-    properties:
-      inn:
-        type: string
-        minLength: 10
-        maxLength: 12
-      reason:
-        type: string
-        nullable: true
-    required: [inn]
-
-  UserBlacklistInnListResponse:
-    type: object
-    properties:
-      items:
-        type: array
-        items:
-          type: object
-          properties:
-            id: { type: integer }
-            inn: { type: string }
-            supplier_id: { type: integer, nullable: true }
-            supplier_name: { type: string, nullable: true }
-            checko_data:
-              type: object
-              nullable: true
-              additionalProperties: true
-            reason: { type: string, nullable: true }
-            created_at: { type: string, format: date-time }
-          required: [id, inn, created_at]
-    required: [items]
-    HealthResponse:
-      type: object
+    AddUserBlacklistInnRequestDTO:
       properties:
-        status: { type: string, example: ok }
-      required: [status]
-
-    ErrorResponse:
-      type: object
-      properties:
-        success: { type: boolean, example: false }
-        error: { type: string }
-        details:
-          type: object
-          additionalProperties: true
-      required: [success, error]
-
-    GenericOkResponse:
-      type: object
-      properties:
-        success: { type: boolean, example: true }
-        message: { type: string }
-      required: [success]
-
-    AuthTokenResponse:
-      type: object
-      properties:
-        access_token: { type: string }
-        token_type: { type: string, example: Bearer }
-        expires_in: { type: integer, example: 3600 }
-      required: [access_token, token_type]
-
-    User:
-      type: object
-      properties:
-        id: { type: integer }
-        email: { type: string, format: email }
-        email_policy:
+        inn:
           type: string
-          enum: [append_only, allow_delete]
-        created_at: { type: string, format: date-time }
-      required: [id, email, email_policy]
-
-    UpdateEmailPolicyRequest:
-      type: object
-      properties:
-        email_policy:
-          type: string
-          enum: [append_only, allow_delete]
-      required: [email_policy]
-
-    CreateRequestManualRequest:
-      type: object
-      properties:
-        title: { type: string, example: "Р вЂ”Р В°РЎРЏР Р†Р С”Р В° Р Р…Р В° Р В·Р В°Р С”РЎС“Р С—Р С”РЎС“ РІвЂћвЂ“123" }
-        keys:
-          type: array
-          items: { $ref: "#/components/schemas/RequestKeyInput" }
-      required: [keys]
-
-    CreateRequestResponse:
-      type: object
-      properties:
-        success: { type: boolean, example: true }
-        request_id: { type: integer }
-        filename: { type: string, nullable: true }
-        status:
-          type: string
-          enum: [draft, confirmed, processing, done]
-        message: { type: string }
-      required: [success, request_id, status]
-
-    RequestListResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items: { $ref: "#/components/schemas/RequestSummary" }
-        limit: { type: integer }
-        offset: { type: integer }
-        total: { type: integer }
-      required: [items]
-
-    RequestSummary:
-      type: object
-      properties:
-        id: { type: integer }
-        filename: { type: string, nullable: true }
-        status:
-          type: string
-          enum: [draft, confirmed, processing, done]
-        created_at: { type: string, format: date-time }
-        keys_count: { type: integer, example: 5 }
-      required: [id, status, created_at]
-
-    RequestKeyInput:
-      type: object
-      properties:
-        pos: { type: integer, minimum: 1 }
-        text: { type: string, minLength: 1 }
-        qty: { type: number, nullable: true }
-        unit: { type: string, nullable: true }
-      required: [pos, text]
-
-    UpdateRequestKeysRequest:
-      type: object
-      properties:
-        keys:
-          type: array
-          items: { $ref: "#/components/schemas/RequestKeyInput" }
-      required: [keys]
-
-    SubmitRequestResponse:
-      type: object
-      properties:
-        success: { type: boolean, example: true }
-        request_id: { type: integer }
-        new_status:
-          type: string
-          enum: [confirmed, processing, done]
-        matched_suppliers: { type: integer }
-        message: { type: string }
-      required: [success, request_id, new_status]
-
-    RequestDetail:
-      type: object
-      properties:
-        id: { type: integer }
-        filename: { type: string, nullable: true }
-        status:
-          type: string
-          enum: [draft, confirmed, processing, done]
-        created_at: { type: string, format: date-time }
-        keys:
-          type: array
-          items: { $ref: "#/components/schemas/RequestKey" }
-      required: [id, status, created_at, keys]
-
-    RequestKey:
-      type: object
-      properties:
-        id: { type: integer }
-        pos: { type: integer }
-        raw_text: { type: string }
-        normalized_text: { type: string }
-        qty: { type: number, nullable: true }
-        unit: { type: string, nullable: true }
-        suppliers:
-          type: array
-          items: { $ref: "#/components/schemas/SupplierInRequest" }
-      required: [id, pos, raw_text, normalized_text, suppliers]
-
-    Supplier:
-      type: object
-      properties:
-        id: { type: integer }
-        name: { type: string }
-        inn: { type: string }
-        domain_normalized: { type: string }
-        url_original: { type: string, nullable: true }
-
-        emails:
-          type: array
-          description: "Sales contact emails for the supplier (one or more)."
-          items:
-            type: string
-            format: email
-          nullable: true
-
-        checko_data:
-          type: object
-          nullable: true
-          additionalProperties: true
-        created_at: { type: string, format: date-time }
-      required: [id, name, inn, domain_normalized, created_at]
-    SupplierInRequest:
-      allOf:
-        - $ref: "#/components/schemas/Supplier"
-        - type: object
-          properties:
-            is_new: { type: boolean }
-            selected: { type: boolean }
-            send_status:
-              type: string
-              enum: [not_sent, sending, sent, failed]
-            reply_status:
-              type: string
-              enum: [no_reply, replied, bounced]
-            sent_at: { type: string, format: date-time, nullable: true }
-            replied_at: { type: string, format: date-time, nullable: true }
-          required: [is_new, selected, send_status, reply_status]
-
-    SupplierSearchResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items: { $ref: "#/components/schemas/Supplier" }
-      required: [items]
-
-    # -------- Attachments --------
-    Attachment:
-      type: object
-      properties:
-        id: { type: integer }
-        title: { type: string, nullable: true }
-        original_filename: { type: string }
-        content_type: { type: string, nullable: true }
-        size_bytes: { type: integer }
-        sha256: { type: string, nullable: true }
-        storage_key:
-          type: string
-          description: Internal storage reference (not shown in UI usually)
-        is_deleted: { type: boolean, default: false }
-        created_at: { type: string, format: date-time }
-      required: [id, original_filename, size_bytes, is_deleted, created_at]
-
-    AttachmentListResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items: { $ref: "#/components/schemas/Attachment" }
-        limit: { type: integer }
-        offset: { type: integer }
-        total: { type: integer }
-      required: [items]
-
-    # -------- Messaging --------
-    UpdateRecipientsRequest:
-      type: object
-      properties:
-        recipients:
-          type: array
-          items:
-            type: object
-            required: [supplier_id, selected]
-            properties:
-              supplier_id: { type: integer }
-              selected: { type: boolean }
-      required: [recipients]
-
-    RecipientsResponse:
-      type: object
-      properties:
-        request_id: { type: integer }
-        recipients:
-          type: array
-          items:
-            type: object
-            required: [supplier_id, selected, send_status, reply_status, is_new]
-            properties:
-              supplier_id: { type: integer }
-              selected: { type: boolean }
-              send_status:
-                type: string
-                enum: [not_sent, sending, sent, failed]
-              reply_status:
-                type: string
-                enum: [no_reply, replied, bounced]
-              is_new: { type: boolean }
-      required: [request_id, recipients]
-
-    SendMessageRequestV2:
-      type: object
-      properties:
-        subject: { type: string, minLength: 1 }
-        body: { type: string, minLength: 1 }
-        attach_request_file:
-          type: boolean
-          default: true
-          description: Attach original request file if present
-        attachment_ids:
-          type: array
-          items: { type: integer }
-          description: Additional uploaded attachments to include
-      required: [subject, body]
-
-    SendMessageResponse:
-      type: object
-      properties:
-        success: { type: boolean, example: true }
-        request_id: { type: integer }
-        sent_count: { type: integer }
-        skipped_already_sent: { type: integer }
-        failed_count: { type: integer }
-      required: [success, request_id]
-
-    MessageListResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items: { $ref: "#/components/schemas/Message" }
-        limit: { type: integer }
-        offset: { type: integer }
-        total: { type: integer }
-      required: [items]
-
-    Message:
-      type: object
-      properties:
-        id: { type: integer }
-        request_id: { type: integer }
-        supplier_id: { type: integer, nullable: true }
-        direction:
-          type: string
-          enum: [outgoing, incoming]
-        subject: { type: string }
-        body_preview: { type: string }
-        message_id: { type: string, nullable: true }
-        in_reply_to: { type: string, nullable: true }
-        is_deleted_by_user:
-          type: boolean
-          default: false
-          description: Soft delete flag for allow_delete policy
-        created_at: { type: string, format: date-time }
-      required: [id, request_id, direction, subject, created_at]
-
-    # -------- Moderator tasks / suppliers --------
-    ModeratorTaskListResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items: { $ref: "#/components/schemas/ModeratorTaskSummary" }
-      required: [items]
-
-    ModeratorTaskSummary:
-      type: object
-      properties:
-        id: { type: integer }
-        request_id: { type: integer }
-        request_key_id: { type: integer }
-        url_original: { type: string }
-        status:
-          type: string
-          enum: [pending, parsed, needs_manual, done]
-        created_at: { type: string, format: date-time }
-      required: [id, request_id, request_key_id, url_original, status, created_at]
-
-    ModeratorTaskDetail:
-      allOf:
-        - $ref: "#/components/schemas/ModeratorTaskSummary"
-        - type: object
-          properties:
-            notes: { type: string, nullable: true }
-
-    CreateSupplierRequest:
-      type: object
-      properties:
-        name: { type: string, minLength: 1 }
-        inn: { type: string, minLength: 10, maxLength: 12 }
-        url_original: { type: string, minLength: 3 }
-
-        emails:
-          type: array
-          items:
-            type: string
-            format: email
-          nullable: true
-      required: [name, inn, url_original]
-    UpdateSupplierRequest:
-      type: object
-      properties:
-        name: { type: string }
-        inn: { type: string }
-        url_original: { type: string }
-
-        emails:
-          type: array
-          items:
-            type: string
-            format: email
-          nullable: true
-
-        refresh_checko:
-          type: boolean
-          default: false
-      additionalProperties: false
-    ModeratorSupplierListResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items: { $ref: "#/components/schemas/Supplier" }
-        limit: { type: integer }
-        offset: { type: integer }
-        total: { type: integer }
-      required: [items]
-
-    # -------- Blacklist --------
-    AddBlacklistDomainRequest:
-      type: object
-      properties:
-        domain_canonical:
-          type: string
-          example: pulsecen.ru
+          maxLength: 12
+          minLength: 10
+          title: Inn
         reason:
-          type: string
-          nullable: true
-      required: [domain_canonical]
-
-    BlacklistDomainListResponse:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
       type: object
+      required:
+      - inn
+      title: AddUserBlacklistInnRequestDTO
+    AttachmentDTO:
+      properties:
+        id:
+          type: integer
+          title: Id
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        originalfilename:
+          type: string
+          title: Originalfilename
+        contenttype:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Contenttype
+        sizebytes:
+          type: integer
+          title: Sizebytes
+        sha256:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sha256
+        storagekey:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Storagekey
+        isdeleted:
+          type: boolean
+          title: Isdeleted
+          default: false
+        createdat:
+          type: string
+          title: Createdat
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - originalfilename
+      - sizebytes
+      - createdat
+      title: AttachmentDTO
+      description: "SSoT: api-contracts.yaml /components/schemas/Attachment\n\nÐ\x92\
+        Ð\x90Ð\x96Ð\x9DÐ\x9E:\n- Ð½Ð°Ñ\x80Ñ\x83Ð¶Ñ\x83 Ð¾Ñ\x82Ð´Ð°Ñ\x91Ð¼ lower-without-separators:\
+        \ originalfilename, contenttype, sizebytes, storagekey, isdeleted, createdat\n\
+        - Ð²Ð½Ñ\x83Ñ\x82Ñ\x80Ð¸ Ð´ÐµÑ\x80Ð¶Ð¸Ð¼ snake_case: original_filename, content_type,\
+        \ size_bytes, storage_key, is_deleted, created_at"
+    AttachmentListResponseDTO:
       properties:
         items:
-          type: array
           items:
+            $ref: '#/components/schemas/AttachmentDTO'
+          type: array
+          title: Items
+        limit:
+          type: integer
+          title: Limit
+        offset:
+          type: integer
+          title: Offset
+        total:
+          type: integer
+          title: Total
+      additionalProperties: false
+      type: object
+      required:
+      - items
+      - limit
+      - offset
+      - total
+      title: AttachmentListResponseDTO
+      description: 'SSoT: api-contracts.yaml /components/schemas/AttachmentListResponse'
+    AuthOtpRequestDTO:
+      properties:
+        email:
+          type: string
+          format: email
+          title: Email
+      type: object
+      required:
+      - email
+      title: AuthOtpRequestDTO
+    AuthOtpVerifyDTO:
+      properties:
+        email:
+          type: string
+          format: email
+          title: Email
+        code:
+          type: string
+          maxLength: 6
+          minLength: 6
+          title: Code
+      type: object
+      required:
+      - email
+      - code
+      title: AuthOtpVerifyDTO
+    Body_upload_and_create_apiv1_user_upload_and_create_post:
+      properties:
+        file:
+          type: string
+          format: binary
+          title: File
+      type: object
+      required:
+      - file
+      title: Body_upload_and_create_apiv1_user_upload_and_create_post
+    Body_upload_attachment_apiv1_user_attachments_post:
+      properties:
+        file:
+          type: string
+          format: binary
+          title: File
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+      type: object
+      required:
+      - file
+      title: Body_upload_attachment_apiv1_user_attachments_post
+    CreateRequestManualRequestDTO:
+      properties:
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        keys:
+          items:
+            $ref: '#/components/schemas/RequestKeyInputDTO'
+          type: array
+          title: Keys
+      type: object
+      required:
+      - keys
+      title: CreateRequestManualRequestDTO
+    CreateRequestResponseDTO:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        requestid:
+          type: integer
+          title: Requestid
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        status:
+          type: string
+          title: Status
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+      type: object
+      required:
+      - success
+      - requestid
+      - status
+      title: CreateRequestResponseDTO
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HealthResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+      type: object
+      required:
+      - status
+      title: HealthResponse
+    RequestDetailDTO:
+      properties:
+        id:
+          type: integer
+          title: Id
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        status:
+          type: string
+          title: Status
+        createdat:
+          type: string
+          title: Createdat
+        keys:
+          items:
+            $ref: '#/components/schemas/RequestKeyDTO'
+          type: array
+          title: Keys
+      type: object
+      required:
+      - id
+      - status
+      - createdat
+      - keys
+      title: RequestDetailDTO
+    RequestKeyDTO:
+      properties:
+        id:
+          type: integer
+          title: Id
+        pos:
+          type: integer
+          title: Pos
+        rawtext:
+          type: string
+          title: Rawtext
+        normalizedtext:
+          type: string
+          title: Normalizedtext
+        qty:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Qty
+        unit:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unit
+        suppliers:
+          items:
+            additionalProperties: true
             type: object
-            properties:
-              id: { type: integer }
-              domain_canonical: { type: string }
-              reason: { type: string, nullable: true }
-              created_at: { type: string, format: date-time }
-            required: [id, domain_canonical, created_at]
-      required: [items]
+          type: array
+          title: Suppliers
+      type: object
+      required:
+      - id
+      - pos
+      - rawtext
+      - normalizedtext
+      - suppliers
+      title: RequestKeyDTO
+    RequestKeyInputDTO:
+      properties:
+        pos:
+          type: integer
+          minimum: 1.0
+          title: Pos
+        text:
+          type: string
+          minLength: 1
+          title: Text
+        qty:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Qty
+        unit:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unit
+      type: object
+      required:
+      - pos
+      - text
+      title: RequestKeyInputDTO
+    RequestListResponseDTO:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/RequestSummaryDTO'
+          type: array
+          title: Items
+        limit:
+          type: integer
+          title: Limit
+        offset:
+          type: integer
+          title: Offset
+        total:
+          type: integer
+          title: Total
+      type: object
+      required:
+      - items
+      - limit
+      - offset
+      - total
+      title: RequestListResponseDTO
+    RequestSummaryDTO:
+      properties:
+        id:
+          type: integer
+          title: Id
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        status:
+          type: string
+          title: Status
+        createdat:
+          type: string
+          title: Createdat
+        keyscount:
+          type: integer
+          title: Keyscount
+      type: object
+      required:
+      - id
+      - status
+      - createdat
+      - keyscount
+      title: RequestSummaryDTO
+    SubmitRequestResponseDTO:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          default: true
+        requestid:
+          type: integer
+          title: Requestid
+        newstatus:
+          type: string
+          title: Newstatus
+        matchedsuppliers:
+          type: integer
+          title: Matchedsuppliers
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+      type: object
+      required:
+      - requestid
+      - newstatus
+      - matchedsuppliers
+      title: SubmitRequestResponseDTO
+    UpdateRequestKeysRequestDTO:
+      properties:
+        keys:
+          items:
+            $ref: '#/components/schemas/RequestKeyInputDTO'
+          type: array
+          title: Keys
+      type: object
+      required:
+      - keys
+      title: UpdateRequestKeysRequestDTO
+    UserBlacklistInnItemDTO:
+      properties:
+        id:
+          type: integer
+          title: Id
+        inn:
+          type: string
+          title: Inn
+        supplierid:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Supplierid
+        suppliername:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suppliername
+        checkodata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Checkodata
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+        createdat:
+          type: string
+          title: Createdat
+      type: object
+      required:
+      - id
+      - inn
+      - createdat
+      title: UserBlacklistInnItemDTO
+    UserBlacklistInnListResponseDTO:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/UserBlacklistInnItemDTO'
+          type: array
+          title: Items
+      type: object
+      required:
+      - items
+      title: UserBlacklistInnListResponseDTO
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    app__transport__schemas__attachments__GenericOkResponseDTO:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          default: true
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+      additionalProperties: false
+      type: object
+      title: GenericOkResponseDTO
+    app__transport__schemas__common__GenericOkResponseDTO:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+      type: object
+      required:
+      - success
+      title: GenericOkResponseDTO

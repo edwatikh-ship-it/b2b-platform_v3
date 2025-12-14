@@ -22,7 +22,7 @@ def _require_user_id(authorization: str | None) -> int:
     return 1
 
 
-@router.post("/user/blacklist/inn")
+@router.post("/user/blacklist/inn", include_in_schema=False)
 async def add_user_blacklist_inn(
     payload: AddUserBlacklistInnRequestDTO,
     authorization: str | None = Header(default=None),
@@ -34,7 +34,7 @@ async def add_user_blacklist_inn(
     return {"success": True}
 
 
-@router.get("/user/blacklist/inn", response_model=UserBlacklistInnListResponseDTO)
+@router.get("/user/blacklist/inn", response_model=UserBlacklistInnListResponseDTO, include_in_schema=False)
 async def list_user_blacklist_inn(
     limit: int = 200,
     authorization: str | None = Header(default=None),
@@ -46,7 +46,7 @@ async def list_user_blacklist_inn(
     return {"items": [UserBlacklistInnItemDTO(**x) for x in items]}
 
 
-@router.delete("/user/blacklist/inn/{inn}")
+@router.delete("/user/blacklist/inn/{inn}", include_in_schema=False)
 async def remove_user_blacklist_inn(
     inn: str,
     authorization: str | None = Header(default=None),
