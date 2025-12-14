@@ -211,3 +211,10 @@ Rule:
 - Expected: Working tree clean; hooks pass; fewer CRLF/LF warnings
 - Now: Repo hygiene complete
 - Next: Pick next endpoint from api-contracts.yaml and implement first slice
+## 2025-12-15 00:13:50 MSK
+- What: Removed legacy file 'Дерево проекта.txt' from repo
+- Why: We keep project structure in PROJECT-TREE.txt; unicode legacy file causes git noise
+- Verify: git status (after commit) shows clean working tree
+- Expected: Working tree clean; file removed from main
+- Now: Repo hygiene complete
+- Next: Return to product work: pick next endpoint from api-contracts.yaml

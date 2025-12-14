@@ -1,5 +1,5 @@
 PROJECT TREE (curated)
-Generated: 2025-12-15 00:11:01
+Generated: 2025-12-15 00:13:49
 
 .gitattributes
 .github\workflows\ci.yml
@@ -154,4 +154,3 @@ README.md
 tools\append_handoff_incidents.ps1
 tools\log_success.ps1
 tools\update_project_tree.ps1
-Дерево проекта.txt
