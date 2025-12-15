@@ -546,3 +546,14 @@ PowerShell reference preflight snippet:
 - Любые продуктовые решения/ответы заказчика из чата, которые влияют на поведение системы (данные, доступы/роли, фича-флаги, API/UX-ограничения), должны быть записаны в PROJECT-DOC.md.
 - PROJECT-DOC.md ведём на русском языке.
 - При конфликте SSoT: api-contracts.yaml имеет приоритет; расхождения фиксируем в PROJECT-DOC.md как явный техдолг/несостыковку.
+
+---
+
+## Known pitfalls (Windows / PowerShell / SSoT)
+
+- Do NOT patch api-contracts.yaml with complex regex blindly. Prefer deterministic anchor-based edits or a reusable tools/ script.
+- In PowerShell, always escape $ref as ` $ref ` (otherwise it is treated as a variable).
+- Do NOT call [regex]::Replace with RegexOptions (can bind to matchTimeout overload). Use New-Object Regex(..., [RegexOptions]::Singleline) then .Replace().
+- After any SSoT edit: git status immediately + keep .bak.<timestamp> rollback.
+- Any failed patch attempt must be logged in INCIDENTS.md (append-only) with symptom/root cause/fix/verification.
+
