@@ -1,5 +1,5 @@
 PROJECT TREE (curated)
-Generated: 2025-12-15 00:13:49
+Generated: 2025-12-15 10:19:40
 
 .gitattributes
 .github\workflows\ci.yml
@@ -20,6 +20,7 @@ backend\alembic\versions\552d97f8cc92_create_requests_and_keys_tables.py
 backend\alembic\versions\687ead051921_create_request_recipients_table.py
 backend\alembic\versions\6fdf6afd7f77_rename_userid_createdat_columns_in_user_.py
 backend\alembic\versions\9458942023a4_merge_heads.py
+backend\alembic\versions\9d40af57b9c5_create_suppliers_tables.py
 backend\alembic\versions\a291dc92b69a_create_users_and_otp_codes.py
 backend\alembic\versions\bbff04c57403_create_attachments_table.py
 backend\alembic\versions\be4136aa1c68_request_recipients_defaults.py
@@ -93,8 +94,6 @@ backend\app\usecases\user_blacklist_inn\__init__.py
 backend\app\usecases\user_blacklist_inn\add.py
 backend\app\usecases\user_blacklist_inn\list.py
 backend\app\usecases\user_blacklist_inn\remove.py
-backend\HANDOFF.md
-backend\INCIDENTS.md
 backend\openapi-runtime.json
 backend\PROJECT-RULES.md
 backend\pyproject.toml
@@ -148,9 +147,12 @@ HANDOFF.md
 INCIDENTS.md
 justfile
 openapi-runtime.json
+PROJECT-DOC.md
 PROJECT-RULES.md
 PROJECT-TREE.txt
 README.md
+tests\integration\test_suppliers_search.py
 tools\append_handoff_incidents.ps1
+tools\check_suppliers_tables.py
 tools\log_success.ps1
 tools\update_project_tree.ps1
