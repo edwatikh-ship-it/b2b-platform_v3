@@ -185,3 +185,10 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 - 2025-12-15 20:51 MSK Parser service: /parse via Playwright CDP. Adds 'купить' to query, brings captcha tab to front, dismisses popups best-effort, returns partial results on engine timeout. Verify:
   PS> $body = @{ query = "поставщик металлопроката"; depth = 1 } | ConvertTo-Json
   PS> Invoke-RestMethod http://127.0.0.1:9001/parse -Method Post -ContentType "application/json; charset=utf-8" -Body $body
+
+## [2025-12-15 22:50] SSoT: Finalized parsing contract (runId = informational, latest-only)
+- **Change**: Updated pi-contracts.yaml descriptions for start-parsing, parsing-status, parsing-results.
+- **runId**: Returned in all responses but API always returns latest run (no run selection via query/path).
+- **Blacklist**: Confirmed root domain + subdomain filtering, results MUST NOT include blacklisted URLs.
+- **Status**: All DTO complete (StartParsingResponseDTO, ParsingStatusResponseDTO, ParsingResultsResponseDTO).
+- **Next**: Backend implementation can rely on "latest run per requestId" semantics.
