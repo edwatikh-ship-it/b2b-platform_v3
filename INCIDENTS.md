@@ -66,3 +66,8 @@ Verification: 'ruff check backend', 'ruff format backend', 'pre-commit run --all
   - uv: use existing .venv + pip / python -m venv.
   - direnv: set env vars explicitly in the same shell before running uvicorn/tests.
 Verification: ruff + pre-commit available and pass ('ruff check', 'ruff format', 'pre-commit run --all-files').
+
+- 2025-12-15 11:12 MSK INCIDENT PROJECT-RULES.md appears with broken encoding (garbled Cyrillic) when read in PowerShell. Root cause: file is not UTF-8 (or got corrupted by previous writes). Fix/Mitigation: do not append to PROJECT-RULES.md until encoding is normalized; prefer rewriting file as UTF-8 without BOM from a verified clean source. Verification: Get-Content shows readable Russian text and repo diff contains only intended doc changes.
+
+- 2025-12-15 11:12 MSK INCIDENT PowerShell SSoT patching pitfalls: $ref inside strings caused parser error (PowerShell treated $ref as variable), and [regex]::Replace was called with RegexOptions which bound to matchTimeout overload and failed. Root cause: PowerShell variable interpolation + .NET Regex overload ambiguity. Fix/Mitigation: escape $ref as ` $ref `; create regex via New-Object Regex(pattern, [RegexOptions]::Singleline) and call .Replace(); prefer deterministic anchor-based patches or reusable tools/ scripts. Verification: patch runs without errors; git status shows expected files only; openapi.json loads 200.
+
