@@ -1,47 +1,90 @@
 # B2B Platform — PROJECT RULES (SSoT)
 
-Version: 1.2
-Date: 2025-12-15
+Версия: 1.2
+Дата: 2025-12-15
 
-## SSoT
-- API single source of truth: D:\b2bplatform\api-contracts.yaml
-- If code != contract: code must be aligned to api-contracts.yaml (or contract updated intentionally).
-- Priority: api-contracts.yaml -> PROJECT-RULES.md -> PROJECT-DOC.md
-- SSoT files must live in repo root (D:\b2bplatform\). Do not duplicate them under backend\.
+## 1) SSoT (единственный источник правды)
+- API (эндпоинты, DTO, ответы) = только api-contracts.yaml в корне репо: D:\b2bplatform\api-contracts.yaml
+- Если код и контракт расходятся — это ошибка: приводим к совпадению (либо меняем контракт осознанно).
+- Приоритет источников: api-contracts.yaml → PROJECT-RULES.md → PROJECT-DOC.md
+- SSoT-файлы должны лежать в корне D:\b2bplatform\ (в backend\ дубликатов быть не должно).
+- Прогресс = состояние ветки main в GitHub, не “память чата”.
 
-## Architecture (fixed)
-transport -> usecases -> domain -> adapters
+## 2) Архитектура (фикс)
+transport → usecases → domain → adapters
 
-## Safety guards (mandatory before any repo change)
-- Verify SSoT exists (api-contracts.yaml).
-- Backup every file you will change: .bak.<timestamp>
-- Show git status before/after
-- Provide rollback (restore from .bak and/or git restore)
+Коротко:
+- transport: HTTP-ручки, валидация входа/выхода, никаких бизнес-решений.
+- usecases: бизнес-сценарии.
+- domain: “чистые” модели/правила, без FastAPI/SQLAlchemy.
+- adapters: БД/SMTP/HTTP-клиенты и т.п.
 
-## PRE-FLIGHT before "fix API/routes/wiring"
-Never assume defaults unless confirmed.
-Plan A: read BASE_URL and API_PREFIX from runtime env/settings.
-Plan B: ask the user for current base url (host:port) and API prefix.
+## 3) SAFETY GUARDS (обязательно перед любыми правками)
+Перед любыми изменениями ассистент/исполнитель обязан:
+- Проверить, что D:\b2bplatform\ существует и api-contracts.yaml на месте.
+- Сделать backup всех изменяемых файлов: *.bak.<timestamp>
+- Показать git status до и после.
+- Дать rollback: восстановление из .bak и/или git restore.
 
-Run and confirm:
-1) GET {BASE_URL}/{API_PREFIX}/health -> status ok (or equivalent per contract)
-2) GET {BASE_URL}/openapi.json -> 200 OK and valid JSON
+## 4) PRE-FLIGHT перед любыми “чинить API/роуты/эндпоинты”
+Нельзя “угадывать по умолчанию”.
+
+Сначала выясняем:
+- BASE_URL (host:port) и API_PREFIX (например apiv1).
+  - Plan A: взять из env/настроек запуска.
+  - Plan B: спросить у пользователя.
+
+Проверки (и ожидаемые результаты):
+1) Invoke-RestMethod "{BASE_URL}/{API_PREFIX}/health"
+   - Ожидаем JSON со status="ok" (или эквивалент по контракту).
+2) Invoke-RestMethod "{BASE_URL}/openapi.json" | Out-Null
+   - Ожидаем 200 и валидный JSON.
 3) python -c "import os; print(os.getenv('DATABASEURL'), os.getenv('DATABASE_URL'))"
+   - Не None только если это реально нужно при импорте роутеров/модулей.
 
-## Standard tools (check availability first)
-- Ruff: ruff check / ruff format (CI: ruff check + ruff format --check)
-- pre-commit: pre-commit run --all-files
-- just: prefer just (fmt/test/dev/clean) if available
-- pyclean: prefer pyclean ., else PowerShell Plan B
-- uv: prefer uv, else venv + pip Plan B
-- direnv: prefer direnv, else explicit env vars Plan B
+Если любая проверка не проходит — сначала Plan B (как запустить/выставить env), и только потом правки кода.
 
-## Windows / PowerShell pitfalls
-- Do not use bash heredoc in PowerShell (e.g. "python - << PY").
-- In PowerShell, always escape $ref as `` `$ref ``.
-- Do not call [regex]::Replace with RegexOptions (can bind to matchTimeout overload).
-  Use: New-Object Regex(pattern, [RegexOptions]::Singleline) then .Replace().
+## 5) “6 инструментов” проекта (сначала проверка наличия)
+Инструменты: Ruff, pre-commit, pyclean, uv, direnv, just.
 
-## Progress logging
-- Success -> HANDOFF.md append-only + update PROJECT-TREE.txt + commit + push origin/main
-- Failure -> INCIDENTS.md append-only + commit + push origin/main
+Правило:
+- Сначала проверять наличие: Get-Command ruff/pre-commit/pyclean/uv/direnv/just
+- Если инструмента нет — использовать Plan B (без обещаний, что “точно стоит”).
+
+Как используем:
+- Линт/формат:
+  - ruff check backend
+  - ruff format backend
+  - (в CI: ruff check + ruff format --check)
+- Хуки:
+  - pre-commit run --all-files
+- Рутинные команды:
+  - just fmt / just test / just dev / just clean (если есть)
+- Чистка мусора:
+  - pyclean . (если есть)
+  - Plan B: удалить __pycache__ через PowerShell
+- Депсы:
+  - prefer uv
+  - Plan B: python -m venv + pip install
+- env:
+  - prefer direnv
+  - Plan B: явные env vars в том же shell
+
+## 6) Windows / PowerShell pitfalls (важно)
+- Не использовать bash heredoc в PowerShell (например: python - << PY).
+- PowerShell: строка `$ref` должна быть экранирована как `` `$ref `` (иначе это воспринимается как переменная).
+- .NET Regex в PowerShell:
+  - не использовать [regex]::Replace с RegexOptions (может попасть в перегрузку matchTimeout),
+  - правильно: New-Object Regex(pattern, [RegexOptions]::Singleline) и потом .Replace().
+- Любая правка текстовых файлов: UTF-8 без BOM (если нет особой причины), писать через .NET WriteAllText с UTF8Encoding(false).
+
+## 7) Лог прогресса (обязательно)
+- Успех шага → HANDOFF.md (append-only) + обновить PROJECT-TREE.txt + commit + push origin/main
+- Фейл/инцидент → INCIDENTS.md (append-only) + commit + push
+
+Формат INCIDENTS/HANDOFF:
+- Дата/время MSK
+- Что случилось / что сделали
+- Root cause
+- Fix/Mitigation
+- Verification (команда + ожидаемый результат)
