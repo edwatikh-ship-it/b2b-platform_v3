@@ -178,3 +178,4 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 ' (or git-based patch). Verify: python tools/set_limit_max_200.py -> no further changes; git diff clean; Invoke-RestMethod http://127.0.0.1:8000/openapi.json returns 200.
 
 - 2025-12-15 18:49 MSK Success: Dropped '/apiv1' URL prefix (API is now root paths like /health, /user/requests). Updated contract/integration tests to use root paths and adjusted contract OpenAPI-vs-SSoT check to not apply API_PREFIX. Verified: cd D:\b2bplatform\backend; python -m pytest -q => 39 passed, 1 skipped.
+- 2025-12-15 18:50 MSK Success: Removed '/apiv1' prefix from API routes (now root paths like /health). Updated tests and OpenAPI-vs-SSoT contract check accordingly. Verified: cd D:\b2bplatform\backend; python -m pytest -q => 39 passed, 1 skipped.
