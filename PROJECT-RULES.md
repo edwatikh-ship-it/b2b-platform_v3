@@ -128,6 +128,22 @@ HANDOFF/INCIDENTS format:
   - Backend default: 8000
   - Parser service default: 9001
   - Chrome CDP default: 9222
+
+### Parser service preflight (mandatory)
+- If Moderator parsing endpoints are used (/moderator/requests/{requestId}/start-parsing):
+  - Ensure parser_service is running and reachable BEFORE debugging backend logic.
+  - Symptom: parsing-status shows status=failed with error "All connection attempts failed" for keys.
+  - Fix: start parser_service (default http://127.0.0.1:9001) and re-run start-parsing.
+
+PowerShell checks:
+- Plan A (if available): Get-NetTCPConnection -LocalPort 9001 -State Listen
+- Plan B (Windows-safe): netstat -ano | findstr ":9001"
+- HTTP ping (404 is OK; connection refused is NOT OK):
+  - try { Invoke-WebRequest "http://127.0.0.1:9001/" -UseBasicParsing -TimeoutSec 2 | Select-Object StatusCode } catch { $_.Exception.Message }
+
+Start command (run in a separate shell):
+- Set-Location D:\b2bplatform\parser_service
+- python -m uvicorn app.main:app --host 127.0.0.1 --port 9001
 - PowerShell checks:
   - Get-NetTCPConnection -LocalPort 8000 -State Listen
   - Get-NetTCPConnection -LocalPort 9001 -State Listen
