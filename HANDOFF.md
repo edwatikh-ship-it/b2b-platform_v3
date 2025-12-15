@@ -261,3 +261,5 @@ Rule:
   - Invoke-RestMethod "http://127.0.0.1:8000/apiv1/health" -> status ok
   - (Invoke-RestMethod "http://127.0.0.1:8000/openapi.json").paths contains "/apiv1/suppliers/search"
   - Invoke-RestMethod "http://127.0.0.1:8000/apiv1/suppliers/search?q=test" -> 200
+- 2025-12-15 11:53 MSK Fixed recurring Windows encoding pitfall while editing api-contracts.yaml: avoid PowerShell full-file rewrites that can mojibake Cyrillic; use Python scripts with explicit encoding='utf-8' and newline='
+' (tools/set_limit_max_200.py) or git-based patches. Also standardized all query limit params to include maximum: 200 in api-contracts.yaml. Verify: python tools/set_limit_max_200.py then git diff shows only expected insertions; openapi.json reachable via Invoke-RestMethod http://127.0.0.1:8000/openapi.json.
