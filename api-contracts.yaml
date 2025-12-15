@@ -1,4 +1,4 @@
-openapi: 3.1.0
+﻿openapi: 3.1.0
 info:
   title: B2B Platform API
   version: 1.0.0
@@ -837,7 +837,9 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+
+$ref: '#/components/schemas/SupplierSearchResponseDTO'
         '422':
           description: Validation Error
           content:
@@ -1226,12 +1228,12 @@ components:
       description: 'SSoT: api-contracts.yaml /components/schemas/Attachment
 
 
-        Р’РђР–РќРћ:
+        Р вЂ™Р С’Р вЂ“Р СњР С›:
 
-        - РЅР°СЂСѓР¶Сѓ РѕС‚РґР°С‘Рј lower-without-separators: originalfilename, contenttype, sizebytes,
+        - Р Р…Р В°РЎР‚РЎС“Р В¶РЎС“ Р С•РЎвЂљР Т‘Р В°РЎвЂР С lower-without-separators: originalfilename, contenttype, sizebytes,
         storagekey, isdeleted, createdat
 
-        - РІРЅСѓС‚СЂРё РґРµСЂР¶РёРј snake_case: original_filename, content_type, size_bytes, storage_key,
+        - Р Р†Р Р…РЎС“РЎвЂљРЎР‚Р С‘ Р Т‘Р ВµРЎР‚Р В¶Р С‘Р С snake_case: original_filename, content_type, size_bytes, storage_key,
         is_deleted, created_at'
     AttachmentListResponseDTO:
       properties:
@@ -1922,3 +1924,4 @@ components:
       required:
       - recipients
       additionalProperties: false
+
