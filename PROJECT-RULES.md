@@ -110,3 +110,9 @@ HANDOFF/INCIDENTS format:
 - Do NOT maintain mandatory RU+EN duplicates for every update (avoids double work and noisy logs).
 - Russian docs live under docs-ru/ as NOT SSoT explanations only.
 - For append-only logs (HANDOFF.md / INCIDENTS.md / DECISIONS.md): one entry = one language, no required translation; keep the required structure and verification commands.
+## PowerShell path safety (mandatory)
+
+- Always anchor scripts to repo root (use Set-Location D:\b2bplatform or $PSScriptRoot + Join-Path), never rely on current working directory.
+- Do not use Resolve-Path for a file that does not exist yet; write using a direct path (Join-Path) or create the file first.
+- Any script that changes directory must restore it (Push-Location + Pop-Location in inally) to avoid breaking subsequent commands.
+
