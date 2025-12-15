@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.db.models import (
     AttachmentModel,
+    DomainBlacklistDomainModel,
     RequestKeyModel,
     RequestModel,
     RequestRecipientModel,
@@ -336,4 +337,45 @@ class UserRepository:
 
 
 #
-# __AUTO_INSERT_REPOSITORIES_END__
+
+
+class DomainBlacklistRepository:
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def list_root_domains(self, limit: int) -> list[str]:
+        stmt = (
+            select(DomainBlacklistDomainModel.root_domain)
+            .order_by(DomainBlacklistDomainModel.id.desc())
+            .limit(int(limit))
+        )
+        res = await self._session.execute(stmt)
+        return [str(x) for x in res.scalars().all()]
+
+    async def add_root_domain(self, root_domain: str) -> None:
+        root_domain = str(root_domain).strip().lower()
+        if not root_domain:
+            raise ValueError("empty_domain")
+
+        exists_stmt = select(DomainBlacklistDomainModel.id).where(
+            DomainBlacklistDomainModel.root_domain == root_domain
+        )
+        existing_id = await self._session.scalar(exists_stmt)
+        if existing_id is not None:
+            return
+
+        obj = DomainBlacklistDomainModel(root_domain=root_domain)
+        self._session.add(obj)
+        try:
+            await self._session.commit()
+        except Exception:
+            await self._session.rollback()
+            raise
+
+    async def remove_root_domain(self, root_domain: str) -> None:
+        root_domain = str(root_domain).strip().lower()
+        stmt = delete(DomainBlacklistDomainModel).where(
+            DomainBlacklistDomainModel.root_domain == root_domain
+        )
+        await self._session.execute(stmt)
+        await self._session.commit()

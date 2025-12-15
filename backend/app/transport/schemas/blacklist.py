@@ -21,3 +21,13 @@ class UserBlacklistInnListResponseDTO(BaseModel):
     limit: int
     offset: int
     total: int
+
+
+class AddBlacklistDomainRequestDTO(BaseModel):
+    domain: str = Field(min_length=1)
+
+
+class BlacklistDomainsListResponseDTO(BaseModel):
+    items: list[str]
+    limit: int
+    total: int

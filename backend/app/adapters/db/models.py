@@ -108,4 +108,11 @@ class RequestRecipientModel(Base):
     )
 
 
-# __AUTO_INSERT_MODELS_END__# __AUTO_INSERT_MODELS_END__
+class DomainBlacklistDomainModel(Base):
+    __tablename__ = "blacklist_domains"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    root_domain: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
+    created_at: Mapped[object] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
