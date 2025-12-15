@@ -179,3 +179,6 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 
 - 2025-12-15 18:49 MSK Success: Dropped '/apiv1' URL prefix (API is now root paths like /health, /user/requests). Updated contract/integration tests to use root paths and adjusted contract OpenAPI-vs-SSoT check to not apply API_PREFIX. Verified: cd D:\b2bplatform\backend; python -m pytest -q => 39 passed, 1 skipped.
 - 2025-12-15 18:50 MSK Success: Removed '/apiv1' prefix from API routes (now root paths like /health). Updated tests and OpenAPI-vs-SSoT contract check accordingly. Verified: cd D:\b2bplatform\backend; python -m pytest -q => 39 passed, 1 skipped.
+- 2025-12-15 19:48 MSK
+  - What: Hardened PowerShell workflow: tools\pytest.ps1 now restores working directory (Push-Location/Pop-Location), and PROJECT-RULES.md now includes mandatory path-safety rules (anchor to repo root, no Resolve-Path for non-existent files).
+  - Verify: .\tools\pytest.ps1 -> 39 passed, 1 skipped (and current directory remains D:\b2bplatform); git status -> clean.
