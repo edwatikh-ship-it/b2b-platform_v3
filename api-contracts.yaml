@@ -830,6 +830,7 @@ paths:
         required: false
         schema:
           type: integer
+          maximum: 200
           default: 20
           title: Limit
       responses:
