@@ -2165,6 +2165,41 @@ components:
       description: |
         Search engine source where the result was found.
         SSoT: api-contracts.yaml /components/schemas/ParsingSource
+    ParsingDomainGroupDTO:
+      type: object
+      description: |
+        Parsing results grouped by domain (for moderator UI accordion).
+        Each group represents a single domain and contains all URLs found for that domain.
+        Blacklist filtering applies: if the root-domain is blacklisted, the entire group MUST NOT appear.
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: Hostname (may include subdomain), e.g. spb.pulscen.ru.
+        urls:
+          type: array
+          title: Urls
+          minItems: 1
+          items:
+            type: string
+            format: uri
+        source:
+          anyOf:
+          - $ref: '#/components/schemas/ParsingSource'
+          - type: 'null'
+          title: Source
+          description: Optional aggregated source; null if unknown or mixed.
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+          description: Optional representative title; may be null.
+      required:
+      - domain
+      - urls
+      additionalProperties: false
+
     ParsingResultItemDTO:
       type: object
       description: |
@@ -2209,15 +2244,15 @@ components:
         keyId:
           type: integer
           title: KeyId
-        items:
+        groups:
           type: array
-          title: Items
+          title: Groups
           items:
-            $ref: '#/components/schemas/ParsingResultItemDTO'
-          description: List of parsing results for this key (blacklist-filtered).
+            $ref: '#/components/schemas/ParsingDomainGroupDTO'
+          description: Domain groups for this key (blacklist-filtered). Each group contains all URLs for that domain.
       required:
       - keyId
-      - items
+      - groups
       additionalProperties: false
     ParsingResultsResponseDTO:
       type: object

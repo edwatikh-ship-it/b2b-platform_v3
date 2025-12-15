@@ -49,3 +49,17 @@
 **Дата:** 2025-12-13  
 **Решение:** общение “как с братишкой”, простым языком, можно эмоджи, но с техдисциплиной.  
 **Почему:** так легче держать темп и не закапываться в бюрократию.
+
+---
+
+## D-007 — Parsing results as domain accordion
+**Date:** 2025-12-16 00:29 MSK  
+**Decision:** /moderator/requests/{requestId}/parsing-results returns results grouped by domain: each group contains domain and urls[] (accordion UI).  
+**Why:** Moderator sees unique domains without noise, but can expand to view all URLs per domain.  
+**Consequences:** Contract updated (ParsingDomainGroupDTO, ParsingResultsByKeyDTO.groups). Backend stores and returns grouped results.
+
+## D-008 — Parsing execution mode (MVP sync, target async)
+**Date:** 2025-12-16 00:29 MSK  
+**Decision:** MVP keeps synchronous start-parsing (request waits for parser_service; timeout increased to allow manual captcha). Target design: start-parsing returns quickly with status=running/queued and parsing runs in background; UI polls parsing-status/results.  
+**Why:** Avoid client/proxy timeouts and improve UX/reliability.  
+**Consequences:** Later introduce background task runner (e.g., in-process task for MVP, then queue) without changing API semantics.
