@@ -116,3 +116,25 @@ HANDOFF/INCIDENTS format:
 - Do not use Resolve-Path for a file that does not exist yet; write using a direct path (Join-Path) or create the file first.
 - Any script that changes directory must restore it (Push-Location + Pop-Location in inally) to avoid breaking subsequent commands.
 
+
+### Runtime base URL & port rules (2025-12-15)
+- Never assume API prefix. Always discover it from the running OpenAPI: GET {BASE_URL}/openapi.json.
+- If OpenAPI paths start with '/apiv1', use '{BASE_URL}/apiv1/...' (example: /apiv1/health).
+- If OpenAPI paths do NOT start with '/apiv1' (paths like '/health', '/user/...', '/moderator/...'), then API_PREFIX is empty and health is '{BASE_URL}/health'.
+- Always validate the chosen base before changing code: request the exact health endpoint that exists in OpenAPI.
+
+### Port hygiene / avoiding \"wrong port\" (2025-12-15)
+- Always check ports before starting services:
+  - Backend default: 8000
+  - Parser service default: 9001
+  - Chrome CDP default: 9222
+- PowerShell checks:
+  - Get-NetTCPConnection -LocalPort 8000 -State Listen
+  - Get-NetTCPConnection -LocalPort 9001 -State Listen
+  - Get-NetTCPConnection -LocalPort 9222 -State Listen
+- If a port is occupied, do NOT guess. Identify owning PID and command line, then stop explicitly:
+  - \8424 = (Get-NetTCPConnection -LocalPort 8000 -State Listen | Select-Object -First 1).OwningProcess
+  - Get-CimInstance Win32_Process -Filter \"ProcessId=\8424\" | Select-Object ProcessId, Name, CommandLine
+  - Stop-Process -Id \8424 -Force
+- Always run backend and parser_service in separate shells and stop them via Ctrl+C when done.
+
