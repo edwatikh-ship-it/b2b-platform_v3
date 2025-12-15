@@ -1,9 +1,16 @@
-# INCIDENTS.md
+# INCIDENTS — B2B Platform
 
 ## Rules (owned here)
 - Log problems/failures here (append-only).
-- Format: datetime MSK Р Р†Р вЂљРІР‚Сњ symptom Р Р†Р вЂљРІР‚Сњ root cause Р Р†Р вЂљРІР‚Сњ fix/mitigation Р Р†Р вЂљРІР‚Сњ verification.
-- 1Р Р†Р вЂљРІР‚Сљ3 lines per entry, no long stacktraces.
+- Format per entry:
+  - datetime MSK
+  - symptom
+  - root cause
+  - fix/mitigation
+  - verification (command + expected output)
+- Keep it short (1–3 lines per incident). Do not paste long stacktraces.
+
+## Entries (append-only)
 
 ## Entries (append-only)
 # INCIDENTS.md Р Р†Р вЂљРІР‚Сњ known issues / pitfalls (append-only)
@@ -75,4 +82,5 @@ Verification: ruff + pre-commit available and pass ('ruff check', 'ruff format',
 - 2025-12-15 11:15 MSK INCIDENT PROJECT-RULES.md is stored in a broken/garbled encoding in git (git show and Get-Content display unreadable Cyrillic). Root cause: file encoding mismatch/corruption in repo history. Fix/Mitigation: avoid relying on this file until normalized; add new rules in readable ASCII/English block; plan separate milestone to rewrite PROJECT-RULES.md as UTF-8 without BOM from a verified source. Verification: after normalization, first lines are readable and diffs are intentional.
 
 - 2025-12-15 11:15 MSK INCIDENT PowerShell SSoT patching pitfalls: $ref inside strings caused parser error (PowerShell treated $ref as variable), and [regex]::Replace was called with RegexOptions which bound to matchTimeout overload and failed. Root cause: PowerShell variable interpolation + .NET Regex overload ambiguity. Fix/Mitigation: escape $ref as ` $ref `; create regex via New-Object Regex(pattern, [RegexOptions]::Singleline) and call .Replace(); prefer deterministic anchor-based patches or reusable tools/ scripts. Verification: patch runs without errors; git status shows expected files only; openapi.json loads 200.
+
 
