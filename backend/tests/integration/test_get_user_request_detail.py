@@ -7,7 +7,7 @@ def test_get_user_request_detail_ok():
     with TestClient(app) as client:
         # create
         r = client.post(
-            "/apiv1/user/requests",
+            "/user/requests",
             json={
                 "title": "DetailTest",
                 "keys": [{"pos": 1, "text": "Bolt M8", "qty": 10, "unit": "pcs"}],
@@ -17,7 +17,7 @@ def test_get_user_request_detail_ok():
         request_id = r.json()["requestid"]
 
         # detail
-        resp = client.get(f"/apiv1/user/requests/{request_id}")
+        resp = client.get(f"/user/requests/{request_id}")
         assert resp.status_code == 200
 
         data = resp.json()
@@ -31,5 +31,5 @@ def test_get_user_request_detail_ok():
 
 def test_get_user_request_detail_404():
     with TestClient(app) as client:
-        resp = client.get("/apiv1/user/requests/99999999")
+        resp = client.get("/user/requests/99999999")
         assert resp.status_code == 404

@@ -5,7 +5,7 @@ from app.main import app
 
 def test_list_user_requests_ok():
     with TestClient(app) as client:
-        resp = client.get("/apiv1/user/requests?limit=50&offset=0")
+        resp = client.get("/user/requests?limit=50&offset=0")
         assert resp.status_code == 200
 
         data = resp.json()

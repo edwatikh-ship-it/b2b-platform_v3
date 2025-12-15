@@ -4,8 +4,6 @@ import yaml
 
 from app.main import app
 
-API_PREFIX = "/apiv1"
-
 
 def _find_contracts_path() -> Path:
     p = Path(__file__).resolve()
@@ -25,9 +23,7 @@ def test_openapi_has_no_extra_paths_vs_contract():
     contracts_path = _find_contracts_path()
     spec = yaml.safe_load(contracts_path.read_text(encoding="utf-8"))
 
-    contract_paths = set(spec["paths"].keys())
-    allowed = set(API_PREFIX + p for p in contract_paths)
-
+    allowed = set(spec["paths"].keys())
     actual = set(app.openapi()["paths"].keys())
 
     extra = sorted(actual - allowed)
@@ -39,7 +35,7 @@ def test_show_missing_paths_for_dev_visibility(capsys):
     contracts_path = _find_contracts_path()
     spec = yaml.safe_load(contracts_path.read_text(encoding="utf-8"))
 
-    expected = set(API_PREFIX + p for p in spec["paths"].keys())
+    expected = set(spec["paths"].keys())
     actual = set(app.openapi()["paths"].keys())
 
     missing = sorted(expected - actual)

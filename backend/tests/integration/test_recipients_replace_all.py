@@ -4,7 +4,7 @@ from app.main import app
 
 
 def _first_request_id(client: TestClient) -> int:
-    r = client.get("/apiv1/user/requests?limit=1&offset=0")
+    r = client.get("/user/requests?limit=1&offset=0")
     assert r.status_code == 200, r.text
     data = r.json()
     assert "items" in data and len(data["items"]) >= 1, "Need at least one request in DB"
@@ -16,7 +16,7 @@ def test_recipients_replace_all_and_update_selected():
         rid = _first_request_id(client)
 
         r1 = client.put(
-            f"/apiv1/userrequests/{rid}/recipients",
+            f"/userrequests/{rid}/recipients",
             json={
                 "recipients": [
                     {"supplierid": 10, "selected": True},
@@ -31,7 +31,7 @@ def test_recipients_replace_all_and_update_selected():
         ]
 
         r2 = client.put(
-            f"/apiv1/userrequests/{rid}/recipients",
+            f"/userrequests/{rid}/recipients",
             json={
                 "recipients": [
                     {"supplierid": 10, "selected": True},
@@ -47,7 +47,7 @@ def test_recipients_replace_all_and_update_selected():
 
         # replace-all removes missing supplierid=20 completely
         r3 = client.put(
-            f"/apiv1/userrequests/{rid}/recipients",
+            f"/userrequests/{rid}/recipients",
             json={"recipients": [{"supplierid": 10, "selected": True}]},
         )
         assert r3.status_code == 200, r3.text

@@ -6,7 +6,7 @@ from app.main import app
 def test_create_request_manual_ok():
     with TestClient(app) as client:
         resp = client.post(
-            "/apiv1/user/requests",
+            "/user/requests",
             json={
                 "title": "Test",
                 "keys": [{"pos": 1, "text": "Bolt M8", "qty": 10, "unit": "pcs"}],

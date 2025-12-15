@@ -27,17 +27,17 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     app = FastAPI(title="B2B Platform API", version="1.0.0", lifespan=lifespan)
 
-    app.include_router(health_router, prefix="/apiv1")
-    app.include_router(requests_router, prefix="/apiv1")
-    app.include_router(user_upload_and_create_router, prefix="/apiv1")
-    app.include_router(user_messaging_router, prefix="/apiv1")
-    app.include_router(attachments_router, prefix="/apiv1")
-    app.include_router(auth_router, prefix="/apiv1")
-    app.include_router(suppliers_router, prefix="/apiv1")
-    app.include_router(moderator_tasks_router, prefix="/apiv1")
-    app.include_router(moderator_suppliers_router, prefix="/apiv1")
-    app.include_router(moderator_blacklist_domains_router, prefix="/apiv1")
-    app.include_router(user_blacklist_inn_router, prefix="/apiv1")
+    app.include_router(health_router)
+    app.include_router(requests_router)
+    app.include_router(user_upload_and_create_router)
+    app.include_router(user_messaging_router)
+    app.include_router(attachments_router)
+    app.include_router(auth_router)
+    app.include_router(suppliers_router)
+    app.include_router(moderator_tasks_router)
+    app.include_router(moderator_suppliers_router)
+    app.include_router(moderator_blacklist_domains_router)
+    app.include_router(user_blacklist_inn_router)
 
     return app
 

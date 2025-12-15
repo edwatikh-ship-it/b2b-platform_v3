@@ -7,7 +7,7 @@ def test_update_request_keys_ok():
     with TestClient(app) as client:
         # create
         r = client.post(
-            "/apiv1/user/requests",
+            "/user/requests",
             json={
                 "title": "UpdKeys",
                 "keys": [{"pos": 1, "text": "Bolt", "qty": 1, "unit": "pcs"}],
@@ -18,7 +18,7 @@ def test_update_request_keys_ok():
 
         # update keys
         resp = client.put(
-            f"/apiv1/user/requests/{request_id}/keys",
+            f"/user/requests/{request_id}/keys",
             json={"keys": [{"pos": 1, "text": "Nut M10", "qty": 5, "unit": "pcs"}]},
         )
         assert resp.status_code == 200
@@ -30,7 +30,5 @@ def test_update_request_keys_ok():
 
 def test_update_request_keys_404():
     with TestClient(app) as client:
-        resp = client.put(
-            "/apiv1/user/requests/99999999/keys", json={"keys": [{"pos": 1, "text": "X"}]}
-        )
+        resp = client.put("/user/requests/99999999/keys", json={"keys": [{"pos": 1, "text": "X"}]})
         assert resp.status_code == 404

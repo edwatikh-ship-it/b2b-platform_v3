@@ -5,13 +5,13 @@ from app.main import app
 
 def test_auth_me_requires_auth_401():
     with TestClient(app) as client:
-        r = client.get("/apiv1/auth/me")
+        r = client.get("/auth/me")
         assert r.status_code == 401
 
 
 def test_auth_me_ok_contract_fields():
     with TestClient(app) as client:
-        r = client.get("/apiv1/auth/me", headers={"Authorization": "Bearer dev"})
+        r = client.get("/auth/me", headers={"Authorization": "Bearer dev"})
         assert r.status_code == 200, r.text
         body = r.json()
         assert isinstance(body.get("id"), int)

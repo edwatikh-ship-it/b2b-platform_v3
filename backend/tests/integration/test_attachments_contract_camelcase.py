@@ -8,7 +8,7 @@ def test_attachments_response_fields_match_contract():
         files = {"file": ("tmp-attachment.txt", b"hello from test", "text/plain")}
         data = {"title": "tmp-attachment"}
 
-        r = client.post("/apiv1/user/attachments", files=files, data=data)
+        r = client.post("/user/attachments", files=files, data=data)
         assert r.status_code == 200
         att = r.json()
 

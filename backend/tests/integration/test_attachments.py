@@ -8,7 +8,7 @@ def test_attachments_upload_list_get_delete_download():
         # upload
         files = {"file": ("hello.txt", b"hello world", "text/plain")}
         data = {"title": "My file"}
-        r = client.post("/apiv1/user/attachments", files=files, data=data)
+        r = client.post("/user/attachments", files=files, data=data)
         assert r.status_code == 200
 
         att = r.json()
@@ -21,25 +21,25 @@ def test_attachments_upload_list_get_delete_download():
         assert "createdat" in att
 
         # list
-        r = client.get("/apiv1/user/attachments?limit=50&offset=0")
+        r = client.get("/user/attachments?limit=50&offset=0")
         assert r.status_code == 200
         payload = r.json()
         assert "items" in payload
         assert isinstance(payload["items"], list)
 
         # get
-        r = client.get(f"/apiv1/user/attachments/{att_id}")
+        r = client.get(f"/user/attachments/{att_id}")
         assert r.status_code == 200
         got = r.json()
         assert got["id"] == att_id
 
         # download
-        r = client.get(f"/apiv1/user/attachments/{att_id}/download")
+        r = client.get(f"/user/attachments/{att_id}/download")
         assert r.status_code == 200
         assert r.content == b"hello world"
 
         # delete
-        r = client.delete(f"/apiv1/user/attachments/{att_id}")
+        r = client.delete(f"/user/attachments/{att_id}")
         assert r.status_code == 200
         deleted = r.json()
         assert deleted["success"] is True
