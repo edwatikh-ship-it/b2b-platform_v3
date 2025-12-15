@@ -983,6 +983,12 @@ paths:
               additionalProperties: true
               title: Payload
       responses:
+        '409':
+          description: Duplicate INN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuplicateInnErrorDTO'
         '200':
           description: Successful Response
           content:
@@ -1129,6 +1135,48 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+  DuplicateInnErrorDTO:
+    type: object
+    additionalProperties: false
+    required:
+      - error
+      - inn
+      - incomingurl
+      - existingsupplier
+    properties:
+      error:
+        type: string
+        const: duplicate_inn
+        title: Error
+      inn:
+        type: string
+        title: Inn
+      incomingurl:
+        anyOf:
+          - type: string
+          - type: 'null'
+        title: Incoming Url
+      existingsupplier:
+        type: object
+        additionalProperties: false
+        required:
+          - supplierid
+          - urls
+        properties:
+          supplierid:
+            type: integer
+            title: Supplierid
+          name:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Name
+          urls:
+            type: array
+            title: Urls
+            items:
+              type: string
+              title: Url
     AttachmentDTO:
       properties:
         id:

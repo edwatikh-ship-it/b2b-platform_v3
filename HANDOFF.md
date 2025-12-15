@@ -249,3 +249,4 @@ Rule:
 
 
 - 2025-12-15 02:00 MSK Added mandatory preflight rule: ensure DATABASEURL/DATABASE_URL env is set in the same shell that runs uvicorn; otherwise OpenAPI may miss DB-dependent routers. Verified by importing app.transport.routers.requests (routes=5) after setting env and installing/enabling pre-commit hooks (pre-commit run --all-files passes).
+- 2025-12-15 03:29 MSK Added 409 Duplicate INN for POST /apiv1/moderator/suppliers in api-contracts.yaml and documented behavior in PROJECT-DOC.md. Verified: python -c yaml.safe_load ok; Select-String operationId shows 409 -> DuplicateInnErrorDTO.
