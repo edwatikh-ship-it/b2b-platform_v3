@@ -88,3 +88,8 @@ transport → usecases → domain → adapters
 - Root cause
 - Fix/Mitigation
 - Verification (команда + ожидаемый результат)
+## 8) Language policy (SSoT docs)
+- Source language for SSoT docs is English (ASCII preferred for maximum compatibility).
+- Do NOT maintain mandatory RU+EN duplicates for every update (avoids double work and noisy logs).
+- Russian docs live under docs-ru/ as NOT SSoT explanations only.
+- For append-only logs (HANDOFF.md / INCIDENTS.md / DECISIONS.md): one entry = one language, no required translation; keep the required structure and verification commands.
