@@ -255,3 +255,9 @@ Rule:
 - 2025-12-15 05:36 MSK Fixed integration tests: aligned user blacklist INN test base path to SSoT (/apiv1/user/blacklist-inn) and skipped suppliers search integration test because SupplierModel/SupplierUrlModel are absent from current db models. Verified: cd D:\b2bplatform\backend; python -m pytest -q (39 passed, 1 skipped).
 
 - 2025-12-15 10:21 MSK: Added Suppliers router stub: GET /apiv1/suppliers/search returns 501 Not Implemented (contract present). Updated PROJECT-TREE.txt. Verified: Invoke-RestMethod http://127.0.0.1:8000/apiv1/health -> status ok; Invoke-RestMethod http://127.0.0.1:8000/openapi.json -> 200; GET /apiv1/suppliers/search?q=test -> 501.
+2025-12-15 10:40 MSK — feat: add Suppliers Search endpoint.
+- Added: backend/app/transport/routers/suppliers.py (GET /apiv1/suppliers/search, q required, limit default 20), returns 200 with empty JSON array.
+- Verified:
+  - Invoke-RestMethod "http://127.0.0.1:8000/apiv1/health" -> status ok
+  - (Invoke-RestMethod "http://127.0.0.1:8000/openapi.json").paths contains "/apiv1/suppliers/search"
+  - Invoke-RestMethod "http://127.0.0.1:8000/apiv1/suppliers/search?q=test" -> 200
