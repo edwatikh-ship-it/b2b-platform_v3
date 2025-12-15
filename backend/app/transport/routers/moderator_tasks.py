@@ -12,9 +12,13 @@ import uuid
 from urllib.parse import urlparse
 
 import httpx
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from publicsuffix2 import get_sld
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters import parsing_storage
+from app.adapters.db.repositories import DomainBlacklistRepository
+from app.adapters.db.session import getdbsession
 from app.transport.schemas.moderator_parsing import (
     ParsingDomainGroupDTO,
     ParsingKeyStatusDTO,
@@ -28,36 +32,26 @@ from app.transport.schemas.moderator_parsing import (
 router = APIRouter(tags=["ModeratorTasks"])
 
 PARSER_SERVICE_URL = "http://127.0.0.1:9001"
-BACKEND_BASE_URL = "http://127.0.0.1:8000"
 
 
 def extract_root_domain(domain: str) -> str:
-    parts = domain.split(".")
-    if len(parts) >= 2:
-        return ".".join(parts[-2:])
-    return domain
+    d = str(domain).strip().lower().strip(".")
+    if not d:
+        return ""
+    # PSL-based: returns registrable domain e.g. bbc.co.uk, pulscen.ru
+    sld = get_sld(d)
+    return str(sld or d)
 
 
-def is_blacklisted(domain: str, blacklist: set[str]) -> bool:
+def is_blacklisted(domain: str, root_blacklist: set[str]) -> bool:
     root = extract_root_domain(domain)
-    return domain in blacklist or root in blacklist
+    return root in root_blacklist
 
 
-async def fetch_blacklist_domains() -> set[str]:
-    """
-    Fetch blacklist from backend endpoint.
-    If endpoint is not implemented (501) or fails, treat as empty blacklist (MVP).
-    """
-    try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            r = await client.get(f"{BACKEND_BASE_URL}/moderator/blacklist/domains?limit=1000")
-            if r.status_code == 501:
-                return set()
-            r.raise_for_status()
-            data = r.json()
-            return {item["domain"] for item in data.get("items", [])}
-    except Exception:
-        return set()
+async def fetch_blacklist_domains_db(session: AsyncSession) -> set[str]:
+    repo = DomainBlacklistRepository(session)
+    items = await repo.list_root_domains(limit=1000)
+    return {str(x).strip().lower() for x in items if str(x).strip()}
 
 
 @router.get("/moderator/tasks")
@@ -73,15 +67,20 @@ async def get_moderator_task(taskId: int):
 @router.post(
     "/moderator/requests/{requestId}/start-parsing", response_model=StartParsingResponseDTO
 )
-async def start_parsing(requestId: int):
+async def start_parsing(
+    requestId: int,
+    session: AsyncSession = Depends(getdbsession),
+):
     """
     Starts parsing for a request.
     MVP: request keys are mocked (later: fetch real keys from DB).
     """
     key_ids = [1, 2]
     keys_data = {
-        1: {"text": "поставщик металлопроката"},
-        2: {"text": "оптовый поставщик"},
+        1: {
+            "text": "Р С—Р С•РЎРѓРЎвЂљР В°Р Р†РЎвЂ°Р С‘Р С” Р СР ВµРЎвЂљР В°Р В»Р В»Р С•Р С—РЎР‚Р С•Р С”Р В°РЎвЂљР В°"
+        },
+        2: {"text": "Р С•Р С—РЎвЂљР С•Р Р†РЎвЂ№Р в„– Р С—Р С•РЎРѓРЎвЂљР В°Р Р†РЎвЂ°Р С‘Р С”"},
     }
 
     run_id = str(uuid.uuid4())
@@ -95,7 +94,7 @@ async def start_parsing(requestId: int):
     parsing_storage._runs[run_id]["requestId"] = requestId
 
     parsing_storage.update_run_status(run_id, "running")
-    blacklist = await fetch_blacklist_domains()
+    blacklist = await fetch_blacklist_domains_db(session)
 
     key_statuses: list[str] = []
 

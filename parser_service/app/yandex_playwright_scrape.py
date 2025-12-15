@@ -98,7 +98,9 @@ async def wait_for_captcha(page, engine_name: str) -> None:
     while True:
         url = page.url.lower()
         if "captcha" in url or "showcaptcha" in url:
-            logging.warning("%s: captcha detected, waiting for manual solve", engine_name)
+            logging.warning(
+                "%s: captcha detected, waiting for manual solve", engine_name
+            )
             await bring_to_front_safe(page)
             print(f"{engine_name}: solve captcha in the browser, waiting...")
             await asyncio.sleep(2)
@@ -181,7 +183,12 @@ async def parse_google(page, query: str, pages: int, collected_links: set[str]) 
         count = await elems.count()
         for i in range(count):
             href = await elems.nth(i).get_attribute("href")
-            if href and href.startswith("http") and ".ru" in href and "google" not in href:
+            if (
+                href
+                and href.startswith("http")
+                and ".ru" in href
+                and "google" not in href
+            ):
                 collected_links.add(href.split("&")[0])
 
         next_btn = page.locator("a#pnnext")
@@ -195,12 +202,16 @@ async def parse_google(page, query: str, pages: int, collected_links: set[str]) 
 
 
 # ------------------- PUBLIC API -------------------
-async def scrape(query: str, depth: int, cdp_url: str = "http://127.0.0.1:9222") -> list[str]:
+async def scrape(
+    query: str, depth: int, cdp_url: str = "http://127.0.0.1:9222"
+) -> list[str]:
     collected_links: set[str] = set()
 
     async with async_playwright() as p:
         browser = await p.chromium.connect_over_cdp(cdp_url)
-        context = browser.contexts[0] if browser.contexts else await browser.new_context()
+        context = (
+            browser.contexts[0] if browser.contexts else await browser.new_context()
+        )
 
         y_page = await context.new_page()
         g_page = await context.new_page()

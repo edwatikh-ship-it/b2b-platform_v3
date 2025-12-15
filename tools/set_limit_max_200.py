@@ -24,7 +24,9 @@ def main() -> int:
         if lines[i].strip() == "- name: limit":
             # Confirm it is a query param (in: query) within the next few lines.
             window_end = min(i + 30, n)
-            is_query = any(lines[j].strip() == "in: query" for j in range(i, window_end))
+            is_query = any(
+                lines[j].strip() == "in: query" for j in range(i, window_end)
+            )
             if not is_query:
                 i += 1
                 continue
@@ -41,7 +43,10 @@ def main() -> int:
                 continue
 
             # If maximum already present right after type, skip
-            if type_idx + 1 < n and lines[type_idx + 1].rstrip("\n") == "          maximum: 200":
+            if (
+                type_idx + 1 < n
+                and lines[type_idx + 1].rstrip("\n") == "          maximum: 200"
+            ):
                 i += 1
                 continue
 

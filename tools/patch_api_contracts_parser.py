@@ -4,6 +4,7 @@ from pathlib import Path
 path = Path(r"D:\b2bplatform\api-contracts.yaml")
 src = path.read_text(encoding="utf-8")
 
+
 # 1) Ensure paths exist
 def ensure_path_block(yaml_text: str, path_key: str, block: str) -> str:
     if re.search(rf"(?m)^{re.escape(path_key)}:\s*$", yaml_text):
@@ -14,6 +15,7 @@ def ensure_path_block(yaml_text: str, path_key: str, block: str) -> str:
         raise SystemExit("Cannot find top-level 'paths:' in api-contracts.yaml")
     insert_at = m.end()
     return yaml_text[:insert_at] + "\n\n" + block.strip() + "\n" + yaml_text[insert_at:]
+
 
 start_parsing_path = r"""/moderator/requests/{requestId}/start-parsing:
   post:
@@ -105,9 +107,16 @@ results_path = r"""/moderator/requests/{requestId}/parsing-results:
               $ref: '#/components/schemas/HTTPValidationError'
 """
 
-src = ensure_path_block(src, "/moderator/requests/{requestId}/start-parsing", start_parsing_path)
-src = ensure_path_block(src, "/moderator/requests/{requestId}/parsing-status", status_path)
-src = ensure_path_block(src, "/moderator/requests/{requestId}/parsing-results", results_path)
+src = ensure_path_block(
+    src, "/moderator/requests/{requestId}/start-parsing", start_parsing_path
+)
+src = ensure_path_block(
+    src, "/moderator/requests/{requestId}/parsing-status", status_path
+)
+src = ensure_path_block(
+    src, "/moderator/requests/{requestId}/parsing-results", results_path
+)
+
 
 # 2) Ensure component schemas exist (append if missing)
 def ensure_schema(yaml_text: str, name: str, schema_block: str) -> str:
@@ -123,6 +132,7 @@ def ensure_schema(yaml_text: str, name: str, schema_block: str) -> str:
         yaml_text = yaml_text.rstrip() + "\n\ncomponents:\n  schemas:\n"
     # append under schemas at end (simple but deterministic)
     return yaml_text.rstrip() + "\n\n" + schema_block.strip() + "\n"
+
 
 schemas_to_add = r"""
   StartParsingRequestDTO:
@@ -229,9 +239,14 @@ schemas_to_add = r"""
 """
 
 for schema_name in [
-    "StartParsingRequestDTO","StartParsingResponseDTO","ParsingRunStatus",
-    "ParsingKeyStatusDTO","ParsingStatusResponseDTO","ParsingResultItemDTO",
-    "ParsingResultsByKeyDTO","ParsingResultsResponseDTO"
+    "StartParsingRequestDTO",
+    "StartParsingResponseDTO",
+    "ParsingRunStatus",
+    "ParsingKeyStatusDTO",
+    "ParsingStatusResponseDTO",
+    "ParsingResultItemDTO",
+    "ParsingResultsByKeyDTO",
+    "ParsingResultsResponseDTO",
 ]:
     pass
 

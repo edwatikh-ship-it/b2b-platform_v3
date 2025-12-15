@@ -19,11 +19,16 @@ class ParseRequest(BaseModel):
 
 
 def _chrome_exe_path() -> str:
-    return os.getenv("CHROME_EXE", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+    return os.getenv(
+        "CHROME_EXE", r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+    )
 
 
 def _chrome_user_data_dir() -> str:
-    return os.getenv("CHROME_USER_DATA_DIR", os.path.join(os.environ["LOCALAPPDATA"], r"Google\Chrome\User Data"))
+    return os.getenv(
+        "CHROME_USER_DATA_DIR",
+        os.path.join(os.environ["LOCALAPPDATA"], r"Google\Chrome\User Data"),
+    )
 
 
 def _chrome_profile_dir() -> str:
@@ -57,7 +62,9 @@ def ensure_cdp(timeout_sec: int = 10) -> dict[str, Any]:
         f"--profile-directory={profile}",
     ]
 
-    subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)  # noqa: S603
+    subprocess.Popen(
+        args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True
+    )  # noqa: S603
 
     deadline = time.time() + timeout_sec
     last_err: str | None = None
@@ -70,7 +77,9 @@ def ensure_cdp(timeout_sec: int = 10) -> dict[str, Any]:
             last_err = str(e)
             time.sleep(0.25)
 
-    raise RuntimeError(f"CDP did not start within {timeout_sec}s. Last error: {last_err}")
+    raise RuntimeError(
+        f"CDP did not start within {timeout_sec}s. Last error: {last_err}"
+    )
 
 
 @app.get("/health")
@@ -83,5 +92,7 @@ async def parse(payload: ParseRequest) -> dict[str, Any]:
     # гарантируем, что Chrome CDP поднят
     _ = ensure_cdp(timeout_sec=15)
 
-    urls = await scrape(query=payload.query, depth=payload.depth, cdp_url=_cdp_base_url())
+    urls = await scrape(
+        query=payload.query, depth=payload.depth, cdp_url=_cdp_base_url()
+    )
     return {"urls": urls}
