@@ -1,110 +1,21 @@
 ## Logging rule (DoD)
 - Success -> HANDOFF.md (append-only, with verification command).
 - Failure -> INCIDENTS.md (append-only, with symptom/root cause/fix/verification).
-# HANDOFF Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ B2B Platform (backend bootstrap)
 
-## 0) SSoT / Rules
-- SSoT API contract: `api-contracts.yaml` (OpenAPI). All endpoints/DTO must follow it. [api-contracts.yaml] [api-contracts.yaml]
-- Architecture is strict: `transport/` (FastAPI routes + DTO only) Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ `usecases/` (business scenarios) Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ `domain/` (pure models/rules) Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ `adapters/` (DB/SMTP/etc). No FastAPI/SQLAlchemy in `domain`/`usecases`. [PROJECT-RULES.md]
-- Config only via env (`backend/.env`), no hardcode secrets. [PROJECT-RULES.md]
+# HANDOFF — B2B Platform
 
-## 1) Environment
-- OS: Windows 11
-- Repo root: `D:\b2bplatform`
-- Backend root: `D:\b2bplatform\backend`
-- Python: 3.12
-- Postgres: 16 (service name: `postgresql-x64-16`)
-- API base URL (contract): `http://localhost:8000/api/v1` [api-contracts.yaml]
+## How to use
+Append-only progress log for successful milestones.
+Each entry should include:
+- datetime MSK
+- what changed
+- how verified (exact command + expected output)
 
-## 2) Current status (works)
-### 2.1 Virtual env / deps
-- Created venv: `backend\.venv`
-- Dependencies installed inside venv from `backend\requirements.txt` (pip in venv)
+If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 
-### 2.2 Backend scaffold
-- `backend/app/` package exists.
-- `backend/app/main.py` exports `app` for Uvicorn.
-- `backend/app/config.py` loads env vars from `.env` (pydantic-settings).
-- `backend/app/transport/routers/health.py` implemented.
+## Entries (append-only)
 
-### 2.3 Verified DoD checks
-- Health endpoint:
-  - GET `http://localhost:8000/api/v1/health` Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ 200 `{"status":"ok"}` [api-contracts.yaml]
-- Swagger UI:
-  - `http://localhost:8000/docs` opens
-- OpenAPI JSON:
-  - `http://localhost:8000/openapi.json` opens
-
-## 3) Runbook (how to start backend)
-From PowerShell:
-1) `cd D:\b2bplatform\backend`
-2) `.\.venv\Scripts\activate`
-3) `uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
-
-Quick verify (PowerShell):
-- `Invoke-RestMethod http://localhost:8000/api/v1/health` Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ `status = ok` [api-contracts.yaml]
-
-## 4) Database (reset to clean state)
-### 4.1 Current DATABASE_URL
-- `backend/.env` (DO NOT COMMIT):
-  - `DATABASE_URL=postgresql+asyncpg://b2b_user:***@127.0.0.1:5432/b2b_platform`
-- IMPORTANT: Use `127.0.0.1` (not `localhost`) on Windows to avoid IPv6/permission/socket issues observed earlier.
-
-### 4.2 DB was recreated from scratch (data not needed)
-Executed as postgres:
-- `DROP DATABASE IF EXISTS b2b_platform WITH (FORCE);`
-- `DROP ROLE IF EXISTS b2b_user;`
-- `CREATE ROLE b2b_user WITH LOGIN PASSWORD '***';`
-- `CREATE DATABASE b2b_platform OWNER b2b_user;`
-
-Then in DB `b2b_platform`:
-- `GRANT USAGE, CREATE ON SCHEMA public TO b2b_user;`
-- `GRANT CONNECT, TEMPORARY ON DATABASE b2b_platform TO b2b_user;`
-
-Result: DB is clean baseline.
-
-## 5) Alembic (migrations) Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ final working state
-### 5.1 Windows note (critical)
-Before running any `alembic ...` command in PowerShell:
-- `$env:PYTHONPATH="."`
-Reason: Alembic env imports `app.*` from backend root.
-
-### 5.2 Issue that was fixed
-- `alembic revision -m "init"` failed with:
-  - `FileNotFoundError: alembic\script.py.mako`
-Fix:
-- Created missing template file: `backend/alembic/script.py.mako`
-
-### 5.3 Baseline migration created and applied
-Commands:
-- `alembic revision -m "init"`
-  - created: `backend/alembic/versions/3315ed698ecb_init.py`
-- `alembic upgrade head`
-
-Verification:
-- In DB `b2b_platform`: `SELECT * FROM alembic_version;` returns `3315ed698ecb` (1 row).
-
-## 6) Next feature (default)
-Default next feature: implement first real CRUD from `UserRequests`:
-- `POST /user/requests` (CreateRequestManualRequest Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ CreateRequestResponse) [api-contracts.yaml]
-- then `GET /user/requests` (list) [api-contracts.yaml]
-Implementation must follow layers and add tests (unit for domain/usecase first; integration later). [PROJECT-RULES.md]
-
-## 7) Known pitfalls / reminders
-- PowerShell `curl` is not Linux curl; prefer:
-  - `Invoke-RestMethod http://localhost:8000/api/v1/health`
-- psql meta-commands like `\dt` work only inside psql prompt.
-- Do not commit: `backend/.venv`, `backend/.env`.
-
-## 8) Progress log (append-only)
-Rule:
-- After each successfully completed step/milestone, append ONE entry here:
-  - date/time (MSK)
-  - what changed (feature/files/migration)
-  - how verified (exact command + expected output)
-- If step failed, DO NOT add an entry.
-
-### Entries
+## Entries
 - 2025-12-13 22:40 MSK Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ Verified API up: GET /api/v1/health -> 200 {"status":"ok"}; Swagger /docs and /openapi.json available. Verify: open URLs or `Invoke-RestMethod http://localhost:8000/api/v1/health`. 
 - 2025-12-13 22:55 MSK Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ Reset Postgres clean: dropped/recreated DB b2b_platform and role b2b_user; switched DATABASE_URL to 127.0.0.1; granted schema public CREATE/USAGE to b2b_user. Verify: `psql -U b2b_user -h 127.0.0.1 -d b2b_platform` works; `\dt` shows empty baseline before migrations.
 - 2025-12-13 23:00 MSK Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ Fixed Alembic revision generation by adding `backend/alembic/script.py.mako`; created baseline migration `3315ed698ecb_init.py`; applied `alembic upgrade head`. Verify: `SELECT * FROM alembic_version;` -> 3315ed698ecb.
@@ -265,3 +176,4 @@ Rule:
 ' (tools/set_limit_max_200.py) or git-based patches. Also standardized all query limit params to include maximum: 200 in api-contracts.yaml. Verify: python tools/set_limit_max_200.py then git diff shows only expected insertions; openapi.json reachable via Invoke-RestMethod http://127.0.0.1:8000/openapi.json.
 - 2025-12-15 11:54 MSK Standardized pagination safety: added maximum: 200 to all query 'limit' params in api-contracts.yaml using deterministic Python script tools/set_limit_max_200.py. Documented recurring Windows encoding pitfall: avoid PowerShell full-file rewrite methods that may mojibake Cyrillic in UTF-8 files; prefer Python with explicit encoding='utf-8' and newline='
 ' (or git-based patch). Verify: python tools/set_limit_max_200.py -> no further changes; git diff clean; Invoke-RestMethod http://127.0.0.1:8000/openapi.json returns 200.
+
