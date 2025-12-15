@@ -30,3 +30,6 @@ backend.env
 # local artifacts
 openapi-diff.csv
 prompt/
+
+openapi.json
+
