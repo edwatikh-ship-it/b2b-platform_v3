@@ -138,3 +138,10 @@ HANDOFF/INCIDENTS format:
   - Stop-Process -Id \8424 -Force
 - Always run backend and parser_service in separate shells and stop them via Ctrl+C when done.
 
+<!-- PRE-FLIGHT-RULE-BEGIN -->
+## Mandatory preflight (START HERE)
+
+- Before any work (dev/debug) and before any commit: run .\tools\preflight.ps1 from D:\b2bplatform.
+- If preflight fails: fix environment/services first (follow the script hints). Do not commit/push while failing.
+- Only push to main after preflight passes in the current session.
+<!-- PRE-FLIGHT-RULE-END -->

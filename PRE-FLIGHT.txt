@@ -1,0 +1,6 @@
+<!-- PRE-FLIGHT-RULE-BEGIN -->
+MANDATORY: Start work by running:
+  D:\b2bplatform\tools\preflight.ps1
+
+If it fails: do not start development/debugging until issues are fixed.
+<!-- PRE-FLIGHT-RULE-END -->
