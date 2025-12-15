@@ -33,3 +33,7 @@ prompt/
 
 openapi.json
 
+
+# Logs
+parser_service/*.log
+
