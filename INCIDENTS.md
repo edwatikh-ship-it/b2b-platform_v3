@@ -50,3 +50,8 @@ Rule:
 - 2025-12-15 10:46 MSK INCIDENT Contract patching via regex failed: could not locate supplierssearch block and also Regex.Replace overload was misused (RegexOptions passed where matchTimeout is expected). Root cause: api-contracts.yaml formatting differs (lots of blank lines / schema: {} patterns), and .NET Regex.Replace signature requires RegexOptions in constructor or different overload. Fix/Mitigation: either do deterministic line-based patching (Select-String anchors + manual edit) or use a YAML-aware tool/script; when using .NET regex, instantiate [regex]::new(pattern, [RegexOptions]::Singleline). Verification: Select-String finds patched  in supplierssearch response schema and openapi.json shows expected response schema reference.
 
 - 2025-12-15 10:46 MSK NOTE PowerShell table output can display empty JSON arrays/objects confusingly (e.g. items shown as {}). Mitigation: validate response with 'Invoke-RestMethod ... | ConvertTo-Json -Depth 10'. Verification: JSON output matches expected structure.
+- 2025-12-15 10:47 MSK INCIDENT Dev tooling missing on Windows shell: 'pyclean', 'uv', 'direnv' commands not recognized; only ruff/pre-commit/just were available. Root cause: tools not installed or not on PATH in current environment. Fix/Mitigation: use Plan B commands:
+  - pyclean Plan B: remove __pycache__ via PowerShell (Get-ChildItem -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force).
+  - uv Plan B: use existing .venv + pip (python -m pip install ...) or standard venv bootstrap (python -m venv .venv).
+  - direnv Plan B: set env vars explicitly in the same shell before running uvicorn/tests.
+Verification: 'ruff check backend', 'ruff format backend', 'pre-commit run --all-files' succeed in current shell.
