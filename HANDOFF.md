@@ -177,3 +177,4 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 - 2025-12-15 11:54 MSK Standardized pagination safety: added maximum: 200 to all query 'limit' params in api-contracts.yaml using deterministic Python script tools/set_limit_max_200.py. Documented recurring Windows encoding pitfall: avoid PowerShell full-file rewrite methods that may mojibake Cyrillic in UTF-8 files; prefer Python with explicit encoding='utf-8' and newline='
 ' (or git-based patch). Verify: python tools/set_limit_max_200.py -> no further changes; git diff clean; Invoke-RestMethod http://127.0.0.1:8000/openapi.json returns 200.
 
+- 2025-12-15 18:49 MSK Success: Dropped '/apiv1' URL prefix (API is now root paths like /health, /user/requests). Updated contract/integration tests to use root paths and adjusted contract OpenAPI-vs-SSoT check to not apply API_PREFIX. Verified: cd D:\b2bplatform\backend; python -m pytest -q => 39 passed, 1 skipped.
