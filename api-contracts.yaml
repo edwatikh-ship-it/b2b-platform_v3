@@ -837,7 +837,8 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/SupplierSearchResponseDTO'
         '422':
           description: Validation Error
           content:
@@ -1135,6 +1136,76 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+  SupplierSearchItemDTO:
+    type: object
+    additionalProperties: false
+    required:
+    - supplierid
+    - name
+    - inn
+    - email
+    - urls
+    properties:
+      supplierid:
+        type: integer
+        title: SupplierId
+      name:
+        type: string
+        minLength: 1
+        title: Name
+      inn:
+        type: string
+        minLength: 10
+        maxLength: 12
+        title: Inn
+      email:
+        type: string
+        format: email
+        title: Email
+      emails:
+        anyOf:
+        - type: array
+          items:
+            type: string
+            format: email
+        - type: 'null'
+        title: Emails
+      urls:
+        type: array
+        title: Urls
+        minItems: 1
+        items:
+          type: string
+      checko:
+        anyOf:
+        - type: object
+          additionalProperties: true
+        - type: 'null'
+        title: Checko
+    title: SupplierSearchItemDTO
+    description: 'SSoT: api-contracts.yaml /components/schemas/SupplierSearchItemDTO'
+
+  SupplierSearchResponseDTO:
+    type: object
+    additionalProperties: false
+    required:
+    - items
+    - q
+    - limit
+    properties:
+      items:
+        type: array
+        title: Items
+        items:
+          $ref: '#/components/schemas/SupplierSearchItemDTO'
+      q:
+        type: string
+        title: Q
+      limit:
+        type: integer
+        title: Limit
+    title: SupplierSearchResponseDTO
+    description: 'SSoT: api-contracts.yaml /components/schemas/SupplierSearchResponseDTO'
   DuplicateInnErrorDTO:
     type: object
     additionalProperties: false
@@ -1226,12 +1297,12 @@ components:
       description: 'SSoT: api-contracts.yaml /components/schemas/Attachment
 
 
-        Р’РђР–РќРћ:
+        Р вЂ™Р С’Р вЂ“Р СњР С›:
 
-        - РЅР°СЂСѓР¶Сѓ РѕС‚РґР°С‘Рј lower-without-separators: originalfilename, contenttype, sizebytes,
+        - Р Р…Р В°РЎР‚РЎС“Р В¶РЎС“ Р С•РЎвЂљР Т‘Р В°РЎвЂР С lower-without-separators: originalfilename, contenttype, sizebytes,
         storagekey, isdeleted, createdat
 
-        - РІРЅСѓС‚СЂРё РґРµСЂР¶РёРј snake_case: original_filename, content_type, size_bytes, storage_key,
+        - Р Р†Р Р…РЎС“РЎвЂљРЎР‚Р С‘ Р Т‘Р ВµРЎР‚Р В¶Р С‘Р С snake_case: original_filename, content_type, size_bytes, storage_key,
         is_deleted, created_at'
     AttachmentListResponseDTO:
       properties:
