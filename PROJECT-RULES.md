@@ -145,3 +145,11 @@ HANDOFF/INCIDENTS format:
 - If preflight fails: fix environment/services first (follow the script hints). Do not commit/push while failing.
 - Only push to main after preflight passes in the current session.
 <!-- PRE-FLIGHT-RULE-END -->
+
+Preflight example (Windows PowerShell):
+- Set-Location D:\b2bplatform
+- .\tools\preflight.ps1 -BackendBaseUrl "http://127.0.0.1:8000"
+
+Interpretation rule:
+- If preflight says Detected API_PREFIX is empty and health path is /health, then use BASE_URL + /health and other root paths (no /apiv1).
+- If preflight says API_PREFIX is "apiv1", then use BASE_URL + /apiv1/health, etc.

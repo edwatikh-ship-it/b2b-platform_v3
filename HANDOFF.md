@@ -192,3 +192,8 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 - **Blacklist**: Confirmed root domain + subdomain filtering, results MUST NOT include blacklisted URLs.
 - **Status**: All DTO complete (StartParsingResponseDTO, ParsingStatusResponseDTO, ParsingResultsResponseDTO).
 - **Next**: Backend implementation can rely on "latest run per requestId" semantics.
+
+
+- 2025-12-15 23:09 MSK Env check: git is configured in D:\b2bplatform (.git exists). Branch main is up to date with origin/main. Remote origin = https://github.com/edwatikh-ship-it/b2b-platform_v3.git. Verify: Test-Path .\.git; git status; git remote -v.
+
+- 2025-12-15 23:10 MSK Env check: git is configured in D:\b2bplatform (.git exists). Branch main is up to date with origin/main. Remote origin = https://github.com/edwatikh-ship-it/b2b-platform_v3.git. Verify: Test-Path .\.git; git status; git remote -v.
