@@ -182,3 +182,6 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 - 2025-12-15 19:48 MSK
   - What: Hardened PowerShell workflow: tools\pytest.ps1 now restores working directory (Push-Location/Pop-Location), and PROJECT-RULES.md now includes mandatory path-safety rules (anchor to repo root, no Resolve-Path for non-existent files).
   - Verify: .\tools\pytest.ps1 -> 39 passed, 1 skipped (and current directory remains D:\b2bplatform); git status -> clean.
+- 2025-12-15 20:51 MSK Parser service: /parse via Playwright CDP. Adds 'купить' to query, brings captcha tab to front, dismisses popups best-effort, returns partial results on engine timeout. Verify:
+  PS> $body = @{ query = "поставщик металлопроката"; depth = 1 } | ConvertTo-Json
+  PS> Invoke-RestMethod http://127.0.0.1:9001/parse -Method Post -ContentType "application/json; charset=utf-8" -Body $body
