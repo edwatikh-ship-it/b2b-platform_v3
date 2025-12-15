@@ -6,6 +6,20 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+
+
+function Show-RunHint([string]$title, [string[]]$lines) {
+  Write-Host ""
+  $bar = ("=" * 12) + " HINT " + ("=" * 12)
+  Write-Host $bar -ForegroundColor Yellow
+  Write-Host $title -ForegroundColor Yellow
+
+  foreach ($l in $lines) {
+    Write-Host ("  {0}" -f $l) -ForegroundColor Black -BackgroundColor Green
+  }
+
+  Write-Host $bar -ForegroundColor Yellow
+}
 function Show-PortOwner([int]$port) {
   $c = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
   if ($null -eq $c) {
@@ -24,11 +38,32 @@ function Show-PortOwner([int]$port) {
 
 function Get-Json([string]$url) {
   try {
-    Invoke-RestMethod $url -TimeoutSec 10
+    return Invoke-RestMethod $url -TimeoutSec 10
   } catch {
     Write-Host ("FAILED: {0}" -f $url)
-    Write-Host "Reason: service not reachable (check that it is running, port is correct, and firewall is not blocking)."
-    throw
+    Write-Host ("Reason: {0}" -f $_.Exception.Message)
+
+    if ($url -match "127\.0\.0\.1:8000|localhost:8000") {
+      Write-Host ""
+      Show-RunHint "Run this command to start backend in a new PowerShell window:" @(
+  "Set-Location D:\b2bplatform\backend",
+  "python -m uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000"
+)}
+
+    if ($url -match "127\.0\.0\.1:9001|localhost:9001") {
+      Write-Host ""
+      Show-RunHint "Run this command to start parser_service in a new PowerShell window:" @(
+  "Set-Location D:\b2bplatform\parser_service",
+  "python -m uvicorn app.main:app --host 127.0.0.1 --port 9001"
+)}
+
+    if ($url -match "127\.0\.0\.1:9222|localhost:9222") {
+      Write-Host ""
+      Show-RunHint "Run this command to start Chrome CDP:" @(
+  "chrome.exe --remote-debugging-port=9222 --user-data-dir=<some-dir>"
+)}
+
+    exit 1
   }
 }
 
