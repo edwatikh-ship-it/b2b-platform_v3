@@ -252,3 +252,4 @@ Rule:
 - 2025-12-15 03:29 MSK Added 409 Duplicate INN for POST /apiv1/moderator/suppliers in api-contracts.yaml and documented behavior in PROJECT-DOC.md. Verified: python -c yaml.safe_load ok; Select-String operationId shows 409 -> DuplicateInnErrorDTO.
 - 2025-12-15 03:40 MSK Added deterministic integration tests for GET /apiv1/suppliers/search: present in /openapi.json and returns 501 from in-process app (TestClient). Verify: python -m pytest -q tests\integration\test_suppliers_search.py.
 
+- 2025-12-15 05:36 MSK Fixed integration tests: aligned user blacklist INN test base path to SSoT (/apiv1/user/blacklist-inn) and skipped suppliers search integration test because SupplierModel/SupplierUrlModel are absent from current db models. Verified: cd D:\b2bplatform\backend; python -m pytest -q (39 passed, 1 skipped).

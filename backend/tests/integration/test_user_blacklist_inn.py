@@ -7,7 +7,7 @@ from app.main import app
 
 def test_user_blacklist_inn_list_happy_path():
     headers = {"Authorization": "Bearer dev"}
-    base = "/apiv1/user/blacklist/inn"
+    base = "/apiv1/user/blacklist-inn"
 
     with TestClient(app) as client:
         r = client.post(base, headers=headers, json={"inn": "7707083893", "reason": "pytest"})
