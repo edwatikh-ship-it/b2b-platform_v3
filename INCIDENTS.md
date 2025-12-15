@@ -55,3 +55,14 @@ Rule:
   - uv Plan B: use existing .venv + pip (python -m pip install ...) or standard venv bootstrap (python -m venv .venv).
   - direnv Plan B: set env vars explicitly in the same shell before running uvicorn/tests.
 Verification: 'ruff check backend', 'ruff format backend', 'pre-commit run --all-files' succeed in current shell.
+- 2025-12-15 10:48 MSK INCIDENT PRE-FLIGHT checks failed with invalid URI when BASE_URL was left as placeholder 'http://<host>:<port>'. Root cause: placeholder values not replaced; PowerShell Uri parsing fails. Fix/Mitigation: use real BASE_URL (http://127.0.0.1:8000) and APIPREFIX=apiv1. Verification: GET /apiv1/health -> status ok; GET /openapi.json -> 200.
+
+- 2025-12-15 10:48 MSK INCIDENT Used bash heredoc syntax ('python - << PY') in Windows PowerShell which is not supported. Root cause: shell mismatch (bash vs PowerShell). Fix/Mitigation: run python via -c or create a .py file and execute it. Verification: python script.py exits 0 and changes applied.
+
+- 2025-12-15 10:48 MSK INCIDENT Regex-based patching of api-contracts.yaml was fragile: pattern did not match actual file layout; additional mistake: called [regex]::Replace with RegexOptions in the overload position reserved for matchTimeout. Root cause: yaml uses many blank lines and schema: {} patterns; wrong .NET Regex overload. Fix/Mitigation: prefer deterministic, anchor-based PowerShell patching (Select-String + controlled replacement) or a YAML-aware script; when using .NET regex, instantiate [regex]::new(pattern, [RegexOptions]::Singleline). Verification: Select-String finds patched \ in api-contracts.yaml and openapi.json shows response schema reference.
+
+- 2025-12-15 10:48 MSK INCIDENT Dev tooling missing in environment: 'pyclean', 'uv', 'direnv' commands not recognized (not installed or not on PATH). Fix/Mitigation: Plan B:
+  - pyclean: delete __pycache__ via PowerShell.
+  - uv: use existing .venv + pip / python -m venv.
+  - direnv: set env vars explicitly in the same shell before running uvicorn/tests.
+Verification: ruff + pre-commit available and pass ('ruff check', 'ruff format', 'pre-commit run --all-files').
