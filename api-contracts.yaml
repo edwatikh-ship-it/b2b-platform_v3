@@ -3,96 +3,6 @@ info:
   title: B2B Platform API
   version: 1.0.0
 paths:
-
-
-
-/moderator/requests/{requestId}/parsing-results:
-  get:
-    tags:
-    - ModeratorTasks
-    summary: Get Parsing Results
-    operationId: get_parsing_results_apiv1_moderator_requests__requestId__parsing_results_get
-    parameters:
-    - name: requestId
-      in: path
-      required: true
-      schema:
-        type: integer
-        title: Requestid
-    responses:
-      '200':
-        description: Successful Response
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ParsingResultsResponseDTO'
-      '422':
-        description: Validation Error
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HTTPValidationError'
-
-/moderator/requests/{requestId}/parsing-status:
-  get:
-    tags:
-    - ModeratorTasks
-    summary: Get Parsing Status
-    operationId: get_parsing_status_apiv1_moderator_requests__requestId__parsing_status_get
-    parameters:
-    - name: requestId
-      in: path
-      required: true
-      schema:
-        type: integer
-        title: Requestid
-    responses:
-      '200':
-        description: Successful Response
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ParsingStatusResponseDTO'
-      '422':
-        description: Validation Error
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HTTPValidationError'
-
-/moderator/requests/{requestId}/start-parsing:
-  post:
-    tags:
-    - ModeratorTasks
-    summary: Start Parsing
-    operationId: start_parsing_apiv1_moderator_requests__requestId__start_parsing_post
-    parameters:
-    - name: requestId
-      in: path
-      required: true
-      schema:
-        type: integer
-        title: Requestid
-    requestBody:
-      required: false
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/StartParsingRequestDTO'
-    responses:
-      '200':
-        description: Successful Response
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StartParsingResponseDTO'
-      '422':
-        description: Validation Error
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HTTPValidationError'
-
   /health:
     get:
       tags:
@@ -1006,6 +916,9 @@ paths:
       tags:
       - ModeratorTasks
       summary: Start Parsing
+      description: |
+        Initiates parsing for the given request. Returns a runId that can be used
+        to poll parsing-status and parsing-results endpoints.
       operationId: start_parsing_apiv1_moderator_requests__requestId__start_parsing_post
       parameters:
       - name: requestId
@@ -1019,7 +932,73 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/StartParsingResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /moderator/requests/{requestId}/parsing-status:
+    get:
+      tags:
+      - ModeratorTasks
+      summary: Get Parsing Status
+      description: |
+        Returns the current status of a parsing run, including per-key breakdown.
+        Use this endpoint to poll until overall status is 'succeeded' or 'failed'.
+      operationId: get_parsing_status_apiv1_moderator_requests__requestId__parsing_status_get
+      parameters:
+      - name: requestId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Requestid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParsingStatusResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /moderator/requests/{requestId}/parsing-results:
+    get:
+      tags:
+      - ModeratorTasks
+      summary: Get Parsing Results
+      description: |
+        Returns parsing results grouped by keyId. Results are returned as a complete
+        list without pagination (no limit/offset).
+        
+        **Blacklist filtering rules:**
+        - The domain blacklist stores root domains (e.g. `pulscen.ru`).
+        - A blacklisted root domain blocks itself AND all its subdomains
+          (e.g. blacklisting `pulscen.ru` also blocks `spb.pulscen.ru`, `msk.pulscen.ru`).
+        - URLs/domains matching the blacklist are filtered out server-side and
+          MUST NOT appear in this response. The moderator will never see blacklisted results.
+      operationId: get_parsing_results_apiv1_moderator_requests__requestId__parsing_results_get
+      parameters:
+      - name: requestId
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Requestid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParsingResultsResponseDTO'
         '422':
           description: Validation Error
           content:
@@ -2092,105 +2071,177 @@ components:
       required:
       - recipients
       additionalProperties: false
-
-StartParsingRequestDTO:
-    type: object
-    additionalProperties: false
-    properties:
-      keys:
-        type: array
-        description: Optional filter. If omitted, parse all keys of the request.
-        items:
+    StartParsingResponseDTO:
+      type: object
+      description: |
+        Response returned when parsing is started.
+        SSoT: api-contracts.yaml /components/schemas/StartParsingResponseDTO
+      properties:
+        requestId:
           type: integer
-    required: []
-
-  StartParsingResponseDTO:
-    type: object
-    additionalProperties: false
-    properties:
-      requestId:
-        type: integer
-      started:
-        type: boolean
-      runId:
-        type: string
-        description: Parser run identifier (opaque).
-    required: [requestId, started, runId]
-
-  ParsingRunStatus:
-    type: string
-    enum: [queued, running, succeeded, failed]
-
-  ParsingKeyStatusDTO:
-    type: object
-    additionalProperties: false
-    properties:
-      keyId:
-        type: integer
-      status:
-        $ref: '#/components/schemas/ParsingRunStatus'
-      itemsFound:
-        type: integer
-        minimum: 0
-      error:
-        type: string
-        nullable: true
-    required: [keyId, status, itemsFound, error]
-
-  ParsingStatusResponseDTO:
-    type: object
-    additionalProperties: false
-    properties:
-      requestId:
-        type: integer
-      runId:
-        type: string
-      status:
-        $ref: '#/components/schemas/ParsingRunStatus'
-      keys:
-        type: array
+          title: RequestId
+        runId:
+          type: string
+          title: RunId
+          description: Unique identifier for this parsing run. Use to poll status/results.
+        status:
+          $ref: '#/components/schemas/ParsingRunStatus'
+      required:
+      - requestId
+      - runId
+      - status
+      additionalProperties: false
+    ParsingRunStatus:
+      type: string
+      enum:
+      - queued
+      - running
+      - succeeded
+      - failed
+      title: ParsingRunStatus
+      description: |
+        Status of a parsing run.
+        SSoT: api-contracts.yaml /components/schemas/ParsingRunStatus
+    ParsingKeyStatusDTO:
+      type: object
+      description: |
+        Status of parsing for a single key.
+        SSoT: api-contracts.yaml /components/schemas/ParsingKeyStatusDTO
+      properties:
+        keyId:
+          type: integer
+          title: KeyId
+        status:
+          $ref: '#/components/schemas/ParsingRunStatus'
+        itemsFound:
+          type: integer
+          minimum: 0
+          title: ItemsFound
+          description: Number of results found for this key (after blacklist filtering).
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Error message if status is 'failed', null otherwise.
+      required:
+      - keyId
+      - status
+      - itemsFound
+      additionalProperties: false
+    ParsingStatusResponseDTO:
+      type: object
+      description: |
+        Overall parsing status with per-key breakdown.
+        SSoT: api-contracts.yaml /components/schemas/ParsingStatusResponseDTO
+      properties:
+        requestId:
+          type: integer
+          title: RequestId
+        runId:
+          type: string
+          title: RunId
+        status:
+          $ref: '#/components/schemas/ParsingRunStatus'
+          description: Overall status of the parsing run.
+        keys:
+          type: array
+          title: Keys
+          items:
+            $ref: '#/components/schemas/ParsingKeyStatusDTO'
+          description: Per-key parsing status breakdown.
+      required:
+      - requestId
+      - runId
+      - status
+      - keys
+      additionalProperties: false
+    ParsingSource:
+      type: string
+      enum:
+      - google
+      - yandex
+      title: ParsingSource
+      description: |
+        Search engine source where the result was found.
+        SSoT: api-contracts.yaml /components/schemas/ParsingSource
+    ParsingResultItemDTO:
+      type: object
+      description: |
+        Single parsing result item.
+        SSoT: api-contracts.yaml /components/schemas/ParsingResultItemDTO
+        
+        Note on 'domain' field: This is the hostname extracted from the URL and may
+        include subdomains (e.g. 'spb.pulscen.ru'). Server-side filtering uses root
+        domain matching against the blacklist - if root domain (e.g. 'pulscen.ru')
+        is blacklisted, this item will NOT appear in the response.
+      properties:
+        url:
+          type: string
+          format: uri
+          title: Url
+          description: Full URL of the search result.
+        domain:
+          type: string
+          title: Domain
+          description: |
+            Hostname from the URL (may include subdomain, e.g. 'spb.pulscen.ru').
+            Filtered by root-domain blacklist on server side.
+        source:
+          $ref: '#/components/schemas/ParsingSource'
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+          description: Page title from search results, may be null.
+      required:
+      - url
+      - domain
+      - source
+      additionalProperties: false
+    ParsingResultsByKeyDTO:
+      type: object
+      description: |
+        Parsing results for a single key.
+        SSoT: api-contracts.yaml /components/schemas/ParsingResultsByKeyDTO
+      properties:
+        keyId:
+          type: integer
+          title: KeyId
         items:
-          $ref: '#/components/schemas/ParsingKeyStatusDTO'
-    required: [requestId, runId, status, keys]
-
-  ParsingResultItemDTO:
-    type: object
-    additionalProperties: false
-    properties:
-      url:
-        type: string
-      domain:
-        type: string
-      source:
-        type: string
-        enum: [google, yandex]
-      title:
-        type: string
-        nullable: true
-    required: [url, domain, source, title]
-
-  ParsingResultsByKeyDTO:
-    type: object
-    additionalProperties: false
-    properties:
-      keyId:
-        type: integer
-      items:
-        type: array
-        items:
-          $ref: '#/components/schemas/ParsingResultItemDTO'
-    required: [keyId, items]
-
-  ParsingResultsResponseDTO:
-    type: object
-    additionalProperties: false
-    properties:
-      requestId:
-        type: integer
-      runId:
-        type: string
-      results:
-        type: array
-        items:
-          $ref: '#/components/schemas/ParsingResultsByKeyDTO'
-    required: [requestId, runId, results]
+          type: array
+          title: Items
+          items:
+            $ref: '#/components/schemas/ParsingResultItemDTO'
+          description: List of parsing results for this key (blacklist-filtered).
+      required:
+      - keyId
+      - items
+      additionalProperties: false
+    ParsingResultsResponseDTO:
+      type: object
+      description: |
+        Complete parsing results grouped by keyId.
+        SSoT: api-contracts.yaml /components/schemas/ParsingResultsResponseDTO
+        
+        All results are returned at once (no pagination). URLs matching the domain
+        blacklist (root domain + subdomains) are excluded and will not appear here.
+      properties:
+        requestId:
+          type: integer
+          title: RequestId
+        runId:
+          type: string
+          title: RunId
+        results:
+          type: array
+          title: Results
+          items:
+            $ref: '#/components/schemas/ParsingResultsByKeyDTO'
+          description: Results grouped by keyId.
+      required:
+      - requestId
+      - runId
+      - results
+      additionalProperties: false
