@@ -1,5 +1,5 @@
 PROJECT TREE (curated)
-Generated: 2025-12-15 18:49:54
+Generated: 2025-12-15 19:49:59
 
 .gitattributes
 .github\workflows\ci.yml
@@ -182,20 +182,34 @@ PROJECT-DOC.md
 PROJECT-RULES.md
 PROJECT-TREE.txt
 prompt.bak.20251215-180931\PROJECT-TREE-SNAPSHOT.txt
+prompt.bak.20251215-193606\api-contracts.yaml
+prompt.bak.20251215-193606\DECISIONS.md
+prompt.bak.20251215-193606\DONE.txt
+prompt.bak.20251215-193606\git-status.txt
+prompt.bak.20251215-193606\HANDOFF.md
+prompt.bak.20251215-193606\health.json.ERROR.txt
+prompt.bak.20251215-193606\INCIDENTS.md
+prompt.bak.20251215-193606\openapi.json.ERROR.txt
+prompt.bak.20251215-193606\PROJECT-DOC.md
+prompt.bak.20251215-193606\PROJECT-RULES.md
+prompt.bak.20251215-193606\ROUTES-SNAPSHOT.txt
 prompt\api-contracts.yaml
 prompt\DECISIONS.md
 prompt\HANDOFF.md
-prompt\health.json
+prompt\health.json.ERROR.txt
 prompt\INCIDENTS.md
 prompt\openapi.json
 prompt\PRE-FLIGHT.txt
 prompt\PROJECT-DOC.md
 prompt\PROJECT-RULES.md
+prompt\PROJECT-TREE.txt
 prompt\PROMPT_FILES.txt
 README.md
 tests\integration\test_suppliers_search.py
 tools\append_handoff_incidents.ps1
 tools\check_suppliers_tables.py
 tools\log_success.ps1
+tools\openapi_diff.py
+tools\pytest.ps1
 tools\set_limit_max_200.py
 tools\update_project_tree.ps1
