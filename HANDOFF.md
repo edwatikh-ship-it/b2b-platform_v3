@@ -261,3 +261,5 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 - 2025-12-17 0015 MSK Success Added ModeratorPendingDomains endpoints and DTOs.
   - What: Implemented GET /moderator/pending-domains (list) and GET /moderator/pending-domains/{domain} (detail stub 404) with transport schemas PendingDomainListResponseDTO and PendingDomainDetailDTO, wired router in backend/app/main.py.
   - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
+- 2025-12-17 0021 MSK Correction Previous entry for ModeratorPendingDomains used a Markdown link in the verify command.
+  - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
