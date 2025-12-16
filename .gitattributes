@@ -21,3 +21,4 @@
 *.pdf    binary
 *.ico    binary
 PROJECT-TREE.txt text eol=lf
+.gitattributes text eol=lf
