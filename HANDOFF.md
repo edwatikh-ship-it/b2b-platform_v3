@@ -247,3 +247,5 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 
 - 2025-12-16 16:45 MSK: Success Hardened OpenAPI diff tooling. What: tools/openapi_diff.py now supports offline diff via --live-file (default .tmp/runtime-openapi.json) and optional --live-url; --help no longer triggers HTTP. Verified SSoT api-contracts.yaml paths match runtime OpenAPI (29 ok). Verification: python .\tools\openapi_diff.py --help; python .\tools\openapi_diff.py ->  openapi-diff.csv: 0 missing, 0 extra, 29 ok.
 - 2025-12-16 18:26 MSK: Updated moderator blacklist integration tests to match implemented endpoints; kept moderator tasks as 501 (not implemented) while keeping start-parsing non-501. Verified: just test -> 39 passed, 1 skipped.
+- 2025-12-16 19:09 MSK Success Aligned moderator tasks routes to SSoT: /moderatortasks and /moderatortasks/{taskId}. Verified: .\tools\preflight.ps1 -BackendBaseUrl http://127.0.0.1:8000 ; Invoke-RestMethod http://127.0.0.1:8000/openapi.json contains /moderatortasks ; GET /moderatortasks returns 501.
+
