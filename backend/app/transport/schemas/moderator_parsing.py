@@ -28,6 +28,11 @@ class StartParsingResponseDTO(BaseModel):
         populate_by_name = True
 
 
+class StartParsingRequestDTO(BaseModel):
+    depth: int = Field(10, ge=1, le=50)
+    resume: bool = Field(True)
+
+
 class ParsingKeyStatusDTO(BaseModel):
     """SSoT: api-contracts.yaml#/components/schemas/ParsingKeyStatusDTO"""
 

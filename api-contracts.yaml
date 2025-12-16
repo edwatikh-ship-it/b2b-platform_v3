@@ -2104,6 +2104,15 @@ components:
             Number of search result pages per key for parser_service (Yandex/Google).
             This is the number of pages to crawl, not the number of URLs.
             Default is 10 if not specified.
+        resume:
+          type: boolean
+          default: true
+          title: Resume
+          description: |
+            Continue parsing from the point of failure using stored progress keys.
+            If true, parser will resume from last processed page for each key.
+            If false, parsing will start from the beginning.
+            Default is true.
       required: []
       additionalProperties: false
     StartParsingResponseDTO:
@@ -2153,6 +2162,22 @@ components:
           minimum: 0
           title: ItemsFound
           description: Number of results found for this key (after blacklist filtering).
+        lastProcessedPage:
+          type: integer
+          minimum: 0
+          title: LastProcessedPage
+          description: |
+            Last successfully processed search result page number (0 if parsing hasn't started).
+            Used for resume functionality to continue from last successful page.
+        failedAtPage:
+          anyOf:
+          - type: integer
+            minimum: 1
+          - type: 'null'
+          title: FailedAtPage
+          description: |
+            Page number where parsing failed, if status is 'failed'. Null otherwise.
+            Helps diagnose which page caused the failure.
         error:
           anyOf:
           - type: string
@@ -2163,6 +2188,7 @@ components:
       - keyId
       - status
       - itemsFound
+      - lastProcessedPage
       additionalProperties: false
     ParsingStatusResponseDTO:
       type: object
