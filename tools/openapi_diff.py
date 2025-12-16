@@ -42,6 +42,11 @@ def main() -> int:
         help="Runtime OpenAPI URL, e.g. http://127.0.0.1:8000/openapi.json. If set, uses HTTP.",
     )
     p.add_argument(
+        "--openapi-url-env",
+        default="OPENAPI_URL",
+        help="Env var name used when --live-url is not set (default: OPENAPI_URL).",
+    )
+    p.add_argument(
         "--timeout", type=int, default=10, help="HTTP timeout seconds (default: 10)."
     )
     p.add_argument(
@@ -53,13 +58,18 @@ def main() -> int:
 
     contract = load_contract(Path(args.contract))
 
-    if args.live_url:
-        live = load_live_from_url(args.live_url, args.timeout)
+    live_url = args.live_url
+    if not live_url:
+        import os
+        live_url = os.getenv(args.openapi_url_env)
+
+    if live_url:
+        live = load_live_from_url(live_url, args.timeout)
     else:
         live_path = Path(args.live_file)
         if not live_path.exists():
             raise SystemExit(
-                f"Live file not found: {live_path}. Provide --live-url or create the file."
+                f"Live file not found: {live_path}. Provide --live-url or set {args.openapi_url_env}."
             )
         live = load_live_from_file(live_path)
 
@@ -91,9 +101,7 @@ def main() -> int:
                     op = (spec or {}).get("operationId", "")
                     out.write(f'OK,"{path}",{method.upper()},{op}\n')
 
-    print(
-        f"вњ“ {args.out}: {len(missing)} missing, {len(extra)} extra, {len(present)} ok"
-    )
+        print(f"OK {args.out}: {len(missing)} missing, {len(extra)} extra, {len(present)} ok")
     return 0
 
 
