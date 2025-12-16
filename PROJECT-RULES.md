@@ -169,3 +169,9 @@ Preflight example (Windows PowerShell):
 Interpretation rule:
 - If preflight says Detected API_PREFIX is empty and health path is /health, then use BASE_URL + /health and other root paths (no /apiv1).
 - If preflight says API_PREFIX is "apiv1", then use BASE_URL + /apiv1/health, etc.
+## One-click dev run (justfile)
+
+- This repo uses 'just' and a repo-root 'justfile' as the canonical way to start services locally.
+- Quick start (two terminals): run 'just up' (starts backend on 127.0.0.1:8000 and parser_service on 127.0.0.1:9001), then run 'just smoke' to verify endpoints.
+- Manual start: 'just dev-noreload' (backend) and 'just parser' (parser_service). Use Ctrl+C to stop.
+- If 'just' is missing, install it (Plan B: run uvicorn commands manually as documented in justfile).
