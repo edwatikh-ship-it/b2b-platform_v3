@@ -251,3 +251,5 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 
 - 2025-12-16 20:06 MSK Success Updated PROJECT-RULES.md: added PRE-FLIGHT v2 (human) with mandatory DB smoke check via API and clarified that env in current PowerShell may differ from running backend process. Verified: pre-commit run --all-files (PASS) and Invoke-RestMethod http://127.0.0.1:8000/user/requests?limit=1&offset=0 returns 200 with JSON.
 - 2025-12-16 20:16 MSK Success Updated PROJECT-RULES.md: added rule "Plain language for non-IT заказчик" to prevent jargon-only explanations in chat. Verified: git status clean after commit, pre-commit run --all-files PASS.
+
+2025-12-16 22:01 MSK Fixed /moderator/blacklist/domains 500: aligned DomainBlacklistUrlModel fields (domain_id, created_at) and repo returns (url, comment, created_at) tuples. Verified: Invoke-RestMethod http://127.0.0.1:8000/moderator/blacklist/domains -> 200 and POST -> 200.
