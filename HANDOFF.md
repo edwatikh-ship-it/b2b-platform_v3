@@ -230,3 +230,16 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
   Expected:
   - ctx.ps1 prints cwd, SSoT presence, git status, tools, python/env, and alembic quick output.
   - pre-commit hooks pass (ruff + ruff-format).
+- 2025-12-16 14:36 MSK Success: Implemented chat-efficiency guardrails and a repo-root context dump helper.
+  What:
+  - Added PROJECT-RULES requirement: every multi-step instruction must include WHY/EXPECT/IF FAIL + SA-note (provided in Russian in chat).
+  - Added CTX-FIRST / NO-PLACEHOLDERS / NO-RAW-SETCONTENT guardrails.
+  - Added repo-root ctx.ps1 helper to dump environment/tooling/git context before troubleshooting.
+  Proof (recent commits):
+  d20e470 docs: log ctx-first guardrails milestone 6283d0e docs: log ctx-first guardrails in handoff a60b1a8 docs: add ctx-first guardrails and ctx.ps1 helper
+  Verification:
+  - powershell: Set-Location D:\b2bplatform; .\ctx.ps1
+  - powershell: Set-Location D:\b2bplatform; pre-commit run --all-files
+  Expected:
+  - ctx.ps1 prints repo/env/tool context.
+  - pre-commit hooks pass (ruff + ruff-format).
