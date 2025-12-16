@@ -1,17 +1,17 @@
-# B2B Platform — PROJECT RULES (SSoT)
+# B2B Platform вЂ” PROJECT RULES (SSoT)
 
 Version: 1.3
 Date: 2025-12-15
 
 ## 1) SSoT (Single Source of Truth)
 - API (endpoints, DTOs, responses) = ONLY api-contracts.yaml at repo root: D:\b2bplatform\api-contracts.yaml.
-- If implementation and contract diverge — it's an error. Align code to contract (or change contract intentionally).
-- Priority: api-contracts.yaml → PROJECT-RULES.md → PROJECT-DOC.md.
+- If implementation and contract diverge вЂ” it's an error. Align code to contract (or change contract intentionally).
+- Priority: api-contracts.yaml в†’ PROJECT-RULES.md в†’ PROJECT-DOC.md.
 - SSoT files must live in repo root D:\b2bplatform\ (no duplicates inside backend\).
 - Progress = state of GitHub main branch, not chat memory.
 
 ## 2) Architecture (fixed)
-transport → usecases → domain → adapters
+transport в†’ usecases в†’ domain в†’ adapters
 
 Short meaning:
 - transport: HTTP routes + input/output validation; no business decisions.
@@ -26,7 +26,7 @@ Before any change:
 - Show git status before and after.
 - Provide rollback: restore from .bak and/or git restore.
 
-## 4) PRE-FLIGHT before any “fix routes/endpoints”
+## 4) PRE-FLIGHT before any вЂњfix routes/endpointsвЂќ
 Do NOT guess defaults.
 
 First discover:
@@ -42,14 +42,14 @@ Run checks (expected results):
 3) python -c "import os; print(os.getenv('DATABASEURL'), os.getenv('DATABASE_URL'))"
    - Must be non-None only if routes/import-time DB requires it.
 
-If any check fails — provide Plan B commands first (how to start backend / set env), then propose code changes.
+If any check fails вЂ” provide Plan B commands first (how to start backend / set env), then propose code changes.
 
-## 5) “6 tools” standard (check availability first)
+## 5) вЂњ6 toolsвЂќ standard (check availability first)
 Tools: ruff, pre-commit, pyclean, uv, direnv, just.
 
 Rule:
 - Always check first: Get-Command ruff/pre-commit/pyclean/uv/direnv/just
-- If missing — use Plan B (no assumptions).
+- If missing вЂ” use Plan B (no assumptions).
 
 Usage:
 - Lint/format:
@@ -79,8 +79,8 @@ Usage:
 - Text file writes: UTF-8 without BOM (unless strong reason). Prefer .NET WriteAllText with UTF8Encoding(false).
 
 ## 7) Progress logging (mandatory)
-- Success → HANDOFF.md (append-only) + update PROJECT-TREE.txt + commit + push origin/main.
-- Failure → INCIDENTS.md (append-only) + commit + push.
+- Success в†’ HANDOFF.md (append-only) + update PROJECT-TREE.txt + commit + push origin/main.
+- Failure в†’ INCIDENTS.md (append-only) + commit + push.
 
 HANDOFF/INCIDENTS format:
 - Datetime (MSK)
@@ -90,7 +90,7 @@ HANDOFF/INCIDENTS format:
 - Verification (command + expected output)
 
 ### Chat safety: Step 0 / Question gate (2025-12-15)
-- Step 0 for any new chat: run “Detect backend + PRE-FLIGHT” PowerShell script to discover BASE_URL and verify /{API_PREFIX}/health + /openapi.json.
+- Step 0 for any new chat: run вЂњDetect backend + PRE-FLIGHTвЂќ PowerShell script to discover BASE_URL and verify /{API_PREFIX}/health + /openapi.json.
 - Do NOT assume BASE_URL / API_PREFIX. Use detection or explicit user confirmation.
 - Default: never auto-kill processes. Provide a separate explicit command to stop a PID if needed.
 - Question gate: if a critical question is asked (BASE_URL/API_PREFIX/DATABASEURL/etc) and no answer is given, do not proceed; repeat the question in one short line and wait.
@@ -200,12 +200,6 @@ This is mandatory for any multi-step instruction, any repo change, and any debug
   Run `git status`, then `git add -A`, then retry `git commit`.
 
 
-## Clarifying Questions Gate (Bold Questions)
-
-- If there is ambiguity (paths, base URL/prefix, environment variables, which file to edit, expected behavior, acceptance criteria),
-  the assistant MUST ask 1-3 clarifying questions (formatted in **bold**) and wait for the answers before proposing repo changes.
-- For repo changes, the assistant MUST not proceed until critical questions are answered (no guessing).
-- If answers are missing, provide a short Plan B (commands to discover the missing facts) instead of making assumptions.
 
 
 ## Clarifying Questions Gate (Bold Questions)
@@ -215,4 +209,11 @@ This is mandatory for any multi-step instruction, any repo change, and any debug
 - In such cases, the assistant MUST ask up to 3 clarifying questions (formatted in **bold**) and wait for answers.
 - If there is a critical blocker/risk, the assistant MAY ask more than 3 questions, but MUST justify why the extra questions are required.
 - If answers are missing, provide a short Plan B: commands to discover the missing facts instead of guessing.
+
+
+## PROJECT-TREE DoD (Key Artifacts)
+
+- PROJECT-TREE.txt is a curated list of key artifacts (not a full file dump).
+- Update PROJECT-TREE.txt at the end of a milestone (when adding/renaming/moving key files or changing structure), together with HANDOFF entry.
+- Use: powershell: Set-Location D:\b2bplatform; .\tools\update_project_tree.ps1
 
