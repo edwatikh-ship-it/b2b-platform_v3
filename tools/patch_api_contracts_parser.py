@@ -126,7 +126,6 @@ def ensure_schema(yaml_text: str, name: str, schema_block: str) -> str:
     if not m:
         raise SystemExit("Cannot find top-level 'components:' in api-contracts.yaml")
     # find components/schemas:
-    sm = re.search(r"(?m)^components:\s*$([\s\S]*?)^(?=\S)", yaml_text + "\nZ", re.M)
     # safest: just ensure "  schemas:" exists, else create it at end of file
     if not re.search(r"(?m)^\s{2}schemas:\s*$", yaml_text):
         yaml_text = yaml_text.rstrip() + "\n\ncomponents:\n  schemas:\n"
