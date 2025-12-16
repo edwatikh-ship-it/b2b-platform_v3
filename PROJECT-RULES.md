@@ -199,3 +199,11 @@ This is mandatory for any multi-step instruction, any repo change, and any debug
 - PRE-COMMIT-FIX-LOOP: If pre-commit hooks modify files, the commit will fail by design.
   Run `git status`, then `git add -A`, then retry `git commit`.
 
+
+## Clarifying Questions Gate (Bold Questions)
+
+- If there is ambiguity (paths, base URL/prefix, environment variables, which file to edit, expected behavior, acceptance criteria),
+  the assistant MUST ask 1-3 clarifying questions (formatted in **bold**) and wait for the answers before proposing repo changes.
+- For repo changes, the assistant MUST not proceed until critical questions are answered (no guessing).
+- If answers are missing, provide a short Plan B (commands to discover the missing facts) instead of making assumptions.
+
