@@ -9,6 +9,9 @@ from app.transport.routers.health import router as health_router
 from app.transport.routers.moderator_blacklist_domains import (
     router as moderator_blacklist_domains_router,
 )
+from app.transport.routers.moderator_domain_decision import (
+    router as moderator_domain_decision_router,
+)
 from app.transport.routers.moderator_pending_domains import (
     router as moderator_pending_domains_router,
 )
@@ -38,6 +41,7 @@ def create_app() -> FastAPI:
     app.include_router(auth_router)
     app.include_router(suppliers_router)
     app.include_router(moderator_tasks_router)
+    app.include_router(moderator_domain_decision_router)
     app.include_router(moderator_suppliers_router)
     app.include_router(moderator_blacklist_domains_router)
     app.include_router(user_blacklist_inn_router)
