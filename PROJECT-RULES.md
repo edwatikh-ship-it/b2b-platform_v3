@@ -175,3 +175,15 @@ Interpretation rule:
 - Quick start (two terminals): run 'just up' (starts backend on 127.0.0.1:8000 and parser_service on 127.0.0.1:9001), then run 'just smoke' to verify endpoints.
 - Manual start: 'just dev-noreload' (backend) and 'just parser' (parser_service). Use Ctrl+C to stop.
 - If 'just' is missing, install it (Plan B: run uvicorn commands manually as documented in justfile).
+
+## Assistant Response Format (WHY/EXPECT/IF FAIL)
+
+When the assistant provides commands or steps, each step MUST include a short explanation block in Russian:
+
+- WHY: why we do this step (plain language).
+- EXPECT: what output/result is expected.
+- IF FAIL: what to do if the expectation is not met.
+- SA-note: a short systems-analyst note (risk, assumption, dependency, acceptance signal).
+
+This is mandatory for any multi-step instruction, any repo change, and any debugging flow.
+
