@@ -1,4 +1,4 @@
-# INCIDENTS — B2B Platform
+# INCIDENTS вЂ” B2B Platform
 
 ## Rules (owned here)
 - Log problems/failures here (append-only).
@@ -8,37 +8,37 @@
   - root cause
   - fix/mitigation
   - verification (command + expected output)
-- Keep it short (1–3 lines per incident). Do not paste long stacktraces.
+- Keep it short (1вЂ“3 lines per incident). Do not paste long stacktraces.
 
 ## Entries (append-only)
 
 ## Entries (append-only)
-# INCIDENTS.md Р Р†Р вЂљРІР‚Сњ known issues / pitfalls (append-only)
+# INCIDENTS.md Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ known issues / pitfalls (append-only)
 
 Rule:
 - Log important failures/incidents here.
-- Format: datetime MSK Р Р†Р вЂљРІР‚Сњ symptom Р Р†Р вЂљРІР‚Сњ root cause Р Р†Р вЂљРІР‚Сњ fix/mitigation Р Р†Р вЂљРІР‚Сњ verification.
-- 1Р Р†Р вЂљРІР‚Сљ3 lines per incident, no long stacktraces.
+- Format: datetime MSK Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ symptom Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ root cause Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ fix/mitigation Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ verification.
+- 1Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™3 lines per incident, no long stacktraces.
 
 ## Entries (append-only)
-- 2025-12-13 23:49 MSK pytest on Windows failed with "Event loop is closed" when hitting Postgres via asyncpg in integration tests Р Р†Р вЂљРІР‚Сњ root cause: global SQLAlchemy async engine not disposed on app shutdown Р Р†Р вЂљРІР‚Сњ fix: FastAPI lifespan + `await engine.dispose()` in `app/main.py` Р Р†Р вЂљРІР‚Сњ verification: `python -m pytest -q` -> `2 passed`.
-- 2025-12-13 23:49 MSK pytest on Windows failed with "Event loop is closed" when hitting Postgres via asyncpg Р Р†Р вЂљРІР‚Сњ root cause: SQLAlchemy async engine created globally and not disposed on shutdown Р Р†Р вЂљРІР‚Сњ fix: FastAPI lifespan + await engine.dispose() Р Р†Р вЂљРІР‚Сњ verification: python -m pytest -q => 2 passed.
+- 2025-12-13 23:49 MSK pytest on Windows failed with "Event loop is closed" when hitting Postgres via asyncpg in integration tests Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ root cause: global SQLAlchemy async engine not disposed on app shutdown Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ fix: FastAPI lifespan + `await engine.dispose()` in `app/main.py` Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ verification: `python -m pytest -q` -> `2 passed`.
+- 2025-12-13 23:49 MSK pytest on Windows failed with "Event loop is closed" when hitting Postgres via asyncpg Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ root cause: SQLAlchemy async engine created globally and not disposed on shutdown Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ fix: FastAPI lifespan + await engine.dispose() Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ verification: python -m pytest -q => 2 passed.
 
-- 2025-12-13 23:56 MSK RequestDetail implemented with suppliers=[] and normalizedtext=rawtext as placeholder Р Р†Р вЂљРІР‚Сњ mitigation: later add supplier matching + normalization Р Р†Р вЂљРІР‚Сњ verification: python -m pytest -q => 4 passed.
+- 2025-12-13 23:56 MSK RequestDetail implemented with suppliers=[] and normalizedtext=rawtext as placeholder Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ mitigation: later add supplier matching + normalization Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ verification: python -m pytest -q => 4 passed.
 - 2025-12-14 00:05 MSK FAILED Attachments implementation: pytest collection crashed due to SyntaxError in app/adapters/db/models.py (broken 'from sqlalchemy import' line after patch). Fix: restored import block and converted AttachmentModel to SQLAlchemy 2.0 style; verification: python -c 'from app.adapters.db.models import ...' -> models import ok.
-- 2025-12-14 00:05Р Р†Р вЂљРІР‚Сљ00:24 MSK INCIDENT: backend/alembic failed due to missing DATABASE_URL in .env and mismatch between expected DB user/db (b2buser/b2bplatform) and actual (b2b_user/b2b_platform); also migration 0dc050e5c206 was applied with empty upgrade(). Fix: wrote DATABASE_URL to .env, aligned DATABASE_URL to b2b_user/b2b_platform, created new migration bbff04c57403 to create attachments table. Verified with alembic current + psql \dt.
-- 2025-12-14 00:35Р Р†Р вЂљРІР‚Сљ00:36 MSK INCIDENT: pytest failed with unexpected line: '\\ufeff[pytest]' because pytest.ini was written with UTF-8 BOM by PowerShell Set-Content; fix: rewrite pytest.ini as UTF-8 without BOM via .NET UTF8Encoding(false). Verified: pytest -q => 10 passed.
-- 2025-12-14 00:05Р Р†Р вЂљРІР‚Сљ00:24 MSK INCIDENT: DB/env mismatch and missing DATABASE_URL caused alembic/settings failures; actual role/db were b2b_user/b2b_platform. Fix: added DATABASE_URL to .env pointing to b2b_user/b2b_platform and created migration bbff04c57403 to add attachments table. Verified with alembic current + psql \dt.
-- 2025-12-14 00:35Р Р†Р вЂљРІР‚Сљ00:36 MSK INCIDENT: pytest failed with unexpected line '\ufeff[pytest]' because pytest.ini was written with UTF-8 BOM; fix: rewrite pytest.ini as UTF-8 without BOM via .NET UTF8Encoding(false). Verified: pytest -q => 10 passed.
-- 2025-12-14 00:35Р Р†Р вЂљРІР‚Сљ00:36 MSK INCIDENT: pytest.ini written with UTF-8 BOM caused pytest error (unexpected line '\ufeff[pytest]'). Fix: rewrite pytest.ini UTF-8 without BOM via .NET UTF8Encoding(false). Verified: pytest -q => 10 passed.
+- 2025-12-14 00:05Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™00:24 MSK INCIDENT: backend/alembic failed due to missing DATABASE_URL in .env and mismatch between expected DB user/db (b2buser/b2bplatform) and actual (b2b_user/b2b_platform); also migration 0dc050e5c206 was applied with empty upgrade(). Fix: wrote DATABASE_URL to .env, aligned DATABASE_URL to b2b_user/b2b_platform, created new migration bbff04c57403 to create attachments table. Verified with alembic current + psql \dt.
+- 2025-12-14 00:35Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™00:36 MSK INCIDENT: pytest failed with unexpected line: '\\ufeff[pytest]' because pytest.ini was written with UTF-8 BOM by PowerShell Set-Content; fix: rewrite pytest.ini as UTF-8 without BOM via .NET UTF8Encoding(false). Verified: pytest -q => 10 passed.
+- 2025-12-14 00:05Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™00:24 MSK INCIDENT: DB/env mismatch and missing DATABASE_URL caused alembic/settings failures; actual role/db were b2b_user/b2b_platform. Fix: added DATABASE_URL to .env pointing to b2b_user/b2b_platform and created migration bbff04c57403 to add attachments table. Verified with alembic current + psql \dt.
+- 2025-12-14 00:35Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™00:36 MSK INCIDENT: pytest failed with unexpected line '\ufeff[pytest]' because pytest.ini was written with UTF-8 BOM; fix: rewrite pytest.ini as UTF-8 without BOM via .NET UTF8Encoding(false). Verified: pytest -q => 10 passed.
+- 2025-12-14 00:35Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™00:36 MSK INCIDENT: pytest.ini written with UTF-8 BOM caused pytest error (unexpected line '\ufeff[pytest]'). Fix: rewrite pytest.ini UTF-8 without BOM via .NET UTF8Encoding(false). Verified: pytest -q => 10 passed.
 - 2025-12-14 0016 MSK INCIDENT <symptom>. Root cause: <root_cause>. Fix/mitigation: <fix>. Verification: <command> -> <expected>.
 - 2025-12-14 01:23 MSK INCIDENT <symptom> Root cause: <root_cause> Fix/mitigation: <fix_or_mitigation> Verification: <command> -> <expected>
-- 2025-12-14 01:35 MSK INCIDENT Attachments API contract mismatch (paths + response field casing) caused 404/KeyError in integration tests Р Р†Р вЂљРІР‚Сњ root cause: implementation/tests used '/api/v1/user/attachments' and camelCase DTO aliases (originalFilename), while SSoT requires '/api/v1/userattachments' and lowercase fields (originalfilename) Р Р†Р вЂљРІР‚Сњ fix: aligned router prefix to '/userattachments', replaced Attachment DTO aliases to match api-contracts.yaml, updated integration tests to contract paths/fields Р Р†Р вЂљРІР‚Сњ verification: .\.venv\Scripts\pytest.exe -q -k attachments -> 2 passed.
-- 2025-12-14 10:13 MSK Р Р†Р вЂљРІР‚Сњ INCIDENT Р Р†Р вЂљРІР‚Сњ api-contracts.yaml patching failed: (1) script looked for .\api-contracts.yaml from backend folder instead of repo root; (2) schemas insertion had broken indentation and made YAML invalid. Fix: rollback to .bak, reapply patcher v3 that inserts under '  schemas:' with correct indentation. Verification: python yaml.safe_load => OK; Select-String finds /user/blacklist/inn and '^  AddUserBlacklistInnRequest:'.
+- 2025-12-14 01:35 MSK INCIDENT Attachments API contract mismatch (paths + response field casing) caused 404/KeyError in integration tests Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ root cause: implementation/tests used '/api/v1/user/attachments' and camelCase DTO aliases (originalFilename), while SSoT requires '/api/v1/userattachments' and lowercase fields (originalfilename) Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ fix: aligned router prefix to '/userattachments', replaced Attachment DTO aliases to match api-contracts.yaml, updated integration tests to contract paths/fields Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ verification: .\.venv\Scripts\pytest.exe -q -k attachments -> 2 passed.
+- 2025-12-14 10:13 MSK Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ INCIDENT Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ api-contracts.yaml patching failed: (1) script looked for .\api-contracts.yaml from backend folder instead of repo root; (2) schemas insertion had broken indentation and made YAML invalid. Fix: rollback to .bak, reapply patcher v3 that inserts under '  schemas:' with correct indentation. Verification: python yaml.safe_load => OK; Select-String finds /user/blacklist/inn and '^  AddUserBlacklistInnRequest:'.
 
 
-- 2025-12-14 09:49 MSK Р С—РЎвЂ”Р вЂ¦ INCIDENT Р С—РЎвЂ”Р вЂ¦ UserMessaging recipients attempt broke backend imports/tests. Root cause: bad alembic revision header (invalid quotes) + wrong SQLAlchemy model style inserted into app/adapters/db/models.py (Column not imported / not 2.0 style) + bad escaping inserted into repositories.py docstring; consequence: alembic upgrade failed, pytest collection failed with ImportError. Fix: removed broken revision db107ba8e332, removed injected recipients model block from models.py, removed injected upsert_recipients block and stale RequestRecipientModel import from repositories.py; verified: .\.venv\Scripts\pytest.exe -q -> 11 passed; python import RequestRepository -> ok.
- - 2025-12-14 10:20РІР‚вЂњ10:49 MSK РІР‚вЂќ INCIDENT: backend failed to start (main.py syntax/import errors + domain ports conflict + settings prefix mismatch; plus wrong URL checks). Root cause: text-based patching + Python module/package name collision (domain/ports.py vs domain/ports/) + inconsistent Settings field name/API_PREFIX usage. Fix: rewrite app/main.py to valid state, move UserBlacklist port to non-conflicting module, patch imports, use API_PREFIX=/api/v1 per api-contracts.yaml; verification: uvicorn starts; GET http://localhost:8000/api/v1/user/blacklist/inn -> 501; openapi.json contains /api/v1/user/blacklist/inn and /{inn}.
+- 2025-12-14 09:49 MSK Р В РЎвЂ”Р РЋРІР‚вЂќР В РІР‚В¦ INCIDENT Р В РЎвЂ”Р РЋРІР‚вЂќР В РІР‚В¦ UserMessaging recipients attempt broke backend imports/tests. Root cause: bad alembic revision header (invalid quotes) + wrong SQLAlchemy model style inserted into app/adapters/db/models.py (Column not imported / not 2.0 style) + bad escaping inserted into repositories.py docstring; consequence: alembic upgrade failed, pytest collection failed with ImportError. Fix: removed broken revision db107ba8e332, removed injected recipients model block from models.py, removed injected upsert_recipients block and stale RequestRecipientModel import from repositories.py; verified: .\.venv\Scripts\pytest.exe -q -> 11 passed; python import RequestRepository -> ok.
+ - 2025-12-14 10:20Р Р†Р вЂљРІР‚Сљ10:49 MSK Р Р†Р вЂљРІР‚Сњ INCIDENT: backend failed to start (main.py syntax/import errors + domain ports conflict + settings prefix mismatch; plus wrong URL checks). Root cause: text-based patching + Python module/package name collision (domain/ports.py vs domain/ports/) + inconsistent Settings field name/API_PREFIX usage. Fix: rewrite app/main.py to valid state, move UserBlacklist port to non-conflicting module, patch imports, use API_PREFIX=/api/v1 per api-contracts.yaml; verification: uvicorn starts; GET http://localhost:8000/api/v1/user/blacklist/inn -> 501; openapi.json contains /api/v1/user/blacklist/inn and /{inn}.
 
 - 2025-12-14 11:33 MSK INCIDENT Symptom: python -m pytest -q -> No module named pytest. Root cause: system Python used because venv not activated. Fix: cd D:\b2bplatform\backend; .\.venv\Scripts\Activate.ps1. Verification: python -m pytest -q -> 11 passed.
 - 2025-12-14 12:29 MSK INCIDENT: Git commands failed with 'fatal: not a git repository' because no .git exists under D:\b2bplatform. Root cause: project folder not under git (not cloned/initialized). Mitigation: decide (A) add proper remote and re-clone, or (B) git init locally and commit snapshot. Verification: Test-Path D:\b2bplatform\.git -> False; git status -> fatal.
@@ -95,3 +95,33 @@ Verification: ruff + pre-commit available and pass ('ruff check', 'ruff format',
 
 - 2025-12-16 16:45 MSK: INCIDENT Invoke-RestMethod failed with Invalid URI when using $BASE_URL/$API_PREFIX variables that were not set. Root cause: placeholder usage + skipped preflight (NO-PLACEHOLDERS / PRE-FLIGHT gate). Fix/Mitigation: always run tools\preflight.ps1 to discover API_PREFIX and validate health/openapi before any API debugging. Verification: powershell Set-Location D:\b2bplatform; .\tools\preflight.ps1 -BackendBaseUrl "http://127.0.0.1:8000" -> OK: preflight passed.
 - 2025-12-16 16:45 MSK: INCIDENT json.load failed with Unexpected UTF-8 BOM while reading .tmp\runtime-openapi.json. Root cause: file written with BOM by PowerShell pipeline/Set-Content. Fix/Mitigation: write JSON via .NET WriteAllText + UTF8Encoding(false) (UTF-8 without BOM). Verification: python -c "import json; json.load(open('.tmp/runtime-openapi.json','r',encoding='utf-8')); print('OK')" -> OK.
+## 2025-12-16 21:33 MSK  Blacklist domains endpoint broken (500) after partial cross-layer changes
+
+What happened
+- During work on moderator blacklist domains endpoints, backend started returning 500 on POST/GET moderatorblacklistdomains.
+- Observed errors:
+  - AttributeError: AddModeratorBlacklistDomainRequestDTO has no attribute 'urls' (expected 'url').
+  - Later: ValueError: too many values to unpack (expected 3) when iterating urlrows in moderatorblacklistdomains router.
+
+What was done
+- Attempted to align transport and DB repository to support domain comment and URL-level entries (url/comment/createdat).
+- Partial changes were applied in:
+  - backend/app/transport/routers/moderatorblacklistdomains.py
+  - backend/app/adapters/db/repositories.py
+  - backend/app/adapters/db/models.py
+  - backend/app/transport/schemas/moderatorblacklistdomains.py
+  - plus an alembic migration was created.
+- Changes were not completed atomically and the shape returned by getdomainurls() did not match the router unpacking logic.
+
+Root cause
+- Cross-layer contract was changed without full FACT-LOCK snapshots and without atomic patch across adapters + transport.
+- DTO mismatch vs SSoT (url vs urls) triggered initial failure.
+
+Fix / mitigation
+- Re-run preflight, then take code snapshots of the exact repository and router functions (FACT-LOCK).
+- Make an atomic patch: ensure DomainBlacklistRepository.getdomainurls() return shape matches router unpacking and matches SSoT schema (urls[] items include url/comment/createdat).
+- Run ruff + pre-commit, then smoke test endpoints from openapi.json.
+
+Verification (expected)
+- Invoke-RestMethod "http://127.0.0.1:8000//moderator/blacklist-domains?limit=50&offset=0" should return 200 and valid JSON list response.
+- POST "http://127.0.0.1:8000//moderator/blacklist-domains" with {domain, comment, url} should return 200 and include the created url item.
