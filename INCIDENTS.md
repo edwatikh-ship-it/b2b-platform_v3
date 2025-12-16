@@ -92,3 +92,6 @@ Verification: ruff + pre-commit available and pass ('ruff check', 'ruff format',
   Root cause: files written with UTF-8 BOM or wrong encoding via Set-Content/Out-File or full-file rewrites.
   Fix/Mitigation: NEVER use Set-Content for repo config/SSoT; write via .NET [IO.File]::WriteAllText(..., new UTF8Encoding($false)).
   Verification: Get-Content .\INCIDENTS.md -Tail 30 shows this entry fully.
+
+- 2025-12-16 16:45 MSK: INCIDENT Invoke-RestMethod failed with Invalid URI when using $BASE_URL/$API_PREFIX variables that were not set. Root cause: placeholder usage + skipped preflight (NO-PLACEHOLDERS / PRE-FLIGHT gate). Fix/Mitigation: always run tools\preflight.ps1 to discover API_PREFIX and validate health/openapi before any API debugging. Verification: powershell Set-Location D:\b2bplatform; .\tools\preflight.ps1 -BackendBaseUrl "http://127.0.0.1:8000" -> OK: preflight passed.
+- 2025-12-16 16:45 MSK: INCIDENT json.load failed with Unexpected UTF-8 BOM while reading .tmp\runtime-openapi.json. Root cause: file written with BOM by PowerShell pipeline/Set-Content. Fix/Mitigation: write JSON via .NET WriteAllText + UTF8Encoding(false) (UTF-8 without BOM). Verification: python -c "import json; json.load(open('.tmp/runtime-openapi.json','r',encoding='utf-8')); print('OK')" -> OK.
