@@ -265,3 +265,5 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
   - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
 - 2025-12-17 0021 MSK Correction The ModeratorPendingDomains verify command should use a plain URL (no Markdown link).
   - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
+- 2025-12-17 0022 MSK Correction ModeratorPendingDomains verify command (copy/paste):
+  - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
