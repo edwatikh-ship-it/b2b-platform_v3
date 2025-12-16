@@ -87,3 +87,8 @@ Verification: ruff + pre-commit available and pass ('ruff check', 'ruff format',
 - 2025-12-15 18:26 MSK INCIDENT: OpenAPI diff script crashed in PowerShell with ParserError on '??'/'?.' and produced empty openapi-diff.csv (3 bytes) | root cause: used C# null-coalescing/safe-navigation operators not supported by PowerShell | fix: rewrote script without '??'/'?.' | verification: openapi-diff.csv = 11238 bytes and Group-Object (status, group) returns counts.
 - 2025-12-15 18:26 MSK INCIDENT: OpenAPI diff script crashed in PowerShell with ParserError on '??'/'?.' and produced empty openapi-diff.csv (3 bytes) | root cause: used C# null-coalescing/safe-navigation operators not supported by PowerShell | fix: rewrote script without '??'/'?.' | verification: openapi-diff.csv = 11238 bytes and Group-Object (status, group) returns counts.
 - 2025-12-15 19:29 MSK INCIDENT PowerShell $env:$name syntax error when loading backend.env. Root cause invalid dynamic env var assignment. Fix use Set-Item -Path "Env:${k}" -Value $v. Verification DATABASEURL loaded postgresql+asyncpg://... python -c "import os; print(os.getenv('DATABASEURL'))"
+- 2025-12-16 04:27 MSK INCIDENT Encoding / mojibake in PowerShell edits.
+  Symptom: garbled Cyrillic / broken config parsing / pytest errors after editing files in PowerShell.
+  Root cause: files written with UTF-8 BOM or wrong encoding via Set-Content/Out-File or full-file rewrites.
+  Fix/Mitigation: NEVER use Set-Content for repo config/SSoT; write via .NET [IO.File]::WriteAllText(..., new UTF8Encoding($false)).
+  Verification: Get-Content .\INCIDENTS.md -Tail 30 shows this entry fully.
