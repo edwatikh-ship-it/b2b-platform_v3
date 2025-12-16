@@ -214,3 +214,50 @@ UI: открывается экран сравнения дублей:
 - If parsing partially fails, already collected results are preserved.
 - Resume is per keyId: next start-parsing should parse only failed keys and continue from the page where the key failed (successful keys are not re-parsed).
 - Comment on blacklist add is optional.
+
+## Moderator LK scenario (draft) — 2025-12-16 17:56 MSK
+
+### Goal
+
+Moderator needs a working desk to run parsing, review domains/URLs, decide actions (4 statuses), and gradually build the supplier base; later user LK will send requests into the same pipeline.
+
+
+
+### Manual moderator parsing (temporary request)
+
+- Moderator enters a clean key (without the word "купить") and selects depth (default 10, max 50) and source (google/yandex/both).
+
+- Backend uses "купить " as a hidden search prefix only when querying search engines; it must not be stored or displayed as part of the business key.
+
+- Each manual run is stored in history (list + details) so moderator can return to previous runs.
+
+
+
+### Results UI (accordion)
+
+- Results are grouped by domain; domain row expands into a list of URLs.
+
+- For each URL/domain, UI shows which keys brought this URL/domain (key-to-url mapping).
+
+
+
+### Domain moderation decisions (4 statuses)
+
+The moderation unit is the domain (root-domain aware). Each domain can be moved between statuses later.
+
+- Green: Create Supplier card (required: INN, company name, email; URL is auto-filled from parsed domain/URL).
+
+- Purple: Create Reseller/Trading Organization card (same required fields; marked as reseller for users).
+
+- Black: Add to global domain blacklist (root-domain; blocks subdomains); optional comment.
+
+- Yellow: Pending decision (separate list); domain stays visible until decision is made.
+
+Once a decision is finalized (green/purple/black), the domain disappears from parsing results everywhere.
+
+
+
+### Logging / analytics (domain hits)
+
+Even if a domain is already decided/blacklisted, the system logs every occurrence: key -> url -> domain, so moderator can see which keys keep producing that domain.
+
