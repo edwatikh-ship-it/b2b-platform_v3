@@ -243,3 +243,4 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
   Expected:
   - ctx.ps1 prints repo/env/tool context.
   - pre-commit hooks pass (ruff + ruff-format).
+- 2025-12-16 14:41 MSK Note: The ctx-first guardrails milestone was logged multiple times (duplicate HANDOFF entries). Treat the latest entry as the source of truth; earlier duplicates can be ignored.
