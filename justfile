@@ -37,3 +37,7 @@ test:
 
 clean:
   Remove-Item -Recurse -Force -ErrorAction SilentlyContinue backend\.pytest_cache, backend\__pycache__, backend\app\__pycache__, parser_service\__pycache__, parser_service\app\__pycache__
+
+# Update curated project tree (key artifacts)
+tree:
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\update_project_tree.ps1
