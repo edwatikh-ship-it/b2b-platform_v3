@@ -261,3 +261,48 @@ Once a decision is finalized (green/purple/black), the domain disappears from pa
 
 Even if a domain is already decided/blacklisted, the system logs every occurrence: key -> url -> domain, so moderator can see which keys keep producing that domain.
 
+
+## Moderator LK scenario (approved)  2025-12-16 18:01 MSK
+
+### Goal
+
+Moderator runs parsing from LK, reviews domains/URLs, applies one of 4 domain decisions, and grows supplier base. User LK will later feed requests into the same pipeline.
+
+
+
+### Manual moderator parsing (temporary request with history)
+
+- Moderator enters a clean key (without "купить"), selects depth (default 10, max 50) and source (google/yandex/both).
+
+- Backend prepends hidden search prefix "купить " only when querying search engines; it must not be stored or shown as part of the business key.
+
+- Each manual run is stored in history (list + details).
+
+
+
+### Results UI (accordion)
+
+- Results are grouped by domain; domain expands into URLs.
+
+- For each URL/domain, show which keys produced it (key -> url -> domain mapping).
+
+
+
+### Domain decisions (4 statuses)
+
+- Green: Create Supplier card (required: INN, company name, primary email; URL auto-filled; extra emails allowed).
+
+- Purple: Create Reseller/Trading Organization card (same required fields; flagged as reseller for users).
+
+- Black: Add to global domain blacklist (root-domain; blocks subdomains); optional comment.
+
+- Yellow: Pending decision queue; domain stays visible until decided.
+
+After decision (green/purple/black), domain disappears from parsing results everywhere.
+
+
+
+### Logging (domain hits)
+
+Even for decided/blacklisted domains, log every occurrence: key -> url -> domain, so moderator can see which keys keep producing the domain.
+

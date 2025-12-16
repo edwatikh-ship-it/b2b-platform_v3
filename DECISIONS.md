@@ -63,3 +63,15 @@
 **Decision:** MVP keeps synchronous start-parsing (request waits for parser_service; timeout increased to allow manual captcha). Target design: start-parsing returns quickly with status=running/queued and parsing runs in background; UI polls parsing-status/results.  
 **Why:** Avoid client/proxy timeouts and improve UX/reliability.  
 **Consequences:** Later introduce background task runner (e.g., in-process task for MVP, then queue) without changing API semantics.
+
+- 2025-12-16 18:04 MSK: Decision  Extend api-contracts.yaml for Moderator LK (no auth for now).
+
+  - Add manual moderator parsing with history: clean key + depth (10..50) + source (google/yandex/both).
+
+  - Add pending-decision domain queue with accordion URLs and key->url mapping.
+
+  - Add domain decision state machine: supplier / reseller / blacklist / pending; allow moving between states later.
+
+  - Add domain hit logging: key->url->domain even for decided/blacklisted domains.
+
+  - Use hidden search prefix "buy " only at search time; never store/display it as part of the business key.
