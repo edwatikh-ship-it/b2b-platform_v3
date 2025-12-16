@@ -2,7 +2,7 @@
 - Success -> HANDOFF.md (append-only, with verification command).
 - Failure -> INCIDENTS.md (append-only, with symptom/root cause/fix/verification).
 
-# HANDOFF — B2B Platform
+# HANDOFF вЂ” B2B Platform
 
 ## How to use
 Append-only progress log for successful milestones.
@@ -16,9 +16,9 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 ## Entries (append-only)
 
 ## Entries
-- 2025-12-13 22:40 MSK Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ Verified API up: GET /api/v1/health -> 200 {"status":"ok"}; Swagger /docs and /openapi.json available. Verify: open URLs or `Invoke-RestMethod http://localhost:8000/api/v1/health`. 
-- 2025-12-13 22:55 MSK Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ Reset Postgres clean: dropped/recreated DB b2b_platform and role b2b_user; switched DATABASE_URL to 127.0.0.1; granted schema public CREATE/USAGE to b2b_user. Verify: `psql -U b2b_user -h 127.0.0.1 -d b2b_platform` works; `\dt` shows empty baseline before migrations.
-- 2025-12-13 23:00 MSK Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ Fixed Alembic revision generation by adding `backend/alembic/script.py.mako`; created baseline migration `3315ed698ecb_init.py`; applied `alembic upgrade head`. Verify: `SELECT * FROM alembic_version;` -> 3315ed698ecb.
+- 2025-12-13 22:40 MSK Р В Р’В Р В РІР‚В Р В Р’В Р Р†Р вЂљРЎв„ўР В Р вЂ Р В РІР‚С™Р РЋРЎС™ Verified API up: GET /api/v1/health -> 200 {"status":"ok"}; Swagger /docs and /openapi.json available. Verify: open URLs or `Invoke-RestMethod http://localhost:8000/api/v1/health`. 
+- 2025-12-13 22:55 MSK Р В Р’В Р В РІР‚В Р В Р’В Р Р†Р вЂљРЎв„ўР В Р вЂ Р В РІР‚С™Р РЋРЎС™ Reset Postgres clean: dropped/recreated DB b2b_platform and role b2b_user; switched DATABASE_URL to 127.0.0.1; granted schema public CREATE/USAGE to b2b_user. Verify: `psql -U b2b_user -h 127.0.0.1 -d b2b_platform` works; `\dt` shows empty baseline before migrations.
+- 2025-12-13 23:00 MSK Р В Р’В Р В РІР‚В Р В Р’В Р Р†Р вЂљРЎв„ўР В Р вЂ Р В РІР‚С™Р РЋРЎС™ Fixed Alembic revision generation by adding `backend/alembic/script.py.mako`; created baseline migration `3315ed698ecb_init.py`; applied `alembic upgrade head`. Verify: `SELECT * FROM alembic_version;` -> 3315ed698ecb.
 
 
 
@@ -36,7 +36,7 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 
 2025-12-13 23:24 MSK Wired POST /api/v1/user/requests into FastAPI app: included requests_router in app/main.py. Verified: Invoke-RestMethod http://localhost:8000/openapi.json contains path /api/v1/user/requests with post and schema CreateRequestResponseDTO includes requestid
 
-2025-12-13 23:25 MSK End-to-end POST /api/v1/user/requests works (manual keys): request created in DB and API returns 200 with success=true, requestid and status="draft". Verified via PowerShell Invoke-RestMethod -Method Post http://localhost:8000/api/v1/user/requests with JSON body (title + keys) -> response includes requestid: 1, status: draft.Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРІвЂћвЂ“
+2025-12-13 23:25 MSK End-to-end POST /api/v1/user/requests works (manual keys): request created in DB and API returns 200 with success=true, requestid and status="draft". Verified via PowerShell Invoke-RestMethod -Method Post http://localhost:8000/api/v1/user/requests with JSON body (title + keys) -> response includes requestid: 1, status: draft.Р В Р’В Р В РІР‚В Р В Р’В Р Р†Р вЂљРЎв„ўР В Р вЂ Р В РІР‚С™Р Р†РІР‚С›РІР‚вЂњ
 
 2025-12-13 23:27 MSK Added minimal integration test for POST /api/v1/user/requests: created tests/integration/test_create_request_manual.py; installed test deps pytest and httpx for FastAPI/Starlette TestClient. Verified: python -m pytest -q -> 1 passed.
 
@@ -50,7 +50,7 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 
 2025-12-13 23:40 MSK Refactored DB repository to implement domain port: updated app/adapters/db/repositories.py so RequestRepository implements RequestRepositoryPort and cleaned broken-encoding comment. Verified: `python -c "from app.adapters.db.repositories import RequestRepository; print('repo ok')" -> repo ok. [file:5]
 
-2025-12-13 23:40 MSK Confirmed refactor didnР В Р вЂ Р В РІР‚С™Р Р†РІР‚С›РЎС›t break functionality: ran integration tests after moving usecase to domain port + updating repository; python -m pytest -q -> 1 passed.
+2025-12-13 23:40 MSK Confirmed refactor didnР В Р’В Р В РІР‚В Р В Р’В Р Р†Р вЂљРЎв„ўР В Р вЂ Р Р†Р вЂљРЎвЂєР РЋРЎвЂєt break functionality: ran integration tests after moving usecase to domain port + updating repository; python -m pytest -q -> 1 passed.
 
 2025-12-13 23:43 MSK Extended RequestRepository with listing method: added list_requests(limit, offset) returning {items, total} from requests table (ordered by id desc). Verified: `python -c "from app.adapters.db.repositories import RequestRepository; print('repo ok')" -> repo ok. [file:5]
 
@@ -60,7 +60,7 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 
 2025-12-13 23:45 MSK Verified GET /api/v1/user/requests works end-to-end: Invoke-RestMethod "http://localhost:8000/api/v1/user/requests?limit=50&offset=0" returned items array with existing draft requests.
 
-2025-12-13 23:49 MSK Fixed Windows pytest Р В Р вЂ Р В РІР‚С™Р РЋРЎв„ўEvent loop is closedР В Р вЂ Р В РІР‚С™Р РЋРЎС™ for asyncpg/SQLAlchemy: added FastAPI lifespan in app/main.py to dispose SQLAlchemy async engine on shutdown; updated integration tests to use with TestClient(app); verified python -m pytest -q -> 2 passed
+2025-12-13 23:49 MSK Fixed Windows pytest Р В Р’В Р В РІР‚В Р В Р’В Р Р†Р вЂљРЎв„ўР В Р Р‹Р РЋРІвЂћСћEvent loop is closedР В Р’В Р В РІР‚В Р В Р’В Р Р†Р вЂљРЎв„ўР В Р Р‹Р РЋРЎв„ў for asyncpg/SQLAlchemy: added FastAPI lifespan in app/main.py to dispose SQLAlchemy async engine on shutdown; updated integration tests to use with TestClient(app); verified python -m pytest -q -> 2 passed
 
 - 2025-12-13 23:49 MSK Fixed pytest Windows "Event loop is closed": added FastAPI lifespan in app/main.py to dispose SQLAlchemy async engine on shutdown; tests pass (python -m pytest -q => 2 passed).
 - 2025-12-13 23:56 MSK Implemented GET /api/v1/user/requests/{requestId} (RequestDetail) + integration test; verified: python -m pytest -q.
@@ -76,13 +76,13 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 - 2025-12-14 0016 MSK Fixed Attachments router args to match usecase signatures (original_filename/content_type, attachment_id) and storage base_dir. Verified .\.venv\Scripts\pytest.exe -q tests\integration\test_attachments_contract_camelcase.py -> 1 passed.
 - 2025-12-14 01:23 MSK Fixed Attachments router args to match usecase signatures (original_filename/content_type, attachment_id) and storage base_dir. Verified .\.venv\Scripts\pytest.exe -q tests\integration\test_attachments_contract_camelcase.py -> 1 passed.
 - 2025-12-14 01:35 MSK Aligned Attachments endpoints and DTOs to SSoT (api-contracts.yaml): routes use /api/v1/userattachments, response fields use lowercase (originalfilename/contenttype/sizebytes/etc), updated attachments integration tests accordingly. Verified .\.venv\Scripts\pytest.exe -q -k attachments -> 2 passed.
-- 2025-12-14 10:13 MSK Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ API contract updated (SSoT): added user personal blacklist by INN endpoints (/user/blacklist/inn GET/POST, /user/blacklist/inn/{inn} DELETE) and schemas AddUserBlacklistInnRequest, UserBlacklistInnListResponse (snake_case). Verified: YAML parsed via python yaml.safe_load => OK; Select-String confirms path + schema.
+- 2025-12-14 10:13 MSK Р В Р’В Р В РІР‚В Р В Р’В Р Р†Р вЂљРЎв„ўР В Р вЂ Р В РІР‚С™Р РЋРЎС™ API contract updated (SSoT): added user personal blacklist by INN endpoints (/user/blacklist/inn GET/POST, /user/blacklist/inn/{inn} DELETE) and schemas AddUserBlacklistInnRequest, UserBlacklistInnListResponse (snake_case). Verified: YAML parsed via python yaml.safe_load => OK; Select-String confirms path + schema.
 
 
-- 2025-12-14 09:49 MSK Р В РЎвЂ”Р РЋРІР‚вЂќР В РІР‚В¦ Restored green test suite after recipients experiment (rollback broken alembic revision + fix repositories imports). Verify: .\.venv\Scripts\pytest.exe -q -> 11 passed; .\.venv\Scripts\python.exe -c "from app.adapters.db.repositories import RequestRepository; print('ok')" -> ok.
-- 2025-12-14 09:57 MSK Р В РЎвЂ”Р РЋРІР‚вЂќР В РІР‚В¦ Decision Р В РЎвЂ”Р РЋРІР‚вЂќР В РІР‚В¦ UserMessaging recipients: PUT /user/requests/{requestId}/recipients uses replace-all semantics (server state mirrors UI checkboxes). Decision: when a domain is added to Blacklist, related suppliers must be automatically unselected (selected=false) across ALL requests to prevent sending. Verify (agreed): implement in Blacklist usecase + re-check in send usecase.
-- 2025-12-14 10:08 MSK Р В РЎвЂ”Р РЋРІР‚вЂќР В РІР‚В¦ Decision Р В РЎвЂ”Р РЋРІР‚вЂќР В РІР‚В¦ New API schemas use snake_case (inn, supplier_id, created_at). User blacklist is personal and keyed by INN (UI shows company name + checko_data when available). Moderator blacklist stays global by domain (/moderator/blacklist/domains). Recipients PUT is replace-all; blacklist actions auto-unselect recipients accordingly.
- - 2025-12-14 10:49 MSK Р Р†Р вЂљРІР‚Сњ Blacklist(User) routes wired: /api/v1/user/blacklist/inn (GET/POST) and /api/v1/user/blacklist/inn/{inn} (DELETE) are present in openapi.json; GET returns 501 Not Implemented. Verify: 	ry { Invoke-RestMethod -Method Get http://localhost:8000/api/v1/user/blacklist/inn } catch { $_.Exception.Response.StatusCode.value__ } -> 501; and (Invoke-RestMethod http://localhost:8000/openapi.json).paths... | Select-String '/api/v1/user/blacklist/inn' shows both paths.
+- 2025-12-14 09:49 MSK Р В Р’В Р РЋРІР‚вЂќР В Р Р‹Р Р†Р вЂљРІР‚СњР В Р’В Р Р†Р вЂљР’В¦ Restored green test suite after recipients experiment (rollback broken alembic revision + fix repositories imports). Verify: .\.venv\Scripts\pytest.exe -q -> 11 passed; .\.venv\Scripts\python.exe -c "from app.adapters.db.repositories import RequestRepository; print('ok')" -> ok.
+- 2025-12-14 09:57 MSK Р В Р’В Р РЋРІР‚вЂќР В Р Р‹Р Р†Р вЂљРІР‚СњР В Р’В Р Р†Р вЂљР’В¦ Decision Р В Р’В Р РЋРІР‚вЂќР В Р Р‹Р Р†Р вЂљРІР‚СњР В Р’В Р Р†Р вЂљР’В¦ UserMessaging recipients: PUT /user/requests/{requestId}/recipients uses replace-all semantics (server state mirrors UI checkboxes). Decision: when a domain is added to Blacklist, related suppliers must be automatically unselected (selected=false) across ALL requests to prevent sending. Verify (agreed): implement in Blacklist usecase + re-check in send usecase.
+- 2025-12-14 10:08 MSK Р В Р’В Р РЋРІР‚вЂќР В Р Р‹Р Р†Р вЂљРІР‚СњР В Р’В Р Р†Р вЂљР’В¦ Decision Р В Р’В Р РЋРІР‚вЂќР В Р Р‹Р Р†Р вЂљРІР‚СњР В Р’В Р Р†Р вЂљР’В¦ New API schemas use snake_case (inn, supplier_id, created_at). User blacklist is personal and keyed by INN (UI shows company name + checko_data when available). Moderator blacklist stays global by domain (/moderator/blacklist/domains). Recipients PUT is replace-all; blacklist actions auto-unselect recipients accordingly.
+ - 2025-12-14 10:49 MSK Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ Blacklist(User) routes wired: /api/v1/user/blacklist/inn (GET/POST) and /api/v1/user/blacklist/inn/{inn} (DELETE) are present in openapi.json; GET returns 501 Not Implemented. Verify: 	ry { Invoke-RestMethod -Method Get http://localhost:8000/api/v1/user/blacklist/inn } catch { $_.Exception.Response.StatusCode.value__ } -> 501; and (Invoke-RestMethod http://localhost:8000/openapi.json).paths... | Select-String '/api/v1/user/blacklist/inn' shows both paths.
 
 - 2025-12-14 11:33 MSK Fixed local test run: pytest failed outside venv; activated backend venv and tests pass. Verify: cd D:\b2bplatform\backend; .\.venv\Scripts\Activate.ps1; python -m pytest -q -> 11 passed.
 - 2025-12-14 12:29 MSK: Chat log recovery. Verified backend tests are green: D:\b2bplatform\backend\.venv\Scripts\python.exe -m pytest -q -> 38 passed. Also fixed PowerShell HANDOFF append string to use ${dt} to avoid ': variable' parsing error.
@@ -123,7 +123,7 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 - Now: Repo hygiene complete
 - Next: Pick next endpoint from api-contracts.yaml and implement first slice
 ## 2025-12-15 00:13:50 MSK
-- What: Removed legacy file 'Р”РµСЂРµРІРѕ РїСЂРѕРµРєС‚Р°.txt' from repo
+- What: Removed legacy file 'Р вЂќР ВµРЎР‚Р ВµР Р†Р С• Р С—РЎР‚Р С•Р ВµР С”РЎвЂљР В°.txt' from repo
 - Why: We keep project structure in PROJECT-TREE.txt; unicode legacy file causes git noise
 - Verify: git status (after commit) shows clean working tree
 - Expected: Working tree clean; file removed from main
@@ -166,7 +166,7 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 - 2025-12-15 05:36 MSK Fixed integration tests: aligned user blacklist INN test base path to SSoT (/apiv1/user/blacklist-inn) and skipped suppliers search integration test because SupplierModel/SupplierUrlModel are absent from current db models. Verified: cd D:\b2bplatform\backend; python -m pytest -q (39 passed, 1 skipped).
 
 - 2025-12-15 10:21 MSK: Added Suppliers router stub: GET /apiv1/suppliers/search returns 501 Not Implemented (contract present). Updated PROJECT-TREE.txt. Verified: Invoke-RestMethod http://127.0.0.1:8000/apiv1/health -> status ok; Invoke-RestMethod http://127.0.0.1:8000/openapi.json -> 200; GET /apiv1/suppliers/search?q=test -> 501.
-2025-12-15 10:40 MSK — feat: add Suppliers Search endpoint.
+2025-12-15 10:40 MSK вЂ” feat: add Suppliers Search endpoint.
 - Added: backend/app/transport/routers/suppliers.py (GET /apiv1/suppliers/search, q required, limit default 20), returns 200 with empty JSON array.
 - Verified:
   - Invoke-RestMethod "http://127.0.0.1:8000/apiv1/health" -> status ok
@@ -182,8 +182,8 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 - 2025-12-15 19:48 MSK
   - What: Hardened PowerShell workflow: tools\pytest.ps1 now restores working directory (Push-Location/Pop-Location), and PROJECT-RULES.md now includes mandatory path-safety rules (anchor to repo root, no Resolve-Path for non-existent files).
   - Verify: .\tools\pytest.ps1 -> 39 passed, 1 skipped (and current directory remains D:\b2bplatform); git status -> clean.
-- 2025-12-15 20:51 MSK Parser service: /parse via Playwright CDP. Adds 'купить' to query, brings captcha tab to front, dismisses popups best-effort, returns partial results on engine timeout. Verify:
-  PS> $body = @{ query = "поставщик металлопроката"; depth = 1 } | ConvertTo-Json
+- 2025-12-15 20:51 MSK Parser service: /parse via Playwright CDP. Adds 'РєСѓРїРёС‚СЊ' to query, brings captcha tab to front, dismisses popups best-effort, returns partial results on engine timeout. Verify:
+  PS> $body = @{ query = "РїРѕСЃС‚Р°РІС‰РёРє РјРµС‚Р°Р»Р»РѕРїСЂРѕРєР°С‚Р°"; depth = 1 } | ConvertTo-Json
   PS> Invoke-RestMethod http://127.0.0.1:9001/parse -Method Post -ContentType "application/json; charset=utf-8" -Body $body
 
 ## [2025-12-15 22:50] SSoT: Finalized parsing contract (runId = informational, latest-only)
@@ -250,7 +250,7 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 - 2025-12-16 19:09 MSK Success Aligned moderator tasks routes to SSoT: /moderatortasks and /moderatortasks/{taskId}. Verified: .\tools\preflight.ps1 -BackendBaseUrl http://127.0.0.1:8000 ; Invoke-RestMethod http://127.0.0.1:8000/openapi.json contains /moderatortasks ; GET /moderatortasks returns 501.
 
 - 2025-12-16 20:06 MSK Success Updated PROJECT-RULES.md: added PRE-FLIGHT v2 (human) with mandatory DB smoke check via API and clarified that env in current PowerShell may differ from running backend process. Verified: pre-commit run --all-files (PASS) and Invoke-RestMethod http://127.0.0.1:8000/user/requests?limit=1&offset=0 returns 200 with JSON.
-- 2025-12-16 20:16 MSK Success Updated PROJECT-RULES.md: added rule "Plain language for non-IT заказчик" to prevent jargon-only explanations in chat. Verified: git status clean after commit, pre-commit run --all-files PASS.
+- 2025-12-16 20:16 MSK Success Updated PROJECT-RULES.md: added rule "Plain language for non-IT Р·Р°РєР°Р·С‡РёРє" to prevent jargon-only explanations in chat. Verified: git status clean after commit, pre-commit run --all-files PASS.
 
 2025-12-16 22:01 MSK Fixed /moderator/blacklist/domains 500: aligned DomainBlacklistUrlModel fields (domain_id, created_at) and repo returns (url, comment, created_at) tuples. Verified: Invoke-RestMethod http://127.0.0.1:8000/moderator/blacklist/domains -> 200 and POST -> 200.
 - 2025-12-16 22:46 MSK Success Hardened OpenAPI diff tool to avoid false 'missing' when using stale .tmp/runtime-openapi.json. Now tools/openapi_diff.py can read runtime URL from env OPENAPI_URL when --live-url is not passed; added --openapi-url-env flag and fixed output encoding. Verified: $env:OPENAPI_URL="http://127.0.0.1:8000/openapi.json"; python .\tools\openapi_diff.py -> "OK openapi-diff.csv: 0 missing, 0 extra, 37 ok"; and python .\tools\openapi_diff.py --help | Select-String openapi-url-env shows the flag.- 2025-12-16 23:18 MSK Success Repo hygiene: removed accidental untracked draft files (moderator_api_* stubs, tools/create_moderator_stub_routers.py) and reverted local wiring changes; kept WIP copies outside repo in D:\b2bplatform__WIP\.
@@ -267,3 +267,6 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
   - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
 - 2025-12-17 0022 MSK Correction ModeratorPendingDomains verify command (copy/paste):
   - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
+- 2025-12-17 00:44 MSK Implemented moderator domain decision endpoints.
+  What: Added router moderator_domain_decision and schemas for DomainDecisionRequestDTO/ResponseDTO plus SupplierCardDTO, wired router in backend/app/main.py.
+  Verified: ruff check backend; pre-commit run --all-files; runtime openapi.json contains /moderator/domains/{domain}/decision and /moderator/domains/{domain}/hits.
