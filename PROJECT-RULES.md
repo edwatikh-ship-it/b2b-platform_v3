@@ -288,3 +288,16 @@ HARD RULE 10  QUESTION GATE
 - If any critical fact is unknown (BASE_URL, API_PREFIX, env var names, target function text),
   the assistant MUST ask up to 3 short questions (bold) OR provide commands to discover the fact,
   then wait. No further steps until answered.
+
+TITLE Draft files policy (no repo trash)
+- Rule: Any new file created during experiments is TEMP by default and must not land in main unless it is needed for production/dev workflow.
+- Draft/WIP storage:
+  - Preferred: keep drafts outside the repo (e.g., D:\b2bplatform__WIP\) and copy into repo only when promoted.
+  - If a draft must be in repo temporarily, it must be in a clearly named folder and ignored by git (do not leave random ?? files in backend/).
+- Promote-to-repo checklist (required):
+  - The file is referenced/used (imported, executed, wired) by the codebase or documented tooling flow.
+  - Verification exists and is runnable: pre-commit run --all-files (and/or just test / API smoke when relevant).
+  - Documentation updated when needed: PROJECT-DOC.md and PROJECT-TREE.txt (key artifacts only).
+- Commit gate:
+  - Before commit/push: git status --porcelain must be clean (no accidental ?? files).
+- Added: 2025-12-16 23:03 MSK
