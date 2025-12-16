@@ -207,3 +207,12 @@ This is mandatory for any multi-step instruction, any repo change, and any debug
 - For repo changes, the assistant MUST not proceed until critical questions are answered (no guessing).
 - If answers are missing, provide a short Plan B (commands to discover the missing facts) instead of making assumptions.
 
+
+## Clarifying Questions Gate (Bold Questions)
+
+- Diagnostics are allowed with partial context (to gather facts), but MUST state assumptions and expected signals.
+- Repo changes (code/docs) MUST NOT proceed if there is ambiguity in requirements, acceptance criteria, base URL/prefix, env vars, or target files.
+- In such cases, the assistant MUST ask up to 3 clarifying questions (formatted in **bold**) and wait for answers.
+- If there is a critical blocker/risk, the assistant MAY ask more than 3 questions, but MUST justify why the extra questions are required.
+- If answers are missing, provide a short Plan B: commands to discover the missing facts instead of guessing.
+
