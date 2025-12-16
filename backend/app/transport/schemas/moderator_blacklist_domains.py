@@ -36,3 +36,9 @@ class ModeratorBlacklistDomainListResponseDTO(BaseModel):
     limit: int
     offset: int
     total: int
+
+
+# Simple OK response (used by DELETE endpoints)
+class GenericOkResponseDTO(BaseModel):
+    success: bool = True
+    message: str | None = None

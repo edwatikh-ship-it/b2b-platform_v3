@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.adapters.db.models import (
     AttachmentModel,
     DomainBlacklistDomainModel,
+    DomainBlacklistUrlModel,
     RequestKeyModel,
     RequestModel,
     RequestRecipientModel,
@@ -38,10 +39,10 @@ class RequestRepository(RequestRepositoryPort):
 
     async def list_requests(self, limit: int, offset: int) -> dict:
         total = await self._session.scalar(select(func.count()).select_from(RequestModel))
-
         rows = await self._session.execute(
             select(RequestModel).order_by(RequestModel.id.desc()).limit(limit).offset(offset)
         )
+
         items = []
         for r in rows.scalars().all():
             items.append(
@@ -68,6 +69,7 @@ class RequestRepository(RequestRepositoryPort):
             .where(RequestKeyModel.request_id == request_id)
             .order_by(RequestKeyModel.pos.asc())
         )
+
         keys = []
         for k in rows.scalars().all():
             keys.append(
@@ -100,6 +102,7 @@ class RequestRepository(RequestRepositoryPort):
         await self._session.execute(
             select(RequestKeyModel.id).where(RequestKeyModel.request_id == request_id)
         )
+
         await self._session.execute(
             __import__("sqlalchemy")
             .delete(RequestKeyModel)
@@ -131,7 +134,6 @@ class RequestRepository(RequestRepositoryPort):
         req.status = "confirmed"
         self._session.add(req)
         await self._session.commit()
-
         return {
             "requestid": int(req.id),
             "newstatus": "confirmed",
@@ -160,7 +162,6 @@ class RequestRepository(RequestRepositoryPort):
                     selected=bool(r["selected"]),
                 )
             )
-
         await self._session.commit()
 
         # Return normalized (sorted) for stable API response + tests
@@ -208,6 +209,7 @@ class AttachmentRepository:
             .select_from(AttachmentModel)
             .where(AttachmentModel.is_deleted.is_(False))
         )  # noqa: E712
+
         rows = (
             (
                 await self._session.execute(
@@ -295,7 +297,6 @@ class UserBlacklistInnRepository(UserBlacklistInnRepositoryPort):
         )
         res = await self._session.execute(stmt)
         rows = res.scalars().all()
-
         return [
             {
                 "id": r.id,
@@ -336,9 +337,6 @@ class UserRepository:
         return obj
 
 
-#
-
-
 class DomainBlacklistRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
@@ -357,35 +355,83 @@ class DomainBlacklistRepository:
         total = await self._session.scalar(stmt)
         return int(total or 0)
 
-    async def list_domains(self, limit: int, offset: int) -> list[tuple[str, object]]:
+    async def list_domains(
+        self, limit: int, offset: int
+    ) -> list[tuple[int, str, object, str | None]]:
         stmt = (
-            select(DomainBlacklistDomainModel.root_domain, DomainBlacklistDomainModel.created_at)
+            select(
+                DomainBlacklistDomainModel.id,
+                DomainBlacklistDomainModel.root_domain,
+                DomainBlacklistDomainModel.created_at,
+                DomainBlacklistDomainModel.comment,
+            )
             .order_by(DomainBlacklistDomainModel.id.desc())
             .limit(int(limit))
             .offset(int(offset))
         )
         res = await self._session.execute(stmt)
-        return [(str(d), ca) for (d, ca) in res.all()]
+        return [(int(i), str(d), ca, c) for (i, d, ca, c) in res.all()]
 
-    async def add_root_domain(self, root_domain: str) -> None:
+    async def add_root_domain(self, root_domain: str, comment: str | None = None) -> int:
         root_domain = str(root_domain).strip().lower()
         if not root_domain:
             raise ValueError("empty_domain")
 
-        exists_stmt = select(DomainBlacklistDomainModel.id).where(
+        exists_stmt = select(DomainBlacklistDomainModel).where(
             DomainBlacklistDomainModel.root_domain == root_domain
         )
-        existing_id = await self._session.scalar(exists_stmt)
-        if existing_id is not None:
-            return
+        existing = (await self._session.execute(exists_stmt)).scalars().first()
+        if existing is not None:
+            # Variant A: overwrite comment on re-add
+            existing.comment = comment
+            self._session.add(existing)
+            await self._session.commit()
+            await self._session.refresh(existing)
+            return int(existing.id)
 
-        obj = DomainBlacklistDomainModel(root_domain=root_domain)
+        obj = DomainBlacklistDomainModel(root_domain=root_domain, comment=comment)
         self._session.add(obj)
         try:
             await self._session.commit()
+            await self._session.refresh(obj)
+            return int(obj.id)
         except Exception:
             await self._session.rollback()
             raise
+
+    async def add_domain_urls(
+        self, domain_id: int, urls: list[str], comment: str | None = None
+    ) -> None:
+        clean = []
+        for u in urls or []:
+            u = str(u).strip()
+            if u:
+                clean.append(u)
+        if not clean:
+            return
+
+        # insert ignore duplicates (best-effort): try add, if unique violation then skip
+        for u in clean:
+            self._session.add(DomainBlacklistUrlModel(domain_id=domain_id, url=u, comment=comment))
+            try:
+                await self._session.commit()
+            except Exception:
+                await self._session.rollback()
+                # likely duplicate, ignore
+                continue
+
+    async def get_domain_urls(self, domainid: int):
+        stmt = (
+            select(
+                DomainBlacklistUrlModel.url,
+                DomainBlacklistUrlModel.comment,
+                DomainBlacklistUrlModel.created_at,
+            )
+            .where(DomainBlacklistUrlModel.domain_id == int(domainid))
+            .order_by(DomainBlacklistUrlModel.id.desc())
+        )
+        res = await self._session.execute(stmt)
+        return [(str(u), c, ca) for (u, c, ca) in res.all()]
 
     async def remove_root_domain(self, root_domain: str) -> None:
         root_domain = str(root_domain).strip().lower()

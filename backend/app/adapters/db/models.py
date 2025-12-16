@@ -113,6 +113,21 @@ class DomainBlacklistDomainModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     root_domain: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[object] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class DomainBlacklistUrlModel(Base):
+    __tablename__ = "blacklist_domain_urls"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    domain_id: Mapped[int] = mapped_column(
+        ForeignKey("blacklist_domains.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    url: Mapped[str] = mapped_column(Text, nullable=False)
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[object] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

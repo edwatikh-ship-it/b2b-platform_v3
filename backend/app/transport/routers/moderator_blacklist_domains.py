@@ -29,17 +29,37 @@ async def add_blacklist_domain(
 ) -> ModeratorBlacklistDomainDTO:
     repo = DomainBlacklistRepository(session)
     try:
+        # add_root_domain returns domain id (and may update comment on re-add)
+        domain_id = await repo.add_root_domain(payload.domain, comment=payload.comment)
+    except TypeError:
+        # fallback for older signature without comment/return id
         await repo.add_root_domain(payload.domain)
+        # best-effort: fetch id via list_domains (latest matching root_domain)
+        rows = await repo.list_domains(limit=1, offset=0)
+        domain_id = next((row[0] for row in rows if row[1] == payload.domain.strip().lower()), None)
+        if domain_id is None:
+            raise HTTPException(
+                status_code=500, detail="Failed to resolve domain_id after add_root_domain"
+            )
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e)) from e
 
-    # MVP: url-level blacklist isn't stored yet; keep urls empty.
-    # createdat ideally should come from DB, but without a SELECT here we return "now".
+    if payload.url:
+        await repo.add_domain_urls(
+            domain_id=int(domain_id), urls=[str(payload.url)], comment=payload.comment
+        )
+
+    # Return actual stored urls (url/comment/created_at)
+    url_rows = await repo.get_domain_urls(int(domain_id))
+    urls = [
+        {"url": u, "comment": uc, "createdat": _iso(u_ca)} for (u, uc, u_ca) in (url_rows or [])
+    ]
+
     return ModeratorBlacklistDomainDTO(
         domain=payload.domain.strip().lower(),
         createdat=_iso(datetime.now(tz=UTC)),
         comment=payload.comment,
-        urls=[],
+        urls=urls,
     )
 
 
@@ -54,10 +74,20 @@ async def list_blacklist_domains(
     if hasattr(repo, "list_domains") and hasattr(repo, "count_domains"):
         total = await repo.count_domains()
         rows = await repo.list_domains(limit=limit, offset=offset)
-        items = [
-            ModeratorBlacklistDomainDTO(domain=d, createdat=_iso(ca), comment=None, urls=[])
-            for (d, ca) in rows
-        ]
+        items = []
+        for row in rows:
+            # repo.list_domains returns: (id, rootdomain, createdat, comment)
+            d = row[1]
+            ca = row[2] if len(row) > 2 else datetime.now(tz=UTC)
+            c = row[3] if len(row) > 3 else None
+            url_rows = await repo.get_domain_urls(row[0])
+            urls = [
+                {"url": u, "comment": uc, "createdat": _iso(u_ca)}
+                for (u, uc, u_ca) in (url_rows or [])
+            ]
+            items.append(
+                ModeratorBlacklistDomainDTO(domain=d, createdat=_iso(ca), comment=c, urls=urls)
+            )
         return ModeratorBlacklistDomainListResponseDTO(
             items=items, limit=limit, offset=offset, total=total
         )

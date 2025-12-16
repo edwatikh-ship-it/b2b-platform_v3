@@ -1,18 +1,18 @@
 <!-- write-test 2025-12-16T20:00:42.8821983+03:00 -->
-# B2B Platform РІР‚вЂќ PROJECT RULES (SSoT)
+# B2B Platform Р Р†Р вЂљРІР‚Сњ PROJECT RULES (SSoT)
 
 Version: 1.3
 Date: 2025-12-15
 
 ## 1) SSoT (Single Source of Truth)
 - API (endpoints, DTOs, responses) = ONLY api-contracts.yaml at repo root: D:\b2bplatform\api-contracts.yaml.
-- If implementation and contract diverge РІР‚вЂќ it's an error. Align code to contract (or change contract intentionally).
-- Priority: api-contracts.yaml РІвЂ вЂ™ PROJECT-RULES.md РІвЂ вЂ™ PROJECT-DOC.md.
+- If implementation and contract diverge Р Р†Р вЂљРІР‚Сњ it's an error. Align code to contract (or change contract intentionally).
+- Priority: api-contracts.yaml Р Р†РІР‚В РІР‚в„ў PROJECT-RULES.md Р Р†РІР‚В РІР‚в„ў PROJECT-DOC.md.
 - SSoT files must live in repo root D:\b2bplatform\ (no duplicates inside backend\).
 - Progress = state of GitHub main branch, not chat memory.
 
 ## 2) Architecture (fixed)
-transport РІвЂ вЂ™ usecases РІвЂ вЂ™ domain РІвЂ вЂ™ adapters
+transport Р Р†РІР‚В РІР‚в„ў usecases Р Р†РІР‚В РІР‚в„ў domain Р Р†РІР‚В РІР‚в„ў adapters
 
 Short meaning:
 - transport: HTTP routes + input/output validation; no business decisions.
@@ -27,7 +27,7 @@ Before any change:
 - Show git status before and after.
 - Provide rollback: restore from .bak and/or git restore.
 
-## 4) PRE-FLIGHT before any РІР‚Сљfix routes/endpointsРІР‚Сњ
+## 4) PRE-FLIGHT before any Р Р†Р вЂљРЎС™fix routes/endpointsР Р†Р вЂљРЎСљ
 Do NOT guess defaults.
 
 First discover:
@@ -43,14 +43,14 @@ Run checks (expected results):
 3) python -c "import os; print(os.getenv('DATABASEURL'), os.getenv('DATABASE_URL'))"
    - Must be non-None only if routes/import-time DB requires it.
 
-If any check fails РІР‚вЂќ provide Plan B commands first (how to start backend / set env), then propose code changes.
+If any check fails Р Р†Р вЂљРІР‚Сњ provide Plan B commands first (how to start backend / set env), then propose code changes.
 
-## 5) РІР‚Сљ6 toolsРІР‚Сњ standard (check availability first)
+## 5) Р Р†Р вЂљРЎС™6 toolsР Р†Р вЂљРЎСљ standard (check availability first)
 Tools: ruff, pre-commit, pyclean, uv, direnv, just.
 
 Rule:
 - Always check first: Get-Command ruff/pre-commit/pyclean/uv/direnv/just
-- If missing РІР‚вЂќ use Plan B (no assumptions).
+- If missing Р Р†Р вЂљРІР‚Сњ use Plan B (no assumptions).
 
 Usage:
 - Lint/format:
@@ -80,8 +80,8 @@ Usage:
 - Text file writes: UTF-8 without BOM (unless strong reason). Prefer .NET WriteAllText with UTF8Encoding(false).
 
 ## 7) Progress logging (mandatory)
-- Success РІвЂ вЂ™ HANDOFF.md (append-only) + update PROJECT-TREE.txt + commit + push origin/main.
-- Failure РІвЂ вЂ™ INCIDENTS.md (append-only) + commit + push.
+- Success Р Р†РІР‚В РІР‚в„ў HANDOFF.md (append-only) + update PROJECT-TREE.txt + commit + push origin/main.
+- Failure Р Р†РІР‚В РІР‚в„ў INCIDENTS.md (append-only) + commit + push.
 
 HANDOFF/INCIDENTS format:
 - Datetime (MSK)
@@ -91,7 +91,7 @@ HANDOFF/INCIDENTS format:
 - Verification (command + expected output)
 
 ### Chat safety: Step 0 / Question gate (2025-12-15)
-- Step 0 for any new chat: run РІР‚СљDetect backend + PRE-FLIGHTРІР‚Сњ PowerShell script to discover BASE_URL and verify /{API_PREFIX}/health + /openapi.json.
+- Step 0 for any new chat: run Р Р†Р вЂљРЎС™Detect backend + PRE-FLIGHTР Р†Р вЂљРЎСљ PowerShell script to discover BASE_URL and verify /{API_PREFIX}/health + /openapi.json.
 - Do NOT assume BASE_URL / API_PREFIX. Use detection or explicit user confirmation.
 - Default: never auto-kill processes. Provide a separate explicit command to stop a PID if needed.
 - Question gate: if a critical question is asked (BASE_URL/API_PREFIX/DATABASEURL/etc) and no answer is given, do not proceed; repeat the question in one short line and wait.
@@ -225,3 +225,66 @@ This is mandatory for any multi-step instruction, any repo change, and any debug
 - Plan B: powershell: Set-Location D:\b2bplatform; .\tools\update_project_tree.ps1
 - When the assistant asks for project structure context, provide the output of `just tree` (or Plan B).
 
+
+TITLE B2B Platform PROJECT RULES SSoT - Anti-Guessing Protocol (FACT-LOCK)
+Date: 2025-12-16
+Status: HARD RULES (must follow)
+
+HARD RULE 5  FACT-LOCK (NO GUESSING)
+- The assistant MUST NOT propose any code patch, refactor, or API change unless the following FACT-LOCK bundle is present in the chat (copy/paste outputs).
+- If any item is missing: the assistant MUST provide only commands to collect facts (no fixes, no "likely", no "should", no assumptions).
+
+FACT-LOCK bundle (required):
+1) Repo root & SSoT presence:
+   - Run from repo root (D:\b2bplatform):
+     - Test-Path .\api-contracts.yaml
+     - Test-Path .\PROJECT-RULES.md
+2) Git state:
+   - git status -sb
+3) Runtime base:
+   - Invoke-RestMethod "$BASE_URL/openapi.json" | Out-Null  (expect 200)
+   - Detect API prefix from OpenAPI paths; do NOT assume.
+4) DB env in CURRENT SHELL:
+   - python -c "import os; print(os.getenv('DATABASEURL'), os.getenv('DATABASE_URL'))"
+5) Target code snapshot for EVERY file to be patched:
+   - Provide exact function content using either:
+     - Get-Content <path> -Raw
+     - OR Select-String <path> -Pattern "<anchor>" -Context <n>,<n>
+
+HARD RULE 6  STOP-ON-MISMATCH (PATCH SAFETY)
+- Any deterministic patch MUST validate that the expected anchor block exists.
+- If the anchor block is NOT found (e.g. "Expected block not found"):
+  - The assistant MUST STOP.
+  - The assistant MUST request a fresh code snapshot (FACT-LOCK item #5) and only then re-generate a patch.
+- "Fallback guess patches" are forbidden.
+
+HARD RULE 7  ATOMIC CROSS-LAYER CHANGES
+- If a change modifies a data shape between layers (transport <-> adapters <-> domain):
+  - The assistant MUST patch ALL impacted ends in the same instruction block (atomic change).
+  - Example: if transport expects (url, comment, created_at), adapters MUST be patched in the same step to return exactly that.
+- Partial rollouts are forbidden.
+
+HARD RULE 8  WINDOWS-SAFE EXECUTION ONLY
+- PowerShell quoting pitfalls are treated as a risk; verification commands MUST be Windows-safe.
+- Forbidden:
+  - multi-line python -c
+  - fragile CLI invocations that depend on escaping (psql -c in PowerShell)
+- Allowed (preferred):
+  - Create a temporary .py/.sql file via .NET WriteAllText (UTF-8 no BOM), then execute it.
+  - Or use just recipes (just dev/test/smoke).
+
+HARD RULE 9  VERIFY OR ROLLBACK (MANDATORY)
+- Every patch instruction MUST include:
+  - SAFETY GUARDS:
+    - backup of every changed file: <file>.bak.<timestamp>
+    - git status before and after
+    - rollback commands (restore from .bak and/or git restore)
+  - Verification commands (must be runnable):
+    - python -m py_compile <changed files> OR python -m compileall <dir>
+    - ruff check backend (Plan B if missing: python -m compileall backend)
+    - minimal API smoke (exact endpoints from OpenAPI)
+
+HARD RULE 10  QUESTION GATE
+- If any critical fact is unknown (BASE_URL, API_PREFIX, env var names, target function text),
+  the assistant MUST ask up to 3 short questions (bold) OR provide commands to discover the fact,
+  then wait. No further steps until answered.
