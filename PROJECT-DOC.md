@@ -177,3 +177,23 @@ UI: открывается экран сравнения дублей:
 ### Processing pipeline (recommended)
 - parser_service: collects raw URLs per key by querying search engines up to Depth pages.
 - backend: normalizes domains, applies root-domain blacklist filtering, and groups results by domain before returning them to the moderator endpoints.
+## Parsing MVP: depth, blacklist, accordion
+
+### Depth = search pages (no URL cap)
+- Depth controls how many search result pages are fetched per key in the search engine (Yandex/Google).
+- There is no explicit \"max URLs per key\" cap in MVP: the number of URLs depends on the engine output for the selected number of pages.
+- Depth should have a sane default (MVP) and a hard upper bound to reduce captcha/rate-limit risk; tune later.
+
+### Blacklist domains = root-domain rule
+- The blacklist stores root domains (example: pulscen.ru).
+- A blacklisted root domain blocks itself AND all its subdomains (spb.pulscen.ru, msk.pulscen.ru, etc).
+- Filtering must be server-side: blacklisted domains/URLs must not appear in moderator parsing results at all.
+
+### \"Accordion\" UI grouping (domain -> urls)
+- Moderator UI shows parsing results grouped by domain (accordion): one domain row, expandable list of URLs.
+- Grouping happens after blacklist filtering.
+- Domain in results may include subdomains; blacklist matching must normalize URL hostname to root-domain.
+
+### Suggested pipeline (where logic lives)
+- parser_service: queries search engines up to Depth pages and returns raw URLs per key.
+- backend: normalizes domains, applies root-domain blacklist filtering, groups results into accordion structure, and returns it via API.
