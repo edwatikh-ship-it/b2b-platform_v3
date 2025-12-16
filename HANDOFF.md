@@ -207,3 +207,9 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
   - Select-String .\PROJECT-TREE.txt -Pattern '\.tmp($|\\)' -Quiet  # Expected: False
   - Select-String .\PROJECT-TREE.txt -Pattern '\.log$' -Quiet  # Expected: False
   - git diff -- .\PROJECT-TREE.txt  # Expected: no further unexpected changes after regeneration
+
+- 2025-12-16 11:38 MSK Added Moderator LK decisions to PROJECT-DOC.md (parsing workflow, global root-domain blacklist with accordion UI, resume per keyId). Verified via: git diff -- .\PROJECT-DOC.md (shows added section).
+- 2025-12-16 11:47 MSK Preflight: BackendBaseUrl http://127.0.0.1:8000, detected API_PREFIX empty, health path /health. Backend and parser_service health return status=ok; CDP 9222 check failed (Chrome not started).
+  Verified via: .\tools\preflight.ps1
+- 2025-12-16 11:52 MSK Preflight OK: backend http://127.0.0.1:8000, API_PREFIX empty, health path /health; parser_service http://127.0.0.1:9001 health ok; CDP 9222 not running. Verified via: .\tools\preflight.ps1
+- 2025-12-16 11:52 MSK Added Moderator LK decisions to PROJECT-DOC.md (manual parsing start, global root-domain blacklist accordion with URL history, resume per keyId for failed keys only). Verified via: git diff -- .\PROJECT-DOC.md

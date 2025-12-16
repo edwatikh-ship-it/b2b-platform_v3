@@ -197,3 +197,20 @@ UI: открывается экран сравнения дублей:
 ### Suggested pipeline (where logic lives)
 - parser_service: queries search engines up to Depth pages and returns raw URLs per key.
 - backend: normalizes domains, applies root-domain blacklist filtering, groups results into accordion structure, and returns it via API.
+
+## Moderator LK decisions (parsing + blacklist + resume)
+
+- Priority: Moderator processes incoming client requests first; in free time, uses parsing results to gradually fill the suppliers base.
+- Parsing start: Manual action in moderator LK (button like "Get URLs"). No auto-start for MVP.
+- Parsing results: Moderator reviews URL groups and either creates supplier cards or adds domains to the global blacklist.
+
+### Global domain blacklist (root-domain)
+- Blacklist key is a hostname/root-domain only (e.g. cvetmetall.ru), without scheme (https://) and without trailing slash (/).
+- Blacklist is global (shared across all requests and moderators).
+- Blacklisted domains (including subdomains) MUST NOT appear in parsing-results responses (server-side filtering).
+- Blacklist UI: accordion ("гармошка") where each domain expands into a list of captured URLs with created date and optional comment; sorting by date and alphabet is needed.
+
+### Resume behavior (per key)
+- If parsing partially fails, already collected results are preserved.
+- Resume is per keyId: next start-parsing should parse only failed keys and continue from the page where the key failed (successful keys are not re-parsed).
+- Comment on blacklist add is optional.
