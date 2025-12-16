@@ -187,3 +187,15 @@ When the assistant provides commands or steps, each step MUST include a short ex
 
 This is mandatory for any multi-step instruction, any repo change, and any debugging flow.
 
+
+## Chat Efficiency Guardrails (CTX-FIRST)
+
+- CTX-FIRST: Before asking for help or applying fixes, run `.\ctx.ps1` from repo root and paste the output into chat.
+  This reduces wrong commands due to missing context (cwd, env vars, tools, git state).
+- NO-PLACEHOLDERS: Never paste commands with placeholders like `<FILE>`, `<PORT>`, `http://host:port`.
+  If a value is unknown, first run a command that prints the real value (example: "last migration file") and then use it.
+- NO-RAW-SETCONTENT: Avoid rewriting important repo files with `Set-Content` / `Out-File` (encoding/BOM risk).
+  Prefer deterministic patches or `.NET` `WriteAllText` with UTF-8 *without BOM* where possible.
+- PRE-COMMIT-FIX-LOOP: If pre-commit hooks modify files, the commit will fail by design.
+  Run `git status`, then `git add -A`, then retry `git commit`.
+
