@@ -1,17 +1,18 @@
-# B2B Platform вЂ” PROJECT RULES (SSoT)
+<!-- write-test 2025-12-16T20:00:42.8821983+03:00 -->
+# B2B Platform РІР‚вЂќ PROJECT RULES (SSoT)
 
 Version: 1.3
 Date: 2025-12-15
 
 ## 1) SSoT (Single Source of Truth)
 - API (endpoints, DTOs, responses) = ONLY api-contracts.yaml at repo root: D:\b2bplatform\api-contracts.yaml.
-- If implementation and contract diverge вЂ” it's an error. Align code to contract (or change contract intentionally).
-- Priority: api-contracts.yaml в†’ PROJECT-RULES.md в†’ PROJECT-DOC.md.
+- If implementation and contract diverge РІР‚вЂќ it's an error. Align code to contract (or change contract intentionally).
+- Priority: api-contracts.yaml РІвЂ вЂ™ PROJECT-RULES.md РІвЂ вЂ™ PROJECT-DOC.md.
 - SSoT files must live in repo root D:\b2bplatform\ (no duplicates inside backend\).
 - Progress = state of GitHub main branch, not chat memory.
 
 ## 2) Architecture (fixed)
-transport в†’ usecases в†’ domain в†’ adapters
+transport РІвЂ вЂ™ usecases РІвЂ вЂ™ domain РІвЂ вЂ™ adapters
 
 Short meaning:
 - transport: HTTP routes + input/output validation; no business decisions.
@@ -26,7 +27,7 @@ Before any change:
 - Show git status before and after.
 - Provide rollback: restore from .bak and/or git restore.
 
-## 4) PRE-FLIGHT before any вЂњfix routes/endpointsвЂќ
+## 4) PRE-FLIGHT before any РІР‚Сљfix routes/endpointsРІР‚Сњ
 Do NOT guess defaults.
 
 First discover:
@@ -42,14 +43,14 @@ Run checks (expected results):
 3) python -c "import os; print(os.getenv('DATABASEURL'), os.getenv('DATABASE_URL'))"
    - Must be non-None only if routes/import-time DB requires it.
 
-If any check fails вЂ” provide Plan B commands first (how to start backend / set env), then propose code changes.
+If any check fails РІР‚вЂќ provide Plan B commands first (how to start backend / set env), then propose code changes.
 
-## 5) вЂњ6 toolsвЂќ standard (check availability first)
+## 5) РІР‚Сљ6 toolsРІР‚Сњ standard (check availability first)
 Tools: ruff, pre-commit, pyclean, uv, direnv, just.
 
 Rule:
 - Always check first: Get-Command ruff/pre-commit/pyclean/uv/direnv/just
-- If missing вЂ” use Plan B (no assumptions).
+- If missing РІР‚вЂќ use Plan B (no assumptions).
 
 Usage:
 - Lint/format:
@@ -79,8 +80,8 @@ Usage:
 - Text file writes: UTF-8 without BOM (unless strong reason). Prefer .NET WriteAllText with UTF8Encoding(false).
 
 ## 7) Progress logging (mandatory)
-- Success в†’ HANDOFF.md (append-only) + update PROJECT-TREE.txt + commit + push origin/main.
-- Failure в†’ INCIDENTS.md (append-only) + commit + push.
+- Success РІвЂ вЂ™ HANDOFF.md (append-only) + update PROJECT-TREE.txt + commit + push origin/main.
+- Failure РІвЂ вЂ™ INCIDENTS.md (append-only) + commit + push.
 
 HANDOFF/INCIDENTS format:
 - Datetime (MSK)
@@ -90,7 +91,7 @@ HANDOFF/INCIDENTS format:
 - Verification (command + expected output)
 
 ### Chat safety: Step 0 / Question gate (2025-12-15)
-- Step 0 for any new chat: run вЂњDetect backend + PRE-FLIGHTвЂќ PowerShell script to discover BASE_URL and verify /{API_PREFIX}/health + /openapi.json.
+- Step 0 for any new chat: run РІР‚СљDetect backend + PRE-FLIGHTРІР‚Сњ PowerShell script to discover BASE_URL and verify /{API_PREFIX}/health + /openapi.json.
 - Do NOT assume BASE_URL / API_PREFIX. Use detection or explicit user confirmation.
 - Default: never auto-kill processes. Provide a separate explicit command to stop a PID if needed.
 - Question gate: if a critical question is asked (BASE_URL/API_PREFIX/DATABASEURL/etc) and no answer is given, do not proceed; repeat the question in one short line and wait.
