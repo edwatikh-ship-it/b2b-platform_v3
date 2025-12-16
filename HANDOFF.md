@@ -202,3 +202,8 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 
 - 2025-12-16 02:11 MSK Added PROJECT-RULES.md parser_service preflight: enforce checking port 9001 (netstat fallback) to avoid 'All connection attempts failed' in parsing-status. Verify: netstat -ano | findstr ":9001" shows LISTENING; Invoke-WebRequest http://127.0.0.1:9001/ returns 404 (server reachable).
 - 2025-12-16 05:05 MSK Added parsing depth to StartParsing contract: POST /apiv1/moderator/requests/{requestId}/start-parsing accepts optional body {depth} (default 10, max 50). Verified: python -c "import yaml; yaml.safe_load(open('api-contracts.yaml','r',encoding='utf-8')); print('YAML_OK')" -> YAML_OK; git commit feat(contract): add start-parsing depth.
+- 2025-12-16 05:10 MSK Repo hygiene: regenerated PROJECT-TREE.txt to exclude .bak/.tmp/.log artifacts (including .bak folders). Verify:
+  - Select-String .\PROJECT-TREE.txt -Pattern '\.bak\.' -Quiet  # Expected: False
+  - Select-String .\PROJECT-TREE.txt -Pattern '\.tmp($|\\)' -Quiet  # Expected: False
+  - Select-String .\PROJECT-TREE.txt -Pattern '\.log$' -Quiet  # Expected: False
+  - git diff -- .\PROJECT-TREE.txt  # Expected: no further unexpected changes after regeneration
