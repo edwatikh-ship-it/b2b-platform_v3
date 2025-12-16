@@ -571,177 +571,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
 
-  /user/blacklist-inn:
-    get:
-      tags:
-      - UserBlacklist
-      summary: List User Blacklist Inn
-      operationId: list_user_blacklist_inn_apiv1_user_blacklist_inn_get
-      parameters:
-      - name: limit
-        in: query
-        required: false
-        schema:
-          type: integer
-          maximum: 200
-          default: 200
-          title: Limit
-      - name: offset
-        in: query
-        required: false
-        schema:
-          type: integer
-          default: 0
-          title: Offset
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserBlacklistInnListResponse'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-    post:
-      tags:
-      - UserBlacklist
-      summary: Add User Blacklist Inn
-      operationId: add_user_blacklist_inn_apiv1_user_blacklist_inn_post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddUserBlacklistInnRequest'
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GenericOkResponseDTO'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /user/blacklist-inn/{inn}:
-    delete:
-      tags:
-      - UserBlacklist
-      summary: Delete User Blacklist Inn
-      operationId: delete_user_blacklist_inn_apiv1_user_blacklist_inn__inn__delete
-      parameters:
-      - name: inn
-        in: path
-        required: true
-        schema:
-          type: string
-          title: Inn
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GenericOkResponseDTO'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-
-  /user/blacklist-inn:
-    get:
-      tags:
-      - UserBlacklist
-      summary: List User Blacklist Inn
-      operationId: list_user_blacklist_inn_apiv1_user_blacklist_inn_get
-      parameters:
-      - name: limit
-        in: query
-        required: false
-        schema:
-          type: integer
-          maximum: 200
-          default: 200
-          title: Limit
-      - name: offset
-        in: query
-        required: false
-        schema:
-          type: integer
-          default: 0
-          title: Offset
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserBlacklistInnListResponse'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-    post:
-      tags:
-      - UserBlacklist
-      summary: Add User Blacklist Inn
-      operationId: add_user_blacklist_inn_apiv1_user_blacklist_inn_post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddUserBlacklistInnRequest'
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GenericOkResponseDTO'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /user/blacklist-inn/{inn}:
-    delete:
-      tags:
-      - UserBlacklist
-      summary: Delete User Blacklist Inn
-      operationId: delete_user_blacklist_inn_apiv1_user_blacklist_inn__inn__delete
-      parameters:
-      - name: inn
-        in: path
-        required: true
-        schema:
-          type: string
-          title: Inn
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GenericOkResponseDTO'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
   /auth/otp/request:
     post:
       tags:
@@ -1066,21 +895,20 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: true
-              title: Payload
+              $ref: '#/components/schemas/CreateSupplierCardRequestDTO'
       responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierCardDTO'
         '409':
           description: Duplicate INN
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DuplicateInnErrorDTO'
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
         '422':
           description: Validation Error
           content:
@@ -1105,7 +933,8 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/SupplierCardDTO'
         '422':
           description: Validation Error
           content:
@@ -1129,15 +958,14 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: true
-              title: Payload
+              $ref: '#/components/schemas/UpdateSupplierCardRequestDTO'
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/SupplierCardDTO'
         '422':
           description: Validation Error
           content:
@@ -1222,127 +1050,624 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/GenericOkResponseDTO'
         '422':
           description: Validation Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+
+  # ============================================================================
+  # MODERATOR PARSING RUNS (Временные заявки модератора)
+  # История ручных запусков парсинга
+  # ============================================================================
+  /moderator/parsing-runs:
+    post:
+      tags:
+      - ModeratorParsingRuns
+      summary: Create Parsing Run
+      description: |
+        Создаёт новый ручной запуск парсинга по одному поисковому ключу.
+        Позволяет модератору проверить результаты парсинга без привязки к заявке пользователя.
+        
+        **ВАЖНО:** Клиент передаёт чистый ключ (например, "труба стальная 100мм").
+        Backend автоматически добавляет префикс "купить " при формировании поискового запроса.
+        Клиент НЕ ДОЛЖЕН передавать "купить" в ключе.
+        
+        - key: чистый поисковый ключ без префикса "купить" (обязательный)
+        - depth: глубина парсинга (количество страниц), default=10, max=50
+        - source: источник парсинга (google/yandex/both), default=both
+      operationId: create_parsing_run_apiv1_moderator_parsing_runs_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateModeratorParsingRunRequestDTO'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModeratorParsingRunDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - ModeratorParsingRuns
+      summary: List Parsing Runs
+      description: |
+        Возвращает список всех ручных запусков парсинга модератора.
+        Поддерживает пагинацию и фильтрацию по статусу.
+      operationId: list_parsing_runs_apiv1_moderator_parsing_runs_get
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: Фильтр по статусу запуска
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/ParsingRunStatus'
+          - type: 'null'
+          title: Status
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModeratorParsingRunListResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /moderator/parsing-runs/{runId}:
+    get:
+      tags:
+      - ModeratorParsingRuns
+      summary: Get Parsing Run Detail
+      description: |
+        Возвращает детали запуска парсинга, включая статус и результаты.
+        Результаты группируются по доменам (аккордеон для UI).
+      operationId: get_parsing_run_detail_apiv1_moderator_parsing_runs__runId__get
+      parameters:
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+          title: RunId
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModeratorParsingRunDetailDTO'
+        '404':
+          description: Run not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+  # ============================================================================
+  # PENDING DOMAINS QUEUE (Очередь доменов ждут решения)
+  # Домены со статусом pending с аккордеоном URL-ов
+  # ============================================================================
+  /moderator/pending-domains:
+    get:
+      tags:
+      - ModeratorPendingDomains
+      summary: List Pending Domains
+      description: |
+        Возвращает список доменов со статусом pending, ожидающих решения модератора.
+        
+        Каждый домен содержит:
+        - Список URL-ов (для аккордеона в UI)
+        - Привязку URL → ключи (какие поисковые ключи привели к этому URL)
+        - Общее количество попаданий (hits)
+        
+        Сортировка по умолчанию: по количеству попаданий (desc).
+      operationId: list_pending_domains_apiv1_moderator_pending_domains_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: sortby
+        in: query
+        required: false
+        description: Поле для сортировки
+        schema:
+          type: string
+          enum:
+          - hits
+          - createdat
+          - domain
+          default: hits
+          title: SortBy
+      - name: sortorder
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+          title: SortOrder
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PendingDomainListResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /moderator/pending-domains/{domain}:
+    get:
+      tags:
+      - ModeratorPendingDomains
+      summary: Get Pending Domain Detail
+      description: |
+        Возвращает детальную информацию о pending-домене:
+        - Все URL-ы домена
+        - Для каждого URL — список ключей, которые к нему привели
+        - История попаданий
+      operationId: get_pending_domain_detail_apiv1_moderator_pending_domains__domain__get
+      parameters:
+      - name: domain
+        in: path
+        required: true
+        description: |
+          Root-домен в нормализованном виде (без www, без схемы, без путей).
+          Примеры: 'example.com', 'pulscen.ru'.
+          НЕ допускается: 'www.example.com', 'https://example.com', 'example.com/path'.
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*$'
+          title: Domain
+          example: 'pulscen.ru'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PendingDomainDetailDTO'
+        '404':
+          description: Domain not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+  # ============================================================================
+  # DOMAIN DECISION (Принять решение по домену)
+  # ============================================================================
+  /moderator/domains/{domain}/decision:
+    post:
+      tags:
+      - ModeratorDomainDecision
+      summary: Make Domain Decision
+      description: |
+        Принять решение по домену. Возможные статусы:
+        - supplier: домен принадлежит поставщику → создаётся/обновляется карточка поставщика
+        - reseller: домен принадлежит реселлеру → создаётся/обновляется карточка реселлера
+        - blacklist: домен добавляется в чёрный список
+        - pending: вернуть в очередь ожидания (сброс решения)
+        
+        Для supplier/reseller обязательны поля: inn, name, email.
+        URL подтягивается автоматически из домена.
+        
+        Решение можно изменить в будущем повторным вызовом этого endpoint.
+        
+        **Нормализация домена:** используется root-домен без www.
+      operationId: make_domain_decision_apiv1_moderator_domains__domain__decision_post
+      parameters:
+      - name: domain
+        in: path
+        required: true
+        description: |
+          Root-домен в нормализованном виде (без www, без схемы, без путей).
+          Примеры: 'example.com', 'pulscen.ru'.
+          НЕ допускается: 'www.example.com', 'https://example.com'.
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*$'
+          title: Domain
+          example: 'pulscen.ru'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DomainDecisionRequestDTO'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainDecisionResponseDTO'
+        '404':
+          description: Domain not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - ModeratorDomainDecision
+      summary: Get Domain Decision
+      description: |
+        Получить текущее решение по домену (если есть).
+        Возвращает статус, дату решения и связанную карточку (если есть).
+      operationId: get_domain_decision_apiv1_moderator_domains__domain__decision_get
+      parameters:
+      - name: domain
+        in: path
+        required: true
+        description: |
+          Root-домен в нормализованном виде (без www, без схемы, без путей).
+          Примеры: 'example.com', 'pulscen.ru'.
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*$'
+          title: Domain
+          example: 'pulscen.ru'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainDecisionResponseDTO'
+        '404':
+          description: Domain not found or no decision made
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+  # ============================================================================
+  # DOMAIN/URL HITS LOG (Лог попаданий)
+  # ============================================================================
+  /moderator/domains/{domain}/hits:
+    get:
+      tags:
+      - ModeratorHitsLog
+      summary: Get Domain Hits
+      description: |
+        Возвращает лог попаданий для домена — список всех ключей, 
+        которые когда-либо приводили к этому домену.
+        
+        Лог сохраняется даже если домен забанен или по нему принято решение.
+        Это позволяет анализировать, какие поисковые запросы приводят к домену.
+      operationId: get_domain_hits_apiv1_moderator_domains__domain__hits_get
+      parameters:
+      - name: domain
+        in: path
+        required: true
+        description: |
+          Root-домен в нормализованном виде (без www, без схемы, без путей).
+          Примеры: 'example.com', 'pulscen.ru'.
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*$'
+          title: Domain
+          example: 'pulscen.ru'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 100
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainHitsResponseDTO'
+        '404':
+          description: Domain not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /moderator/urls/hits:
+    get:
+      tags:
+      - ModeratorHitsLog
+      summary: Get URL Hits
+      description: |
+        Возвращает лог попаданий для конкретного URL — список всех ключей,
+        которые когда-либо приводили к этому URL.
+        
+        Полезно для детального анализа отдельных страниц.
+      operationId: get_url_hits_apiv1_moderator_urls_hits_get
+      parameters:
+      - name: url
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uri
+          title: Url
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 100
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlHitsResponseDTO'
+        '404':
+          description: URL not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+  # ============================================================================
+  # RESOLVED DOMAINS (История решений)
+  # ============================================================================
+  /moderator/resolved-domains:
+    get:
+      tags:
+      - ModeratorResolvedDomains
+      summary: List Resolved Domains
+      description: |
+        Возвращает список доменов, по которым было принято решение
+        (supplier, reseller, blacklist). Не включает pending.
+        
+        Поддерживает фильтрацию по статусу решения.
+      operationId: list_resolved_domains_apiv1_moderator_resolved_domains_get
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: Фильтр по статусу решения
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/DomainDecisionStatus'
+          - type: 'null'
+          title: Status
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResolvedDomainListResponseDTO'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
 components:
   schemas:
-  SupplierSearchItemDTO:
-    type: object
-    additionalProperties: false
-    required:
-    - supplierid
-    - name
-    - inn
-    - email
-    - urls
-    properties:
-      supplierid:
-        type: integer
-        title: SupplierId
-      name:
-        type: string
-        minLength: 1
-        title: Name
-      inn:
-        type: string
-        minLength: 10
-        maxLength: 12
-        title: Inn
-      email:
-        type: string
-        format: email
-        title: Email
-      emails:
-        anyOf:
-        - type: array
-          items:
-            type: string
-            format: email
-        - type: 'null'
-        title: Emails
-      urls:
-        type: array
-        title: Urls
-        minItems: 1
-        items:
-          type: string
-      checko:
-        anyOf:
-        - type: object
-          additionalProperties: true
-        - type: 'null'
-        title: Checko
-    title: SupplierSearchItemDTO
-    description: 'SSoT: api-contracts.yaml /components/schemas/SupplierSearchItemDTO'
-
-  SupplierSearchResponseDTO:
-    type: object
-    additionalProperties: false
-    required:
-    - items
-    - q
-    - limit
-    properties:
-      items:
-        type: array
-        title: Items
-        items:
-          $ref: '#/components/schemas/SupplierSearchItemDTO'
-      q:
-        type: string
-        title: Q
-      limit:
-        type: integer
-        title: Limit
-    title: SupplierSearchResponseDTO
-    description: 'SSoT: api-contracts.yaml /components/schemas/SupplierSearchResponseDTO'
-  DuplicateInnErrorDTO:
-    type: object
-    additionalProperties: false
-    required:
-      - error
+    # ==========================================================================
+    # EXISTING SCHEMAS (сохранены без изменений)
+    # ==========================================================================
+    SupplierSearchItemDTO:
+      type: object
+      additionalProperties: false
+      required:
+      - supplierid
+      - name
       - inn
-      - incomingurl
-      - existingsupplier
-    properties:
-      error:
-        type: string
-        const: duplicate_inn
-        title: Error
-      inn:
-        type: string
-        title: Inn
-      incomingurl:
-        anyOf:
-          - type: string
-          - type: 'null'
-        title: Incoming Url
-      existingsupplier:
-        type: object
-        additionalProperties: false
-        required:
-          - supplierid
-          - urls
-        properties:
-          supplierid:
-            type: integer
-            title: Supplierid
-          name:
-            anyOf:
-              - type: string
-              - type: 'null'
-            title: Name
-          urls:
-            type: array
-            title: Urls
+      - email
+      - urls
+      properties:
+        supplierid:
+          type: integer
+          title: SupplierId
+        name:
+          type: string
+          minLength: 1
+          title: Name
+        inn:
+          type: string
+          minLength: 10
+          maxLength: 12
+          title: Inn
+        email:
+          type: string
+          format: email
+          title: Email
+        emails:
+          anyOf:
+          - type: array
             items:
               type: string
-              title: Url
+              format: email
+          - type: 'null'
+          title: Emails
+        urls:
+          type: array
+          title: Urls
+          minItems: 1
+          items:
+            type: string
+        checko:
+          anyOf:
+          - type: object
+            additionalProperties: true
+          - type: 'null'
+          title: Checko
+      title: SupplierSearchItemDTO
+      description: 'SSoT: api-contracts.yaml /components/schemas/SupplierSearchItemDTO'
+
+    SupplierSearchResponseDTO:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - q
+      - limit
+      properties:
+        items:
+          type: array
+          title: Items
+          items:
+            $ref: '#/components/schemas/SupplierSearchItemDTO'
+        q:
+          type: string
+          title: Q
+        limit:
+          type: integer
+          title: Limit
+      title: SupplierSearchResponseDTO
+      description: 'SSoT: api-contracts.yaml /components/schemas/SupplierSearchResponseDTO'
+
+    DuplicateInnErrorDTO:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+        - inn
+        - incomingurl
+        - existingsupplier
+      properties:
+        error:
+          type: string
+          const: duplicate_inn
+          title: Error
+        inn:
+          type: string
+          title: Inn
+        incomingurl:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Incoming Url
+        existingsupplier:
+          type: object
+          additionalProperties: false
+          required:
+            - supplierid
+            - urls
+          properties:
+            supplierid:
+              type: integer
+              title: Supplierid
+            name:
+              anyOf:
+                - type: string
+                - type: 'null'
+              title: Name
+            urls:
+              type: array
+              title: Urls
+              items:
+                type: string
+                title: Url
+
     AttachmentDTO:
       properties:
         id:
@@ -1389,15 +1714,8 @@ components:
       - sizebytes
       - createdat
       title: AttachmentDTO
-      description: 'SSoT: api-contracts.yaml /components/schemas/Attachment
+      description: 'SSoT: api-contracts.yaml /components/schemas/AttachmentDTO'
 
-        ВАЖНО:
-
-        - наружу отдаём lower-without-separators: originalfilename, contenttype, sizebytes,
-        storagekey, isdeleted, createdat
-
-        - внутри держим snake_case: original_filename, content_type, size_bytes, storage_key,
-        is_deleted, created_at'
     AttachmentListResponseDTO:
       properties:
         items:
@@ -1422,7 +1740,8 @@ components:
       - offset
       - total
       title: AttachmentListResponseDTO
-      description: 'SSoT: api-contracts.yaml /components/schemas/AttachmentListResponse'
+      description: 'SSoT: api-contracts.yaml /components/schemas/AttachmentListResponseDTO'
+
     AuthOtpRequestDTO:
       properties:
         email:
@@ -1433,6 +1752,7 @@ components:
       required:
       - email
       title: AuthOtpRequestDTO
+
     AuthOtpVerifyDTO:
       properties:
         email:
@@ -1449,6 +1769,7 @@ components:
       - email
       - code
       title: AuthOtpVerifyDTO
+
     Body_upload_and_create_apiv1_user_upload_and_create_post:
       properties:
         file:
@@ -1459,6 +1780,7 @@ components:
       required:
       - file
       title: Body_upload_and_create_apiv1_user_upload_and_create_post
+
     Body_upload_attachment_apiv1_user_attachments_post:
       properties:
         file:
@@ -1474,6 +1796,7 @@ components:
       required:
       - file
       title: Body_upload_attachment_apiv1_user_attachments_post
+
     CreateRequestManualRequestDTO:
       properties:
         title:
@@ -1490,6 +1813,7 @@ components:
       required:
       - keys
       title: CreateRequestManualRequestDTO
+
     CreateRequestResponseDTO:
       properties:
         success:
@@ -1517,6 +1841,7 @@ components:
       - requestid
       - status
       title: CreateRequestResponseDTO
+
     GenericOkResponseDTO:
       properties:
         success:
@@ -1531,6 +1856,7 @@ components:
       additionalProperties: false
       type: object
       title: GenericOkResponseDTO
+
     HTTPValidationError:
       properties:
         detail:
@@ -1541,91 +1867,6 @@ components:
       type: object
       title: HTTPValidationError
 
-  /user/blacklist-inn:
-    get:
-      tags:
-      - UserBlacklist
-      summary: List User Blacklist Inn
-      operationId: list_user_blacklist_inn_apiv1_user_blacklist_inn_get
-      parameters:
-      - name: limit
-        in: query
-        required: false
-        schema:
-          type: integer
-          maximum: 200
-          default: 200
-          title: Limit
-      - name: offset
-        in: query
-        required: false
-        schema:
-          type: integer
-          default: 0
-          title: Offset
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserBlacklistInnListResponse'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-    post:
-      tags:
-      - UserBlacklist
-      summary: Add User Blacklist Inn
-      operationId: add_user_blacklist_inn_apiv1_user_blacklist_inn_post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddUserBlacklistInnRequest'
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GenericOkResponseDTO'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /user/blacklist-inn/{inn}:
-    delete:
-      tags:
-      - UserBlacklist
-      summary: Delete User Blacklist Inn
-      operationId: delete_user_blacklist_inn_apiv1_user_blacklist_inn__inn__delete
-      parameters:
-      - name: inn
-        in: path
-        required: true
-        schema:
-          type: string
-          title: Inn
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GenericOkResponseDTO'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
     HealthResponse:
       properties:
         status:
@@ -1635,6 +1876,7 @@ components:
       required:
       - status
       title: HealthResponse
+
     RequestDetailDTO:
       properties:
         id:
@@ -1663,6 +1905,7 @@ components:
       - createdat
       - keys
       title: RequestDetailDTO
+
     RequestKeyDTO:
       properties:
         id:
@@ -1701,11 +1944,12 @@ components:
       - normalizedtext
       - suppliers
       title: RequestKeyDTO
+
     RequestKeyInputDTO:
       properties:
         pos:
           type: integer
-          minimum: 1.0
+          minimum: 1
           title: Pos
         text:
           type: string
@@ -1726,6 +1970,7 @@ components:
       - pos
       - text
       title: RequestKeyInputDTO
+
     RequestListResponseDTO:
       properties:
         items:
@@ -1749,6 +1994,7 @@ components:
       - offset
       - total
       title: RequestListResponseDTO
+
     RequestSummaryDTO:
       properties:
         id:
@@ -1775,6 +2021,7 @@ components:
       - createdat
       - keyscount
       title: RequestSummaryDTO
+
     SubmitRequestResponseDTO:
       properties:
         success:
@@ -1801,6 +2048,7 @@ components:
       - newstatus
       - matchedsuppliers
       title: SubmitRequestResponseDTO
+
     UpdateRequestKeysRequestDTO:
       properties:
         keys:
@@ -1812,6 +2060,7 @@ components:
       required:
       - keys
       title: UpdateRequestKeysRequestDTO
+
     AddUserBlacklistInnRequest:
       type: object
       properties:
@@ -1823,11 +2072,12 @@ components:
         comment:
           anyOf:
           - type: string
-          - type: null
+          - type: 'null'
           title: Comment
       required:
       - inn
       additionalProperties: false
+
     UserBlacklistInnItem:
       type: object
       properties:
@@ -1837,15 +2087,16 @@ components:
         comment:
           anyOf:
           - type: string
-          - type: null
+          - type: 'null'
           title: Comment
-        created_at:
+        createdat:
           type: string
-          title: Created At
+          title: CreatedAt
       required:
       - inn
-      - created_at
+      - createdat
       additionalProperties: false
+
     UserBlacklistInnListResponse:
       type: object
       properties:
@@ -1869,177 +2120,7 @@ components:
       - offset
       - total
       additionalProperties: false
-    AddUserBlacklistInnRequest:
-      type: object
-      properties:
-        inn:
-          type: string
-          minLength: 10
-          maxLength: 12
-          title: Inn
-        comment:
-          anyOf:
-          - type: string
-          - type: null
-          title: Comment
-      required:
-      - inn
-      additionalProperties: false
-    UserBlacklistInnItem:
-      type: object
-      properties:
-        inn:
-          type: string
-          title: Inn
-        comment:
-          anyOf:
-          - type: string
-          - type: null
-          title: Comment
-        created_at:
-          type: string
-          title: Created At
-      required:
-      - inn
-      - created_at
-      additionalProperties: false
-    UserBlacklistInnListResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserBlacklistInnItem'
-          title: Items
-        limit:
-          type: integer
-          title: Limit
-        offset:
-          type: integer
-          title: Offset
-        total:
-          type: integer
-          title: Total
-      required:
-      - items
-      - limit
-      - offset
-      - total
-      additionalProperties: false
-    AddUserBlacklistInnRequest:
-      type: object
-      properties:
-        inn:
-          type: string
-          minLength: 10
-          maxLength: 12
-          title: Inn
-        comment:
-          anyOf:
-          - type: string
-          - type: null
-          title: Comment
-      required:
-      - inn
-      additionalProperties: false
-    UserBlacklistInnItem:
-      type: object
-      properties:
-        inn:
-          type: string
-          title: Inn
-        comment:
-          anyOf:
-          - type: string
-          - type: null
-          title: Comment
-        created_at:
-          type: string
-          title: Created At
-      required:
-      - inn
-      - created_at
-      additionalProperties: false
-    UserBlacklistInnListResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserBlacklistInnItem'
-          title: Items
-        limit:
-          type: integer
-          title: Limit
-        offset:
-          type: integer
-          title: Offset
-        total:
-          type: integer
-          title: Total
-      required:
-      - items
-      - limit
-      - offset
-      - total
-      additionalProperties: false
-    AddUserBlacklistInnRequest:
-      type: object
-      properties:
-        inn:
-          type: string
-          minLength: 10
-          maxLength: 12
-          title: Inn
-        comment:
-          anyOf:
-          - type: string
-          - type: null
-          title: Comment
-      required:
-      - inn
-      additionalProperties: false
-    UserBlacklistInnItem:
-      type: object
-      properties:
-        inn:
-          type: string
-          title: Inn
-        comment:
-          anyOf:
-          - type: string
-          - type: null
-          title: Comment
-        created_at:
-          type: string
-          title: Created At
-      required:
-      - inn
-      - created_at
-      additionalProperties: false
-    UserBlacklistInnListResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserBlacklistInnItem'
-          title: Items
-        limit:
-          type: integer
-          title: Limit
-        offset:
-          type: integer
-          title: Offset
-        total:
-          type: integer
-          title: Total
-      required:
-      - items
-      - limit
-      - offset
-      - total
-      additionalProperties: false
+
     ValidationError:
       properties:
         loc:
@@ -2061,6 +2142,7 @@ components:
       - msg
       - type
       title: ValidationError
+
     UpdateRecipientsRequest:
       type: object
       properties:
@@ -2080,6 +2162,7 @@ components:
       required:
       - recipients
       additionalProperties: false
+
     RecipientsResponse:
       type: object
       properties:
@@ -2088,6 +2171,7 @@ components:
       required:
       - recipients
       additionalProperties: false
+
     StartParsingRequestDTO:
       type: object
       description: |
@@ -2115,6 +2199,7 @@ components:
             Default is true.
       required: []
       additionalProperties: false
+
     StartParsingResponseDTO:
       type: object
       description: |
@@ -2135,6 +2220,7 @@ components:
       - runId
       - status
       additionalProperties: false
+
     ParsingRunStatus:
       type: string
       enum:
@@ -2146,6 +2232,7 @@ components:
       description: |
         Status of a parsing run.
         SSoT: api-contracts.yaml /components/schemas/ParsingRunStatus
+
     ParsingKeyStatusDTO:
       type: object
       description: |
@@ -2190,6 +2277,7 @@ components:
       - itemsFound
       - lastProcessedPage
       additionalProperties: false
+
     ParsingStatusResponseDTO:
       type: object
       description: |
@@ -2217,6 +2305,7 @@ components:
       - status
       - keys
       additionalProperties: false
+
     ParsingSource:
       type: string
       enum:
@@ -2226,6 +2315,7 @@ components:
       description: |
         Search engine source where the result was found.
         SSoT: api-contracts.yaml /components/schemas/ParsingSource
+
     ParsingDomainGroupDTO:
       type: object
       description: |
@@ -2296,6 +2386,7 @@ components:
       - domain
       - source
       additionalProperties: false
+
     ParsingResultsByKeyDTO:
       type: object
       description: |
@@ -2315,6 +2406,7 @@ components:
       - keyId
       - groups
       additionalProperties: false
+
     ParsingResultsResponseDTO:
       type: object
       description: |
@@ -2341,6 +2433,7 @@ components:
       - runId
       - results
       additionalProperties: false
+
     ModeratorBlacklistUrlItemDTO:
       type: object
       description: |
@@ -2366,6 +2459,7 @@ components:
       - url
       - createdat
       additionalProperties: false
+
     ModeratorBlacklistDomainDTO:
       type: object
       description: |
@@ -2399,6 +2493,7 @@ components:
       - createdat
       - urls
       additionalProperties: false
+
     ModeratorBlacklistDomainListResponseDTO:
       type: object
       description: |
@@ -2429,6 +2524,7 @@ components:
       - offset
       - total
       additionalProperties: false
+
     AddModeratorBlacklistDomainRequestDTO:
       type: object
       description: |
@@ -2456,4 +2552,1068 @@ components:
           description: Optional specific URL to blacklist along with the domain.
       required:
       - domain
+      additionalProperties: false
+
+    # ==========================================================================
+    # NEW SCHEMAS: Moderator Parsing Runs (Временные заявки модератора)
+    # ==========================================================================
+    ModeratorParsingSourceOption:
+      type: string
+      enum:
+      - google
+      - yandex
+      - both
+      title: ModeratorParsingSourceOption
+      description: |
+        Источник парсинга для ручных запусков модератора.
+        - google: только Google
+        - yandex: только Яндекс
+        - both: оба источника (по умолчанию)
+        SSoT: api-contracts.yaml /components/schemas/ModeratorParsingSourceOption
+
+    CreateModeratorParsingRunRequestDTO:
+      type: object
+      description: |
+        Запрос на создание ручного запуска парсинга.
+        SSoT: api-contracts.yaml /components/schemas/CreateModeratorParsingRunRequestDTO
+        
+        ВАЖНО: Backend автоматически добавляет "купить " к ключу при поиске.
+        Клиент передаёт только чистый ключ без этого префикса.
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 500
+          title: Key
+          description: |
+            Чистый поисковый ключ БЕЗ префикса "купить".
+            Например: "труба стальная 100мм", "подшипник 6205".
+            Backend автоматически добавит "купить " при формировании запроса в поисковик.
+            Клиент НЕ ДОЛЖЕН передавать префикс "купить" — это приведёт к дублированию.
+        depth:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 10
+          title: Depth
+          description: |
+            Глубина парсинга — количество страниц поисковой выдачи.
+            Default: 10, Max: 50.
+        source:
+          $ref: '#/components/schemas/ModeratorParsingSourceOption'
+          default: both
+          description: Источник парсинга (google/yandex/both).
+      required:
+      - key
+      additionalProperties: false
+
+    ModeratorParsingRunDTO:
+      type: object
+      description: |
+        Краткая информация о запуске парсинга для списка.
+        SSoT: api-contracts.yaml /components/schemas/ModeratorParsingRunDTO
+      properties:
+        runId:
+          type: string
+          title: RunId
+          description: Уникальный идентификатор запуска.
+        key:
+          type: string
+          title: Key
+          description: |
+            Чистый поисковый ключ (без префикса "купить").
+            Префикс добавляется backend-ом при парсинге, но не хранится.
+        depth:
+          type: integer
+          title: Depth
+          description: Глубина парсинга.
+        source:
+          $ref: '#/components/schemas/ModeratorParsingSourceOption'
+          description: Источник парсинга.
+        status:
+          $ref: '#/components/schemas/ParsingRunStatus'
+          description: Текущий статус запуска.
+        itemsFound:
+          type: integer
+          minimum: 0
+          title: ItemsFound
+          description: Количество найденных результатов.
+        createdat:
+          type: string
+          format: date-time
+          title: CreatedAt
+          description: Дата и время создания запуска (ISO 8601).
+        completedat:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: CompletedAt
+          description: Дата и время завершения запуска (ISO 8601), null если не завершён.
+      required:
+      - runId
+      - key
+      - depth
+      - source
+      - status
+      - itemsFound
+      - createdat
+      additionalProperties: false
+
+    ModeratorParsingRunListResponseDTO:
+      type: object
+      description: |
+        Ответ со списком запусков парсинга модератора.
+        SSoT: api-contracts.yaml /components/schemas/ModeratorParsingRunListResponseDTO
+      properties:
+        items:
+          type: array
+          title: Items
+          items:
+            $ref: '#/components/schemas/ModeratorParsingRunDTO'
+        limit:
+          type: integer
+          title: Limit
+        offset:
+          type: integer
+          title: Offset
+        total:
+          type: integer
+          title: Total
+      required:
+      - items
+      - limit
+      - offset
+      - total
+      additionalProperties: false
+
+    ModeratorParsingRunDetailDTO:
+      type: object
+      description: |
+        Детальная информация о запуске парсинга, включая результаты.
+        SSoT: api-contracts.yaml /components/schemas/ModeratorParsingRunDetailDTO
+      properties:
+        runId:
+          type: string
+          title: RunId
+        key:
+          type: string
+          title: Key
+          description: Чистый поисковый ключ (без префикса "купить").
+        depth:
+          type: integer
+          title: Depth
+        source:
+          $ref: '#/components/schemas/ModeratorParsingSourceOption'
+        status:
+          $ref: '#/components/schemas/ParsingRunStatus'
+        itemsFound:
+          type: integer
+          minimum: 0
+          title: ItemsFound
+        createdat:
+          type: string
+          format: date-time
+          title: CreatedAt
+        completedat:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: CompletedAt
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Сообщение об ошибке, если статус failed.
+        groups:
+          type: array
+          title: Groups
+          items:
+            $ref: '#/components/schemas/ModeratorParsingRunDomainGroupDTO'
+          description: |
+            Результаты, сгруппированные по доменам (аккордеон для UI).
+            Каждый URL содержит информацию о ключе, которым был найден.
+            Пустой массив, если парсинг не завершён или нет результатов.
+      required:
+      - runId
+      - key
+      - depth
+      - source
+      - status
+      - itemsFound
+      - createdat
+      - groups
+      additionalProperties: false
+
+    # ==========================================================================
+    # NEW SCHEMAS: Moderator Parsing Run URL/Domain Groups (with URL→keys mapping)
+    # ==========================================================================
+    ModeratorParsingRunUrlDTO:
+      type: object
+      description: |
+        URL в результатах парсинга с информацией о ключах, которые к нему привели.
+        Один URL может всплывать по нескольким разным ключам (например, "TEKA ..."
+        и "Комбинированная варочная панель ..."), поэтому keys — массив.
+        SSoT: api-contracts.yaml /components/schemas/ModeratorParsingRunUrlDTO
+      properties:
+        url:
+          type: string
+          format: uri
+          title: Url
+          description: Полный URL результата.
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+          description: Заголовок страницы из поисковой выдачи.
+        source:
+          $ref: '#/components/schemas/ParsingSource'
+          description: Источник (google/yandex).
+        keys:
+          type: array
+          title: Keys
+          minItems: 1
+          items:
+            type: string
+          description: |
+            Список ключей (чистых, без "купить"), по которым найден этот URL.
+            Один URL может всплывать по нескольким ключам — все они перечислены здесь.
+      required:
+      - url
+      - source
+      - keys
+      additionalProperties: false
+
+    ModeratorParsingRunDomainGroupDTO:
+      type: object
+      description: |
+        Группа результатов парсинга по домену для ручных запусков модератора.
+        В отличие от ParsingDomainGroupDTO, содержит объекты URL с привязкой к ключам.
+        SSoT: api-contracts.yaml /components/schemas/ModeratorParsingRunDomainGroupDTO
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: |
+            Root-домен (нормализованный, без www).
+            Примеры: 'example.com', 'pulscen.ru'.
+        rootdomain:
+          type: string
+          title: RootDomain
+          description: |
+            Канонический root-домен для дедупликации.
+            Всегда без www, без схемы, без путей.
+        urls:
+          type: array
+          title: Urls
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/ModeratorParsingRunUrlDTO'
+          description: Список URL-ов с информацией о ключах.
+        source:
+          anyOf:
+          - $ref: '#/components/schemas/ParsingSource'
+          - type: 'null'
+          title: Source
+          description: Агрегированный источник; null если смешанный (google+yandex).
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+          description: Репрезентативный заголовок домена (может быть null).
+      required:
+      - domain
+      - rootdomain
+      - urls
+      additionalProperties: false
+
+    # ==========================================================================
+    # NEW SCHEMAS: Pending Domains Queue (Очередь доменов ждут решения)
+    # ==========================================================================
+    UrlKeyHitDTO:
+      type: object
+      description: |
+        Связь URL с поисковым ключом, который к нему привёл.
+        SSoT: api-contracts.yaml /components/schemas/UrlKeyHitDTO
+      properties:
+        key:
+          type: string
+          title: Key
+          description: Чистый поисковый ключ (без префикса "купить").
+        hitcount:
+          type: integer
+          minimum: 1
+          title: HitCount
+          description: Сколько раз этот ключ приводил к URL.
+        lasthitat:
+          type: string
+          format: date-time
+          title: LastHitAt
+          description: Время последнего попадания.
+      required:
+      - key
+      - hitcount
+      - lasthitat
+      additionalProperties: false
+
+    PendingDomainUrlDTO:
+      type: object
+      description: |
+        URL в составе pending-домена с привязкой к ключам.
+        SSoT: api-contracts.yaml /components/schemas/PendingDomainUrlDTO
+      properties:
+        url:
+          type: string
+          format: uri
+          title: Url
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+          description: Заголовок страницы из поисковой выдачи.
+        source:
+          anyOf:
+          - $ref: '#/components/schemas/ParsingSource'
+          - type: 'null'
+          title: Source
+          description: Источник (google/yandex), null если смешанный.
+        hitcount:
+          type: integer
+          minimum: 1
+          title: HitCount
+          description: Общее количество попаданий по этому URL.
+        keys:
+          type: array
+          title: Keys
+          items:
+            $ref: '#/components/schemas/UrlKeyHitDTO'
+          description: Список ключей, которые привели к этому URL.
+      required:
+      - url
+      - hitcount
+      - keys
+      additionalProperties: false
+
+    PendingDomainDTO:
+      type: object
+      description: |
+        Домен в очереди ожидания решения (для списка).
+        SSoT: api-contracts.yaml /components/schemas/PendingDomainDTO
+        
+        **Примечание:** Поле `urls` содержит только превью (до 10 URL).
+        Для получения полного списка всех URL домена используйте
+        `GET /moderator/pending-domains/{domain}`.
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: |
+            Root-домен в нормализованном виде (без www, без схемы, без путей).
+            Примеры: 'example.com', 'pulscen.ru'.
+        totalhits:
+          type: integer
+          minimum: 1
+          title: TotalHits
+          description: Общее количество попаданий по всем URL домена.
+        urlcount:
+          type: integer
+          minimum: 1
+          title: UrlCount
+          description: |
+            Количество уникальных URL для этого домена.
+            Может быть больше, чем длина массива `urls` (который ограничен 10 элементами).
+        firstseenat:
+          type: string
+          format: date-time
+          title: FirstSeenAt
+          description: Когда домен впервые появился в результатах.
+        lasthitat:
+          type: string
+          format: date-time
+          title: LastHitAt
+          description: Последнее попадание по домену.
+        urls:
+          type: array
+          title: Urls
+          items:
+            $ref: '#/components/schemas/PendingDomainUrlDTO'
+          description: |
+            **Превью** списка URL-ов домена (для аккордеона в UI).
+            Ограничено 10 элементами для оптимизации списка.
+            Полный список всех URL доступен через `GET /moderator/pending-domains/{domain}`.
+          maxItems: 10
+      required:
+      - domain
+      - totalhits
+      - urlcount
+      - firstseenat
+      - lasthitat
+      - urls
+      additionalProperties: false
+
+    PendingDomainListResponseDTO:
+      type: object
+      description: |
+        Ответ со списком pending-доменов.
+        SSoT: api-contracts.yaml /components/schemas/PendingDomainListResponseDTO
+      properties:
+        items:
+          type: array
+          title: Items
+          items:
+            $ref: '#/components/schemas/PendingDomainDTO'
+        limit:
+          type: integer
+          title: Limit
+        offset:
+          type: integer
+          title: Offset
+        total:
+          type: integer
+          title: Total
+          description: Общее количество pending-доменов.
+      required:
+      - items
+      - limit
+      - offset
+      - total
+      additionalProperties: false
+
+    PendingDomainDetailDTO:
+      type: object
+      description: |
+        Детальная информация о pending-домене.
+        SSoT: api-contracts.yaml /components/schemas/PendingDomainDetailDTO
+        
+        **Отличие от PendingDomainDTO:**
+        В отличие от списочного DTO, здесь поле `urls` содержит **полный** список
+        всех URL домена без ограничения в 10 элементов.
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: |
+            Root-домен в нормализованном виде (без www, без схемы, без путей).
+        totalhits:
+          type: integer
+          minimum: 1
+          title: TotalHits
+        urlcount:
+          type: integer
+          minimum: 1
+          title: UrlCount
+        firstseenat:
+          type: string
+          format: date-time
+          title: FirstSeenAt
+        lasthitat:
+          type: string
+          format: date-time
+          title: LastHitAt
+        urls:
+          type: array
+          title: Urls
+          items:
+            $ref: '#/components/schemas/PendingDomainUrlDTO'
+          description: |
+            **Полный** список всех URL-ов домена (без ограничения).
+            Каждый URL содержит привязку к ключам, которые к нему привели.
+      required:
+      - domain
+      - totalhits
+      - urlcount
+      - firstseenat
+      - lasthitat
+      - urls
+      additionalProperties: false
+
+    # ==========================================================================
+    # NEW SCHEMAS: Domain Decision (Принять решение по домену)
+    # ==========================================================================
+    DomainDecisionStatus:
+      type: string
+      enum:
+      - supplier
+      - reseller
+      - blacklist
+      - pending
+      title: DomainDecisionStatus
+      description: |
+        Статус решения по домену:
+        - supplier: поставщик
+        - reseller: реселлер
+        - blacklist: чёрный список
+        - pending: ожидает решения (сброс)
+        SSoT: api-contracts.yaml /components/schemas/DomainDecisionStatus
+
+    SupplierCardType:
+      type: string
+      enum:
+      - supplier
+      - reseller
+      title: SupplierCardType
+      description: |
+        Тип карточки контрагента.
+        SSoT: api-contracts.yaml /components/schemas/SupplierCardType
+
+    DomainDecisionCardDataDTO:
+      type: object
+      description: |
+        Данные для создания/обновления карточки при решении supplier/reseller.
+        Обязательны при status = supplier или reseller.
+        SSoT: api-contracts.yaml /components/schemas/DomainDecisionCardDataDTO
+      properties:
+        inn:
+          type: string
+          minLength: 10
+          maxLength: 12
+          title: Inn
+          description: ИНН организации (10 или 12 цифр).
+        name:
+          type: string
+          minLength: 1
+          maxLength: 500
+          title: Name
+          description: Название организации.
+        email:
+          type: string
+          format: email
+          title: Email
+          description: Контактный email.
+        emails:
+          anyOf:
+          - type: array
+            items:
+              type: string
+              format: email
+            maxItems: 10
+          - type: 'null'
+          title: Emails
+          description: Дополнительные email-адреса.
+        phone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phone
+          description: Контактный телефон.
+        comment:
+          anyOf:
+          - type: string
+            maxLength: 2000
+          - type: 'null'
+          title: Comment
+          description: Комментарий модератора.
+      required:
+      - inn
+      - name
+      - email
+      additionalProperties: false
+
+    DomainDecisionRequestDTO:
+      type: object
+      description: |
+        Запрос на принятие решения по домену.
+        SSoT: api-contracts.yaml /components/schemas/DomainDecisionRequestDTO
+      properties:
+        status:
+          $ref: '#/components/schemas/DomainDecisionStatus'
+          description: Новый статус домена.
+        carddata:
+          anyOf:
+          - $ref: '#/components/schemas/DomainDecisionCardDataDTO'
+          - type: 'null'
+          description: |
+            Данные карточки. Обязательны при status = supplier или reseller.
+            Игнорируются при status = blacklist или pending.
+        comment:
+          anyOf:
+          - type: string
+            maxLength: 2000
+          - type: 'null'
+          title: Comment
+          description: Комментарий к решению (для blacklist или общий).
+      required:
+      - status
+      additionalProperties: false
+
+    DomainDecisionResponseDTO:
+      type: object
+      description: |
+        Ответ с информацией о принятом решении.
+        SSoT: api-contracts.yaml /components/schemas/DomainDecisionResponseDTO
+        
+        **Intended flow для UI:**
+        Этот ответ содержит базовую информацию о решении и список URL-ов домена.
+        Если фронту нужна детализация "какие ключи привели к каждому URL", следует
+        дополнительно запросить:
+        - `GET /moderator/domains/{domain}/hits` — лог всех ключей для домена
+        - `GET /moderator/pending-domains/{domain}` — детали с URL→keys (если домен был pending)
+        
+        Это разделение позволяет decision endpoint оставаться быстрым и простым.
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: |
+            Root-домен в нормализованном виде (без www, без схемы, без путей).
+            Примеры: 'example.com', 'pulscen.ru'.
+        status:
+          $ref: '#/components/schemas/DomainDecisionStatus'
+        decisionat:
+          type: string
+          format: date-time
+          title: DecisionAt
+          description: Дата и время принятия решения.
+        supplierid:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: SupplierId
+          description: ID созданной/обновлённой карточки (для supplier/reseller).
+        card:
+          anyOf:
+          - $ref: '#/components/schemas/SupplierCardDTO'
+          - type: 'null'
+          description: Данные карточки (для supplier/reseller).
+        comment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comment
+        urls:
+          type: array
+          title: Urls
+          items:
+            type: string
+            format: uri
+          description: |
+            URL-ы, автоматически привязанные к домену/карточке.
+            Это простой список URL без детализации по ключам.
+            Для получения связи URL→keys используйте `/moderator/domains/{domain}/hits`.
+      required:
+      - domain
+      - status
+      - decisionat
+      - urls
+      additionalProperties: false
+
+    # ==========================================================================
+    # NEW SCHEMAS: Supplier Card (Карточка поставщика/реселлера)
+    # ==========================================================================
+    CreateSupplierCardRequestDTO:
+      type: object
+      description: |
+        Запрос на создание карточки поставщика/реселлера.
+        SSoT: api-contracts.yaml /components/schemas/CreateSupplierCardRequestDTO
+      properties:
+        type:
+          $ref: '#/components/schemas/SupplierCardType'
+          default: supplier
+          description: Тип карточки.
+        inn:
+          type: string
+          minLength: 10
+          maxLength: 12
+          title: Inn
+        name:
+          type: string
+          minLength: 1
+          maxLength: 500
+          title: Name
+        email:
+          type: string
+          format: email
+          title: Email
+        emails:
+          anyOf:
+          - type: array
+            items:
+              type: string
+              format: email
+            maxItems: 10
+          - type: 'null'
+          title: Emails
+        phone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phone
+        urls:
+          type: array
+          title: Urls
+          items:
+            type: string
+            format: uri
+          minItems: 1
+          description: Список URL-ов, привязанных к карточке.
+        comment:
+          anyOf:
+          - type: string
+            maxLength: 2000
+          - type: 'null'
+          title: Comment
+      required:
+      - inn
+      - name
+      - email
+      - urls
+      additionalProperties: false
+
+    UpdateSupplierCardRequestDTO:
+      type: object
+      description: |
+        Запрос на обновление карточки поставщика/реселлера.
+        Все поля опциональны — обновляются только переданные.
+        SSoT: api-contracts.yaml /components/schemas/UpdateSupplierCardRequestDTO
+      properties:
+        type:
+          anyOf:
+          - $ref: '#/components/schemas/SupplierCardType'
+          - type: 'null'
+        name:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 500
+          - type: 'null'
+          title: Name
+        email:
+          anyOf:
+          - type: string
+            format: email
+          - type: 'null'
+          title: Email
+        emails:
+          anyOf:
+          - type: array
+            items:
+              type: string
+              format: email
+            maxItems: 10
+          - type: 'null'
+          title: Emails
+        phone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phone
+        urls:
+          anyOf:
+          - type: array
+            items:
+              type: string
+              format: uri
+          - type: 'null'
+          title: Urls
+        comment:
+          anyOf:
+          - type: string
+            maxLength: 2000
+          - type: 'null'
+          title: Comment
+      additionalProperties: false
+
+    SupplierCardDTO:
+      type: object
+      description: |
+        Карточка поставщика/реселлера.
+        SSoT: api-contracts.yaml /components/schemas/SupplierCardDTO
+      properties:
+        supplierid:
+          type: integer
+          title: SupplierId
+        type:
+          $ref: '#/components/schemas/SupplierCardType'
+        inn:
+          type: string
+          title: Inn
+        name:
+          type: string
+          title: Name
+        email:
+          type: string
+          format: email
+          title: Email
+        emails:
+          anyOf:
+          - type: array
+            items:
+              type: string
+              format: email
+          - type: 'null'
+          title: Emails
+        phone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phone
+        urls:
+          type: array
+          title: Urls
+          items:
+            type: string
+            format: uri
+        comment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comment
+        createdat:
+          type: string
+          format: date-time
+          title: CreatedAt
+        updatedat:
+          type: string
+          format: date-time
+          title: UpdatedAt
+        checko:
+          anyOf:
+          - type: object
+            additionalProperties: true
+          - type: 'null'
+          title: Checko
+          description: Данные из сервиса проверки контрагентов.
+      required:
+      - supplierid
+      - type
+      - inn
+      - name
+      - email
+      - urls
+      - createdat
+      - updatedat
+      additionalProperties: false
+
+    # ==========================================================================
+    # NEW SCHEMAS: Hits Log (Лог попаданий)
+    # ==========================================================================
+    HitLogEntryDTO:
+      type: object
+      description: |
+        Запись в логе попаданий.
+        SSoT: api-contracts.yaml /components/schemas/HitLogEntryDTO
+      properties:
+        key:
+          type: string
+          title: Key
+          description: Чистый поисковый ключ (без префикса "купить").
+        source:
+          $ref: '#/components/schemas/ParsingSource'
+          description: Источник (google/yandex).
+        hitcount:
+          type: integer
+          minimum: 1
+          title: HitCount
+          description: Количество попаданий.
+        firsthitat:
+          type: string
+          format: date-time
+          title: FirstHitAt
+          description: Время первого попадания.
+        lasthitat:
+          type: string
+          format: date-time
+          title: LastHitAt
+          description: Время последнего попадания.
+        runid:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: RunId
+          description: ID запуска парсинга (если применимо).
+        requestid:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: RequestId
+          description: ID заявки пользователя (если применимо).
+      required:
+      - key
+      - source
+      - hitcount
+      - firsthitat
+      - lasthitat
+      additionalProperties: false
+
+    DomainHitsResponseDTO:
+      type: object
+      description: |
+        Ответ с логом попаданий для домена.
+        SSoT: api-contracts.yaml /components/schemas/DomainHitsResponseDTO
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: |
+            Root-домен в нормализованном виде (без www, без схемы, без путей).
+        status:
+          anyOf:
+          - $ref: '#/components/schemas/DomainDecisionStatus'
+          - type: 'null'
+          description: Текущий статус домена (null если не определён).
+        totalhits:
+          type: integer
+          minimum: 0
+          title: TotalHits
+          description: Общее количество попаданий.
+        hits:
+          type: array
+          title: Hits
+          items:
+            $ref: '#/components/schemas/HitLogEntryDTO'
+          description: Список записей лога попаданий.
+        limit:
+          type: integer
+          title: Limit
+        offset:
+          type: integer
+          title: Offset
+        total:
+          type: integer
+          title: Total
+          description: Общее количество записей в логе.
+      required:
+      - domain
+      - totalhits
+      - hits
+      - limit
+      - offset
+      - total
+      additionalProperties: false
+
+    UrlHitsResponseDTO:
+      type: object
+      description: |
+        Ответ с логом попаданий для URL.
+        SSoT: api-contracts.yaml /components/schemas/UrlHitsResponseDTO
+      properties:
+        url:
+          type: string
+          format: uri
+          title: Url
+        domain:
+          type: string
+          title: Domain
+          description: |
+            Root-домен в нормализованном виде (без www).
+            Домен, к которому принадлежит URL.
+        domainstatus:
+          anyOf:
+          - $ref: '#/components/schemas/DomainDecisionStatus'
+          - type: 'null'
+          description: Текущий статус домена.
+        totalhits:
+          type: integer
+          minimum: 0
+          title: TotalHits
+        hits:
+          type: array
+          title: Hits
+          items:
+            $ref: '#/components/schemas/HitLogEntryDTO'
+        limit:
+          type: integer
+          title: Limit
+        offset:
+          type: integer
+          title: Offset
+        total:
+          type: integer
+          title: Total
+      required:
+      - url
+      - domain
+      - totalhits
+      - hits
+      - limit
+      - offset
+      - total
+      additionalProperties: false
+
+    # ==========================================================================
+    # NEW SCHEMAS: Resolved Domains (История решений)
+    # ==========================================================================
+    ResolvedDomainDTO:
+      type: object
+      description: |
+        Домен с принятым решением.
+        SSoT: api-contracts.yaml /components/schemas/ResolvedDomainDTO
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: |
+            Root-домен в нормализованном виде (без www, без схемы, без путей).
+        status:
+          $ref: '#/components/schemas/DomainDecisionStatus'
+          description: Статус решения (без pending).
+        decisionat:
+          type: string
+          format: date-time
+          title: DecisionAt
+        supplierid:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: SupplierId
+          description: ID карточки (для supplier/reseller).
+        suppliername:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: SupplierName
+          description: Название из карточки (для supplier/reseller).
+        urlcount:
+          type: integer
+          minimum: 0
+          title: UrlCount
+          description: Количество URL-ов, привязанных к домену.
+        totalhits:
+          type: integer
+          minimum: 0
+          title: TotalHits
+          description: Общее количество попаданий.
+        comment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comment
+      required:
+      - domain
+      - status
+      - decisionat
+      - urlcount
+      - totalhits
+      additionalProperties: false
+
+    ResolvedDomainListResponseDTO:
+      type: object
+      description: |
+        Ответ со списком resolved-доменов.
+        SSoT: api-contracts.yaml /components/schemas/ResolvedDomainListResponseDTO
+      properties:
+        items:
+          type: array
+          title: Items
+          items:
+            $ref: '#/components/schemas/ResolvedDomainDTO'
+        limit:
+          type: integer
+          title: Limit
+        offset:
+          type: integer
+          title: Offset
+        total:
+          type: integer
+          title: Total
+      required:
+      - items
+      - limit
+      - offset
+      - total
       additionalProperties: false
