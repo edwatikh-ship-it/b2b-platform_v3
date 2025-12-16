@@ -919,6 +919,9 @@ paths:
       description: |
         Initiates parsing for the given request. Returns a runId that can be used
         to poll parsing-status and parsing-results endpoints.
+        
+        Depth parameter controls the number of search result pages per key
+        (Yandex/Google). Default is 10 pages if not specified.
       operationId: start_parsing_apiv1_moderator_requests__requestId__start_parsing_post
       parameters:
       - name: requestId
@@ -927,6 +930,12 @@ paths:
         schema:
           type: integer
           title: Requestid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartParsingRequestDTO'
       responses:
         '200':
           description: Successful Response
@@ -2070,6 +2079,24 @@ components:
           $ref: '#/components/schemas/UpdateRecipientsRequest/properties/recipients'
       required:
       - recipients
+      additionalProperties: false
+    StartParsingRequestDTO:
+      type: object
+      description: |
+        Request body for starting a parsing run.
+        SSoT: api-contracts.yaml /components/schemas/StartParsingRequestDTO
+      properties:
+        depth:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 10
+          title: Depth
+          description: |
+            Number of search result pages per key for parser_service (Yandex/Google).
+            This is the number of pages to crawl, not the number of URLs.
+            Default is 10 if not specified.
+      required: []
       additionalProperties: false
     StartParsingResponseDTO:
       type: object
