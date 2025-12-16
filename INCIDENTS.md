@@ -129,3 +129,4 @@ Verification (expected)
   Root cause: router used status=str(body.status) producing 'DomainDecisionStatus.blacklist' instead of 'blacklist'.
   Fix/mitigation: use body.status.value when persisting/returning DTO-compatible status.
   Verification: Invoke-RestMethod -Method Post http://127.0.0.1:8000/moderator/domains/pulscen.ru/decision with {status:'blacklist'} -> 200 and GET returns status='blacklist'.
+- 2025-12-17 01:12 MSK NOTE Enum serialization pitfall in FastAPI/Pydantic: never persist/return Enum via str(enum) (it becomes 'EnumClass.member'); use enum.value (or return the Enum and let Pydantic serialize) to match OpenAPI contract enums.
