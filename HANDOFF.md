@@ -258,3 +258,6 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
   - Expected: working tree clean (no M/??)
   - Verify: pre-commit run --all-files
   - Expected: ruff + ruff-format Passed
+- 2025-12-17 0015 MSK Success Added ModeratorPendingDomains endpoints and DTOs.
+  - What: Implemented GET /moderator/pending-domains (list) and GET /moderator/pending-domains/{domain} (detail stub 404) with transport schemas PendingDomainListResponseDTO and PendingDomainDetailDTO, wired router in backend/app/main.py.
+  - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
