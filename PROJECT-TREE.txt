@@ -1,5 +1,5 @@
 PROJECT TREE (key artifacts)
-Generated: 2025-12-16 22:02:21
+Generated: 2025-12-16 23:45:25
 
 .gitattributes
 .gitignore
@@ -23,6 +23,7 @@ tools\check_suppliers_tables.py
 tools\log_success.ps1
 tools\openapi_diff.py
 tools\patch_api_contracts_parser.py
+tools\patch_openapi_diff.py
 tools\preflight.ps1
 tools\pytest.ps1
 tools\set_limit_max_200.py
