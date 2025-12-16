@@ -269,4 +269,4 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
   - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
 - 2025-12-17 00:44 MSK Implemented moderator domain decision endpoints.
   What: Added router moderator_domain_decision and schemas for DomainDecisionRequestDTO/ResponseDTO plus SupplierCardDTO, wired router in backend/app/main.py.
-  Verified: ruff check backend; pre-commit run --all-files; runtime openapi.json contains /moderator/domains/{domain}/decision and /moderator/domains/{domain}/hits.
+  Verified: ruff check backend; pre-commit run --all-files; runtime openapi.json contains /moderator/domains/{domain}/decision and /moderator/domains/{domain}/hits.- 2025-12-17 01:09 MSK Fixed moderator domain decision endpoints 500 caused by Enum stringification; now returns contract enum values. Verify: POST and GET http://127.0.0.1:8000/moderator/domains/pulscen.ru/decision -> 200 with status 'blacklist'.

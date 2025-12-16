@@ -124,4 +124,8 @@ Fix / mitigation
 
 Verification (expected)
 - Invoke-RestMethod "http://127.0.0.1:8000//moderator/blacklist-domains?limit=50&offset=0" should return 200 and valid JSON list response.
-- POST "http://127.0.0.1:8000//moderator/blacklist-domains" with {domain, comment, url} should return 200 and include the created url item.
+- POST "http://127.0.0.1:8000//moderator/blacklist-domains" with {domain, comment, url} should return 200 and include the created url item.- 2025-12-17 01:08 MSK INCIDENT moderator/domains/{domain}/decision returned 500 due to Enum serialization.
+  Symptom: POST/GET /moderator/domains/pulscen.ru/decision -> 500 ValidationError (status enum).
+  Root cause: router used status=str(body.status) producing 'DomainDecisionStatus.blacklist' instead of 'blacklist'.
+  Fix/mitigation: use body.status.value when persisting/returning DTO-compatible status.
+  Verification: Invoke-RestMethod -Method Post http://127.0.0.1:8000/moderator/domains/pulscen.ru/decision with {status:'blacklist'} -> 200 and GET returns status='blacklist'.
