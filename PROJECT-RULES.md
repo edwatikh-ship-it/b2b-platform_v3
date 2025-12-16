@@ -217,3 +217,10 @@ This is mandatory for any multi-step instruction, any repo change, and any debug
 - Update PROJECT-TREE.txt at the end of a milestone (when adding/renaming/moving key files or changing structure), together with HANDOFF entry.
 - Use: powershell: Set-Location D:\b2bplatform; .\tools\update_project_tree.ps1
 
+
+## Project tree command (Preferred)
+
+- Preferred: `just tree`
+- Plan B: powershell: Set-Location D:\b2bplatform; .\tools\update_project_tree.ps1
+- When the assistant asks for project structure context, provide the output of `just tree` (or Plan B).
+
