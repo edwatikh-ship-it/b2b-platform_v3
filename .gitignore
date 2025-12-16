@@ -37,3 +37,7 @@ openapi.json
 # Logs
 parser_service/*.log
 
+
+# local debug scripts
+backend/tmp_db_check*.py
+
