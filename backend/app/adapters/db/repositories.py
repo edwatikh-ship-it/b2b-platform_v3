@@ -352,6 +352,21 @@ class DomainBlacklistRepository:
         res = await self._session.execute(stmt)
         return [str(x) for x in res.scalars().all()]
 
+    async def count_domains(self) -> int:
+        stmt = select(func.count(DomainBlacklistDomainModel.id))
+        total = await self._session.scalar(stmt)
+        return int(total or 0)
+
+    async def list_domains(self, limit: int, offset: int) -> list[tuple[str, object]]:
+        stmt = (
+            select(DomainBlacklistDomainModel.root_domain, DomainBlacklistDomainModel.created_at)
+            .order_by(DomainBlacklistDomainModel.id.desc())
+            .limit(int(limit))
+            .offset(int(offset))
+        )
+        res = await self._session.execute(stmt)
+        return [(str(d), ca) for (d, ca) in res.all()]
+
     async def add_root_domain(self, root_domain: str) -> None:
         root_domain = str(root_domain).strip().lower()
         if not root_domain:

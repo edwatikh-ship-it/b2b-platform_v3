@@ -1155,15 +1155,14 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: true
-              title: Payload
+              $ref: '#/components/schemas/AddModeratorBlacklistDomainRequestDTO'
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/ModeratorBlacklistDomainDTO'
         '422':
           description: Validation Error
           content:
@@ -1184,12 +1183,21 @@ paths:
           maximum: 200
           default: 200
           title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/ModeratorBlacklistDomainListResponseDTO'
         '422':
           description: Validation Error
           content:
@@ -2306,4 +2314,120 @@ components:
       - requestId
       - runId
       - results
+      additionalProperties: false
+    ModeratorBlacklistUrlItemDTO:
+      type: object
+      description: |
+        Single URL item in the moderator blacklist for a domain.
+        SSoT: api-contracts.yaml /components/schemas/ModeratorBlacklistUrlItemDTO
+      properties:
+        url:
+          type: string
+          format: uri
+          title: Url
+          description: Full URL that was blacklisted.
+        comment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comment
+          description: Optional comment explaining why this URL was blacklisted.
+        createdat:
+          type: string
+          title: Createdat
+          description: Timestamp when this URL was added to blacklist (ISO 8601 format).
+      required:
+      - url
+      - createdat
+      additionalProperties: false
+    ModeratorBlacklistDomainDTO:
+      type: object
+      description: |
+        Domain entry in the moderator blacklist with associated URLs.
+        SSoT: api-contracts.yaml /components/schemas/ModeratorBlacklistDomainDTO
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: |
+            Hostname/root-domain only, no scheme, no path, no trailing slash.
+            Examples: 'cvetmetall.ru', 'pulscen.ru', 'example.com'
+        createdat:
+          type: string
+          title: Createdat
+          description: Timestamp when this domain was added to blacklist (ISO 8601 format).
+        comment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comment
+          description: Optional comment explaining why this domain was blacklisted.
+        urls:
+          type: array
+          title: Urls
+          items:
+            $ref: '#/components/schemas/ModeratorBlacklistUrlItemDTO'
+          description: List of specific URLs blacklisted for this domain (for accordion UI).
+      required:
+      - domain
+      - createdat
+      - urls
+      additionalProperties: false
+    ModeratorBlacklistDomainListResponseDTO:
+      type: object
+      description: |
+        Response containing list of blacklisted domains with pagination info.
+        SSoT: api-contracts.yaml /components/schemas/ModeratorBlacklistDomainListResponseDTO
+      properties:
+        items:
+          type: array
+          title: Items
+          items:
+            $ref: '#/components/schemas/ModeratorBlacklistDomainDTO'
+          description: List of blacklisted domains with their URLs.
+        limit:
+          type: integer
+          title: Limit
+          description: Maximum number of items requested.
+        offset:
+          type: integer
+          title: Offset
+          description: Offset for pagination.
+        total:
+          type: integer
+          title: Total
+          description: Total number of blacklisted domains.
+      required:
+      - items
+      - limit
+      - offset
+      - total
+      additionalProperties: false
+    AddModeratorBlacklistDomainRequestDTO:
+      type: object
+      description: |
+        Request to add a domain to the moderator blacklist.
+        SSoT: api-contracts.yaml /components/schemas/AddModeratorBlacklistDomainRequestDTO
+      properties:
+        domain:
+          type: string
+          title: Domain
+          description: |
+            Hostname/root-domain only, no scheme, no path, no trailing slash.
+            Examples: 'cvetmetall.ru', 'pulscen.ru', 'example.com'
+        comment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comment
+          description: Optional comment explaining why this domain is being blacklisted.
+        url:
+          anyOf:
+          - type: string
+            format: uri
+          - type: 'null'
+          title: Url
+          description: Optional specific URL to blacklist along with the domain.
+      required:
+      - domain
       additionalProperties: false
