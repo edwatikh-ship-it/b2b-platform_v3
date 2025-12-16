@@ -61,6 +61,7 @@ def main() -> int:
     live_url = args.live_url
     if not live_url:
         import os
+
         live_url = os.getenv(args.openapi_url_env)
 
     if live_url:
@@ -101,7 +102,9 @@ def main() -> int:
                     op = (spec or {}).get("operationId", "")
                     out.write(f'OK,"{path}",{method.upper()},{op}\n')
 
-        print(f"OK {args.out}: {len(missing)} missing, {len(extra)} extra, {len(present)} ok")
+        print(
+            f"OK {args.out}: {len(missing)} missing, {len(extra)} extra, {len(present)} ok"
+        )
     return 0
 
 
