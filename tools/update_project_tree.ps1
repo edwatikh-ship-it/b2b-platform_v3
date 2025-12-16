@@ -10,7 +10,7 @@ $repo = (Resolve-Path $RepoRoot).Path
 $out = Join-Path $repo $OutFile
 
 # Curated allowlist of "key artifacts" (keep it short and useful)
-$includePaths = @(
+$includeFiles = @(
   "api-contracts.yaml",
   "PROJECT-RULES.md",
   "PROJECT-DOC.md",
@@ -23,13 +23,16 @@ $includePaths = @(
   ".pre-commit-config.yaml",
   ".gitattributes",
   ".gitignore",
-  "justfile",
-  "tools/*",
-  "backend/app/**",
-  "backend/alembic/**",
-  "backend/tests/**"
+  "justfile"
 )
 
+# These are expanded via Get-ChildItem with -Recurse (PowerShell glob ** does not mean recursive)
+$includeDirs = @(
+  "tools",
+  "backend/app",
+  "backend/alembic",
+  "backend/tests"
+)
 $excludeDirNames = @(
   ".git", ".venv", "venv", "__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache",
   ".idea", ".vscode", "node_modules", "dist", "build", ".tox", ".eggs"
@@ -56,18 +59,29 @@ function Should-Exclude([string]$relPath) {
 $seen = New-Object System.Collections.Generic.HashSet[string]
 $items = New-Object System.Collections.Generic.List[string]
 
-foreach ($inc in $includePaths) {
-  $paths = Get-ChildItem -Path (Join-Path $repo $inc) -Force -ErrorAction SilentlyContinue |
-    Where-Object { -not $_.PSIsContainer } |
-    ForEach-Object { $_.FullName.Substring($repo.Length).TrimStart('\','/') }
-
-  foreach ($rel in $paths) {
+foreach ($f in $includeFiles) {
+  $full = Join-Path $repo $f
+  if (Test-Path $full) {
+    $rel = $full.Substring($repo.Length).TrimStart('\','/')
     if (-not (Should-Exclude $rel)) {
       if ($seen.Add($rel)) { $items.Add($rel) | Out-Null }
     }
   }
 }
 
+foreach ($d in $includeDirs) {
+  $root = Join-Path $repo $d
+  if (Test-Path $root) {
+    $paths = Get-ChildItem -Path $root -File -Recurse -Force -ErrorAction SilentlyContinue |
+      ForEach-Object { $_.FullName.Substring($repo.Length).TrimStart('\','/') }
+
+    foreach ($rel in $paths) {
+      if (-not (Should-Exclude $rel)) {
+        if ($seen.Add($rel)) { $items.Add($rel) | Out-Null }
+      }
+    }
+  }
+}
 $files = $items | Sort-Object
 
 $content = @()
