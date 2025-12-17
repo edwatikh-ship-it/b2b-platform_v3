@@ -51,3 +51,11 @@ new-chat-prompt:
 prompt:
   @just new-chat-prompt
 # Alias: canonical prompt generator
+
+
+# Aliases
+backend:
+    just dev
+
+backend-noreload:
+    just dev-noreload
