@@ -11,4 +11,9 @@ repos:
         name: ruff-format (local)
         entry: cmd /c "backend\.venv\Scripts\python.exe -m ruff format backend"
         language: system
-        pass_filenames: false
+        pass_filenames: false                                                                                            
+      - id: validate-openapi-contract                                                       
+        name: validate OpenAPI contract (paths start with /)                                
+        entry: python tools/validate_openapi_contract.py api-contracts.yaml                 
+        language: system                                                                    
+        pass_filenames: false                                                               
