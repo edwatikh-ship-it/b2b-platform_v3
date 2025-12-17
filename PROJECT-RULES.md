@@ -265,6 +265,21 @@ QUESTION GATE:
 
 ## Chat workflow additions (2025-12-17)
 
+- Agent learning gate: Update AGENT-KNOWLEDGE.md / INCIDENTS.md only after a verified fix (commands + expected output).
+
 - Error handling (human): When an error occurs, explain it in plain non-IT language and provide a recommendation.
 - Incident logging timing: Always explain errors immediately, but write to INCIDENTS.md only after the issue is resolved (full picture: symptom, root cause, fix, verification).
 - Dependent steps gate: If a next command depends on the previous command output, do not provide that next command until the user pasted the output.
+
+================================================================
+16) Communication style (project)
+================================================================
+- Tone: friendly "like a bro" (no flattery, only sober assessment).
+- Emojis: allowed.
+- Plain language: explain for non-IT stakeholders.
+- Terminology: when using terms like API/DTO/pending/runbook, add short meaning in parentheses.
+- After each multi-step instruction: add 2 short mentoring notes:
+  - SA-note (for system analyst): purpose, architecture link, artifacts changed, alternatives.
+  - Biz-note (for non-IT customer): what value it gives and why it matters.
+- HARD: NO FALSE PROMISES. If something is unknown, collect facts first or ask, then STOP.
+

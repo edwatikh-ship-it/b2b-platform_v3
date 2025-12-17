@@ -301,3 +301,7 @@ $ts MSK  Fixed Backup naming line in tools/print_new_chat_prompt.ps1.
 - 2025-12-17 20:03 12S+03:00 Fixed integration tests paths to match SSoT/runtime: /user/requests and /user/messages. Verified: just test (39 passed, 1 skipped).
 
 - 2025-12-17 20:18 MSK Success Verified runtime OpenAPI and health on http://127.0.0.1:8000 (APIPREFIX empty); runtime paths match api-contracts.yaml. Verify: Invoke-RestMethod http://127.0.0.1:8000/health ; Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Out-Null ; (Invoke-RestMethod http://127.0.0.1:8000/openapi.json).paths.PSObject.Properties.Name | Sort-Object.
+- 2025-12-17 22:27:41 MSK Success Added AGENT knowledge trail + communication style rules.
+  - What: created AGENT-KNOWLEDGE.md; updated PROJECT-RULES.md (Communication style section + Agent learning gate).
+  - Why: make chat output consistent and machine-usable; prevent agent from learning unverified fixes.
+  - Verified: ruff check backend; ruff format backend; pre-commit run --all-files (all Passed).
