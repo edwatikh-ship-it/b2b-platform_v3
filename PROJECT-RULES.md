@@ -73,20 +73,25 @@ FACTS to collect (in THIS shell):
    - Plan A: read from launch config / env.
    - Plan B: ask the user for the exact running host:port.
 
-2) Runtime OpenAPI must be reachable:
+2) Confirm backend is running:
+   - If backend is NOT running: do NOT run HTTP checks yet.
+   - Provide only start commands (just dev / just dev-noreload or Plan B), then re-run this PRE-FLIGHT.
+   - Ensure you run checks against the actually running instance (host:port from the start command output).
+
+3) Runtime OpenAPI must be reachable:
    - Invoke-RestMethod "$BASE_URL/openapi.json" | Out-Null
    - Expect: HTTP 200 and valid JSON.
 
-3) API_PREFIX detection rule:
+4) API_PREFIX detection rule:
    - Detect prefix from runtime OpenAPI paths. Do NOT assume apiv1.
    - If OpenAPI includes "/health": API_PREFIX is empty.
    - If OpenAPI includes "/apiv1/health": API_PREFIX is "apiv1".
 
-4) Health check:
+5) Health check:
    - Invoke-RestMethod "$BASE_URL/$API_PREFIX/health" (or "$BASE_URL/health" if API_PREFIX is empty)
    - Expect: JSON with status="ok" (or contract equivalent).
 
-5) DB env in CURRENT shell (only if routers/imports require DB):
+6) DB env in CURRENT shell (only if routers/imports require DB):
    - python -c "import os; print(os.getenv('DATABASEURL'), os.getenv('DATABASE_URL'))"
    - If import-time DB is used and env is missing: STOP and fix env before debugging.
 

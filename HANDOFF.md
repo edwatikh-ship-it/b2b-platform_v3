@@ -287,3 +287,7 @@ $ts MSK  Fixed Backup naming line in tools/print_new_chat_prompt.ps1.
 - Why it matters: Likely source of /moderator/parsing-runs and /moderator/parsing-runs/{runId} runtime behavior; compare with api-contracts.yaml.
 - When: 2025-12-17 15:06 MSK
 
+- 2025-12-17 1641 MSK Success Updated PROJECT-RULES.md PRE-FLIGHT: added explicit rule to confirm backend is running before HTTP checks (openapi.json/health).
+  - Why: avoid invalid pre-flight conclusions when backend is not started.
+  - Verify: Select-String -Path .\PROJECT-RULES.md -Pattern "2\) Confirm backend is running" -Quiet
+  - Expected: True
