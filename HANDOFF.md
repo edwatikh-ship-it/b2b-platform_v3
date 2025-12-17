@@ -276,3 +276,4 @@ $ts MSK  Fixed Backup naming line in tools/print_new_chat_prompt.ps1.
 2025-12-17 12:07:52 MSK  Normalized line-ending rules in .gitattributes (removed duplicates/conflicts; LF for .ps1/.md/.txt; CRLF for .bat/.cmd).
 - Applied: git add --renormalize .
 - Follow-up: added missing newline at EOF in .gitattributes (commit 27593e4).
+- 2025-12-17 13:24 MSK Success: Reduced just prompt noise (suppress recipe echo) and updated tools/new_chat_prompt.ps1 to use BASE_URL-based OpenAPI/health checks. Verify: just prompt | Select-String -SimpleMatch "just new-chat-prompt","powershell -NoProfile -ExecutionPolicy Bypass" -Quiet  # Expected: False.
