@@ -38,7 +38,7 @@ Before any repo modification, always:
 - Backups and temporary files MUST go under D:\b2bplatform\.tmp\ (do not clutter repo root):
   - Backups: D:\b2bplatform\.tmp\backups\
   - Temp:    D:\b2bplatform\.tmp\tmp\
-- Backup naming: <original_filename>.bak.<timestamp>
+- Backup naming: {original_filename}.bak.{timestamp}
 - Show git status before and after.
 - Provide rollback commands (restore from .bak and/or git restore).
 - Write text files as UTF-8 without BOM.
