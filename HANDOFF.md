@@ -282,3 +282,8 @@ $ts MSK  Fixed Backup naming line in tools/print_new_chat_prompt.ps1.
   - What: Renamed legacy /moderatortasks* to /moderator/tasks* and added 501 stubs for missing SSoT paths: /moderator/parsing-runs*, /moderator/resolved-domains, /moderator/domains/{domain}/hits, /moderator/urls/hits.
   - Why: Contract compliance (api-contracts.yaml is SSoT) and OpenAPI-vs-SSoT diff must be zero.
   - Verify: python -c ""import json,yaml,urllib.request as ur; ss=yaml.safe_load(open('api-contracts.yaml','r',encoding='utf-8'))['paths']; lv=json.load(ur.urlopen('http://127.0.0.1:8000/openapi.json'))['paths']; print('missing',sorted(set(ss)-set(lv))); print('extra',sorted(set(lv)-set(ss)))""  -> missing [] extra []
+- What: Found runtime router file for moderator parsing-runs endpoints.
+- Where: backend\app\transport\routers\moderator_tasks.py (exists in repo).
+- Why it matters: Likely source of /moderator/parsing-runs and /moderator/parsing-runs/{runId} runtime behavior; compare with api-contracts.yaml.
+- When: 2025-12-17 15:06 MSK
+
