@@ -172,3 +172,12 @@ Verification (expected)
   (Get-ChildItem .\backend\app\transport\routers -File -Filter "*.bak.*" -ErrorAction SilentlyContinue | Measure-Object).Count
   # Expected: ideally 0 (or trending down); do not commit additional *.bak.* files.
 
+## 2025-12-17 15:21 MSK  Preflight script pitfalls fixed (Resolve-Path + $Host)
+
+- Symptom: Writing .tmp\preflight.ps1 failed when using Resolve-Path for a non-existing target file; later running script failed with VariableNotWritable for parameter named Host.
+- Root cause: Resolve-Path does not resolve non-existing file paths; $Host is a built-in read-only PowerShell variable, so param([string]$Host=...) attempts to assign to it and crashes.
+- Fix/Mitigation: Write file via an explicit absolute path (Join-Path + Get-Location) without Resolve-Path; rename Host parameter to ServerHost (avoid reserved built-ins); when putting ':' after a variable in a string use ${var} form.
+- Verification:
+  powershell -NoProfile -ExecutionPolicy Bypass -File .\.tmp\preflight.ps1
+  # Expected: prints base_url, api_prefix, health_status=ok, and openapi_paths_with_parsing_runs.
+
