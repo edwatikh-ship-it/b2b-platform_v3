@@ -54,13 +54,38 @@ async def fetch_blacklist_domains_db(session: AsyncSession) -> set[str]:
     return {str(x).strip().lower() for x in items if str(x).strip()}
 
 
-@router.get("/moderatortasks")
+@router.get("/moderator/tasks")
 async def list_moderator_tasks(status: str | None = None, limit: int = 50):
     raise HTTPException(status_code=501, detail="Not Implemented")
 
 
-@router.get("/moderatortasks/{taskId}")
+@router.get("/moderator/tasks/{taskId}")
 async def get_moderator_task(taskId: int):
+    raise HTTPException(status_code=501, detail="Not Implemented")
+
+
+@router.get("/moderator/parsing-runs")
+async def list_parsing_runs(status: str | None = None, limit: int = 50, offset: int = 0):
+    raise HTTPException(status_code=501, detail="Not Implemented")
+
+
+@router.get("/moderator/parsing-runs/{runId}")
+async def get_parsing_run_detail(runId: str):
+    raise HTTPException(status_code=501, detail="Not Implemented")
+
+
+@router.get("/moderator/resolved-domains")
+async def list_resolved_domains(status: str | None = None, limit: int = 50, offset: int = 0):
+    raise HTTPException(status_code=501, detail="Not Implemented")
+
+
+@router.get("/moderator/domains/{domain}/hits")
+async def get_domain_hits(domain: str, limit: int = 100, offset: int = 0):
+    raise HTTPException(status_code=501, detail="Not Implemented")
+
+
+@router.get("/moderator/urls/hits")
+async def get_url_hits(url: str, limit: int = 100, offset: int = 0):
     raise HTTPException(status_code=501, detail="Not Implemented")
 
 
