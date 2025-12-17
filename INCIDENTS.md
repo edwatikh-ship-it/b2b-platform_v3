@@ -163,3 +163,12 @@ Verification (expected)
 - Symptom: NamedParameterNotFound / ParameterBindingException when tokens/line breaks are inserted.
 - Fix: Prefer single-line commands OR use PowerShell line continuation backticks carefully; avoid pasting markdown-wrapped commands.
 
+## 2025-12-17 15:07 MSK  Repo hygiene: router backups clutter
+
+- Symptom: backend\app\transport\routers contains many *.bak.* files next to real routers, making file discovery/noise worse.
+- Root cause: backups were created in-place under backend\... instead of the allowed temp area (D:\b2bplatform\.tmp) per artifacts policy.
+- Fix/Mitigation: keep backups only in D:\b2bplatform\.tmp (or outside repo) and avoid creating *.bak.* under backend\...; optionally exclude *.bak.* in search commands.
+- Verification:
+  (Get-ChildItem .\backend\app\transport\routers -File -Filter "*.bak.*" -ErrorAction SilentlyContinue | Measure-Object).Count
+  # Expected: ideally 0 (or trending down); do not commit additional *.bak.* files.
+
