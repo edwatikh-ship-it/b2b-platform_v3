@@ -42,3 +42,7 @@ parser_service/*.log
 backend/tmp_db_check*.py
 # Local artifacts (backups/tmp) - do not commit
 .tmp/
+
+# --- repo hygiene (artifacts) ---
+.tmp/
+.backups*/
