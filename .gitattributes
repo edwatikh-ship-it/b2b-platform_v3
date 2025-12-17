@@ -22,3 +22,12 @@
 *.ico    binary
 PROJECT-TREE.txt text eol=lf
 .gitattributes text eol=lf
+
+# Line endings normalization (Windows-friendly, repo-stable)
+* text=auto
+
+*.md      text eol=lf
+*.yaml    text eol=lf
+*.yml     text eol=lf
+justfile  text eol=lf
+*.ps1     text eol=crlf
