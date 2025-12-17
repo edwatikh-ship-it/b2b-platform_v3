@@ -1,10 +1,15 @@
+import json
+from datetime import UTC, datetime
+
 from sqlalchemy import delete, func, select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.db.models import (
     AttachmentModel,
     DomainBlacklistDomainModel,
     DomainBlacklistUrlModel,
+    DomainDecisionModel,
     RequestKeyModel,
     RequestModel,
     RequestRecipientModel,
@@ -439,4 +444,87 @@ class DomainBlacklistRepository:
             DomainBlacklistDomainModel.root_domain == root_domain
         )
         await self._session.execute(stmt)
+        await self._session.commit()
+
+
+class DomainDecisionRepository:
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def get_by_domain(self, domain: str) -> DomainDecisionModel | None:
+        domain = str(domain).strip().lower()
+        stmt = select(DomainDecisionModel).where(DomainDecisionModel.domain == domain)
+        res = await self._session.execute(stmt)
+        return res.scalars().first()
+
+    async def upsert(
+        self,
+        *,
+        domain: str,
+        status: str,
+        comment: str | None,
+        carddata: dict | None,
+    ) -> DomainDecisionModel:
+        domain = str(domain).strip().lower()
+
+        card_inn = None
+        card_name = None
+        card_email = None
+        card_emails = None
+        card_phone = None
+        card_comment = None
+
+        if carddata:
+            card_inn = carddata.get("inn")
+            card_name = carddata.get("name")
+            card_email = carddata.get("email")
+            emails = carddata.get("emails")
+            card_emails = json.dumps(emails) if emails is not None else None
+            card_phone = carddata.get("phone")
+            card_comment = carddata.get("comment")
+
+        now = datetime.now(tz=UTC)
+
+        stmt = (
+            pg_insert(DomainDecisionModel)
+            .values(
+                domain=domain,
+                status=status,
+                comment=comment,
+                card_inn=card_inn,
+                card_name=card_name,
+                card_email=card_email,
+                card_emails=card_emails,
+                card_phone=card_phone,
+                card_comment=card_comment,
+                created_at=now,
+                updated_at=now,
+            )
+            .on_conflict_do_update(
+                index_elements=[DomainDecisionModel.domain],
+                set_={
+                    "status": status,
+                    "comment": comment,
+                    "card_inn": card_inn,
+                    "card_name": card_name,
+                    "card_email": card_email,
+                    "card_emails": card_emails,
+                    "card_phone": card_phone,
+                    "card_comment": card_comment,
+                    "updated_at": now,
+                },
+            )
+            .returning(DomainDecisionModel)
+        )
+
+        row = (await self._session.execute(stmt)).scalars().first()
+        await self._session.commit()
+        return row
+
+    async def delete_by_domain(self, domain: str) -> None:
+        domain = str(domain).strip().lower()
+        obj = await self.get_by_domain(domain)
+        if obj is None:
+            return
+        await self._session.delete(obj)
         await self._session.commit()
