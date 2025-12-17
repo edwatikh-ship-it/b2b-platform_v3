@@ -28,6 +28,7 @@ $filesToCopy = @(
   "PROJECT-DOC.md",
   "DOCS-INDEX.md",
   "SPRINTS.md",
+  "AGENT-KNOWLEDGE.md",
   "PROJECT-TREE.txt",
   "HANDOFF.md",
   "INCIDENTS.md",

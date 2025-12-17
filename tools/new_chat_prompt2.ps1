@@ -2,6 +2,7 @@ $ErrorActionPreference = "Stop"
 
 Write-Host "B2B Platform: new chat prompt v2 (generated)"
 Write-Host ""
+
 Write-Host "HARD RULES / GATES:"
 Write-Host "0) NO GUESSING. Facts first."
 Write-Host "1) SSoT: api-contracts.yaml is the only API source of truth."
@@ -27,24 +28,33 @@ Write-Host "# Show how backend is started (no execution)"
 Write-Host "just -n dev-noreload"
 Write-Host "just -n dev"
 Write-Host ""
-Write-Host "# BASE_URL fact (must be set in THIS shell before HTTP checks):"
-Write-Host "# - Set $Env:BASE_URL to the real running backend URL (no defaults)."
-Write-Host "# - Then run the checks below."
-Write-Host ""
-Write-Host "# Pre-flight HTTP checks (only after backend is running)"
+Write-Host "# BASE_URL fact: set $Env:BASE_URL to the real running backend URL in THIS shell (no defaults)."
+Write-Host "# Pre-flight HTTP checks (only after backend is running):"
 Write-Host 'Invoke-RestMethod "$Env:BASE_URL/health"'
 Write-Host 'Invoke-RestMethod "$Env:BASE_URL/openapi.json" | Out-Null'
 Write-Host ""
-Write-Host "# Shell env snapshot (important if DB required at import-time)"
+Write-Host "# Shell env snapshot:"
 Write-Host 'python -c "import os; print(''PYTHONPATH='',os.getenv(''PYTHONPATH'')); print(''DATABASEURL='',os.getenv(''DATABASEURL'')); print(''DATABASE_URL='',os.getenv(''DATABASE_URL''))"'
 Write-Host ""
 Write-Host "# If something fails: paste the full error + outputs into chat (no guesses)."
 Write-Host ""
+
 Write-Host "----- BEGIN CHAT BUNDLE (paste into chat) -----"
+Write-Host ""
+
+# 1) Run bundle copier (creates D:\b2bplatform\Prompt and copies files)
+$bundle = Join-Path (Get-Location) "tools\new-chat-bundle.ps1"
+if (Test-Path $bundle) {
+  & $bundle
+} else {
+  Write-Host "MISSING: tools/new-chat-bundle.ps1"
+}
+
 Write-Host ""
 Write-Host "=== NEW CHAT BUNDLE (paste into chat) ==="
 Write-Host ""
 
+# 2) ctx.ps1 output
 $ctx = Join-Path (Get-Location) "ctx.ps1"
 Write-Host "## ctx.ps1"
 if (Test-Path $ctx) { & $ctx } else { Write-Host "MISSING: ctx.ps1" }
@@ -53,6 +63,9 @@ Write-Host ""
 Write-Host "## git status -sb"
 git status -sb 2>$null
 
+Write-Host ""
+Write-Host "FILES COPIED TO:"
+Write-Host "D:\b2bplatform\Prompt"
 Write-Host ""
 Write-Host "FILES TO ATTACH (drag & drop into chat):"
 Write-Host "- api-contracts.yaml"
