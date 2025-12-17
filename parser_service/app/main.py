@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import os
+import socket
 import subprocess
 import time
 from typing import Any
 
 import httpx
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from app.yandex_playwright_scrape import scrape
@@ -43,7 +46,16 @@ def _cdp_version_url() -> str:
     return _cdp_base_url().rstrip("/") + "/json/version"
 
 
+def _is_port_open(host: str, port: int, timeout_sec: float = 0.2) -> bool:
+    try:
+        with socket.create_connection((host, port), timeout=timeout_sec):
+            return True
+    except OSError:
+        return False
+
+
 def ensure_cdp(timeout_sec: int = 10) -> dict[str, Any]:
+    # Fast path: CDP already available.
     try:
         r = httpx.get(_cdp_version_url(), timeout=1.5)
         r.raise_for_status()
@@ -51,6 +63,24 @@ def ensure_cdp(timeout_sec: int = 10) -> dict[str, Any]:
     except Exception:
         pass
 
+    # If the port is already open, do NOT spawn a new Chrome.
+    # Another instance may be holding the port; spawning again only makes the state worse.
+    if _is_port_open("127.0.0.1", 9222):
+        last_err: str | None = None
+        deadline = time.time() + timeout_sec
+        while time.time() < deadline:
+            try:
+                r = httpx.get(_cdp_version_url(), timeout=1.5)
+                r.raise_for_status()
+                return r.json()
+            except Exception as e:
+                last_err = str(e)
+                time.sleep(0.25)
+        raise RuntimeError(
+            f"CDP port 9222 is open but /json/version is not ready. Last error: {last_err}"
+        )
+
+    # Port not open -> start Chrome.
     chrome_exe = _chrome_exe_path()
     user_data = _chrome_user_data_dir()
     profile = _chrome_profile_dir()
@@ -89,8 +119,11 @@ def health() -> dict[str, str]:
 
 @app.post("/parse")
 async def parse(payload: ParseRequest) -> dict[str, Any]:
-    # гарантируем, что Chrome CDP поднят
-    _ = ensure_cdp(timeout_sec=15)
+    try:
+        _ = ensure_cdp(timeout_sec=15)
+    except RuntimeError as e:
+        # Do not crash uvicorn; return a controlled 503 to the caller.
+        raise HTTPException(status_code=503, detail=str(e)) from e
 
     urls = await scrape(
         query=payload.query, depth=payload.depth, cdp_url=_cdp_base_url()
