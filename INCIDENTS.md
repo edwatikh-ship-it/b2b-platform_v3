@@ -152,3 +152,14 @@ Verification (expected)
   - Root cause: PowerShell here-string is not a safe way to pass multiline code into python -c; quoting/escapes get mangled.
   - Fix/Mitigation: Write a temporary .py file via .NET WriteAllText (UTF-8 no BOM) into .tmp, then run python script.py.
   - Verification: python .tmp\patch_moderator_tasks.py -> OK patched; git diff shows expected changes.
+## 2025-12-17 15:05 MSK  Shell tooling: Select-String recursion issues
+
+### Incident A: Select-String has no -Recurse in this environment
+- Symptom: "Cannot find a parameter matching 'Recurse'" when running: Select-String -Recurse ...
+- Fix/Workaround (PowerShell 5.1 compatible):
+  Get-ChildItem -Path . -Recurse -File | Select-String -Pattern "<pattern>"
+
+### Incident B: Command copy/paste can break parameter parsing
+- Symptom: NamedParameterNotFound / ParameterBindingException when tokens/line breaks are inserted.
+- Fix: Prefer single-line commands OR use PowerShell line continuation backticks carefully; avoid pasting markdown-wrapped commands.
+
