@@ -321,3 +321,13 @@ Files touched:
 - api-contracts.yaml
 - backend/app/transport/schemas/moderator_parsing.py
 - backend/app/transport/routers/moderator_tasks.py
+- 2025-12-18 01:54 12S+03:00 Success: process/doc safety hardened + deterministic doc editing tool.
+  - What:
+    - Updated PROJECT-RULES.md: chat output format, commands-first/docs-first/evidence gates.
+    - Updated INCIDENTS.md: incident entry for missing just recipe suggestion.
+    - Updated AGENT-KNOWLEDGE.md: incident pattern "Just recipe verification (commands-first)".
+    - Added tools/doc_edit.py: deterministic patcher (anchor-check + backups + UTF-8/LF), idempotent for agent-pattern insertion.
+    - Regenerated PROJECT-TREE.txt.
+  - Verify:
+    - pre-commit run --all-files
+    - Expected: Passed (ruff, ruff-format, validate OpenAPI contract).
