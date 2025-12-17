@@ -200,3 +200,17 @@ Fix:
 
 Status:
 - Resolved, hooks green.
+## 2025-12-18 00:52 MSK  Incident: Suggested missing just recipe (project-tree)
+
+- Symptom:
+  - `just -n project-tree` and `just project-tree` failed with: "Justfile does not contain recipe `project-tree`".
+- Root cause:
+  - Assistant suggested a just recipe without verifying it exists first (`just -n {recipe}` or `just --list`).
+- Fix/Mitigation:
+  - Plan B: update PROJECT-TREE.txt via:
+    - powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\update_project_tree.ps1
+  - Follow the process rule: Commands-first gate (HARD) + STOP until facts are pasted.
+- Verification:
+  - powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\update_project_tree.ps1
+  - Expected: "Wrote PROJECT-TREE.txt with {N} paths."
+

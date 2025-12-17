@@ -1,5 +1,5 @@
 PROJECT TREE (key artifacts)
-Generated: 2025-12-17 22:27:36
+Generated: 2025-12-18 00:52:13
 
 .gitattributes
 .gitignore
@@ -135,6 +135,7 @@ tools\append_handoff_incidents.ps1
 tools\check_suppliers_tables.py
 tools\log_success.ps1
 tools\new_chat_prompt.ps1
+tools\new_chat_prompt2.ps1
 tools\new-chat-bundle.ps1
 tools\openapi_diff.py
 tools\patch_api_contracts_parser.py
@@ -145,7 +146,3 @@ tools\pytest.ps1
 tools\set_limit_max_200.py
 tools\update_project_tree.ps1
 tools\validate_openapi_contract.py
-# 2025-12-17 23:33 MSK  touched
-api-contracts.yaml
-backend/app/transport/schemas/moderator_parsing.py
-backend/app/transport/routers/moderator_tasks.py

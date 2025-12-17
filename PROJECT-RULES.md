@@ -274,6 +274,32 @@ QUESTION GATE:
 
 ================================================================
 16) Communication style (project)
+- Chat output format (HARD):
+  - Write in the same structured style as the agreed example: short, readable, with emojis (in moderation).
+  - For each step (or group of related commands), always include:
+    - WHY
+    - EXPECT
+    - IF FAIL
+  - After each step, always add 2 mentoring notes:
+    - SA-note (for system analyst): architecture link, artifacts, alternatives.
+    - Biz-note (for customer): value in plain language.
+
+- Commands-first gate (HARD):
+  - If the assistant needs any fact/output/log/file snippet to continue, it MUST provide the exact commands to collect it.
+  - After giving discovery commands, the assistant MUST STOP and wait for the pasted output (no guessing).
+
+- Docs-first gate (HARD):
+  - No answers or decisions without checking SSoT/docs first.
+  - SSoT priority: api-contracts.yaml -> PROJECT-RULES.md -> PROJECT-DOC.md.
+  - If the needed doc fragment is not in the chat context, request it with commands (Get-Content / Select-String) and STOP.
+
+- Evidence gate for documentation (HARD):
+  - If we "document" something (PROJECT-RULES.md / PROJECT-DOC.md / DECISIONS.md / AGENT-KNOWLEDGE.md / HANDOFF.md / INCIDENTS.md),
+    the assistant MUST request confirming output (e.g., git diff, Select-String, Get-Content -Tail) and MUST NOT proceed without it.
+
+- Success discipline reminder:
+  - After successful change: append-only HANDOFF.md (with verify command), update PROJECT-TREE.txt, commit + push origin/main.
+
 ================================================================
 - Tone: friendly "like a bro" (no flattery, only sober assessment).
 - Emojis: allowed.

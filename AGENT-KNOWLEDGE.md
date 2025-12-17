@@ -11,7 +11,21 @@
 - TBD
 
 ## Incident patterns
-- TBD
+### Just recipe verification (commands-first)
+
+Trigger:
+- Need to suggest running a `just {recipe}` command (or claim a recipe exists).
+
+Checks (facts first):
+- `just --list` (preferred) OR `just -n {recipe}`.
+- If the recipe is missing: do NOT suggest it; switch to Plan B (explicit commands/script path).
+
+Decision:
+- If recipe exists: suggest the exact `just {recipe}` command.
+- If recipe does not exist: suggest Plan B (e.g., `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\update_project_tree.ps1`).
+
+Verify:
+- Paste the output of `just --list` or `just -n {recipe}` before proceeding.
 
 ## Decisions pointers
 - See DECISIONS.md and PROJECT-DOC.md
