@@ -277,3 +277,8 @@ $ts MSK  Fixed Backup naming line in tools/print_new_chat_prompt.ps1.
 - Applied: git add --renormalize .
 - Follow-up: added missing newline at EOF in .gitattributes (commit 27593e4).
 - 2025-12-17 13:24 MSK Success: Reduced just prompt noise (suppress recipe echo) and updated tools/new_chat_prompt.ps1 to use BASE_URL-based OpenAPI/health checks. Verify: just prompt | Select-String -SimpleMatch "just new-chat-prompt","powershell -NoProfile -ExecutionPolicy Bypass" -Quiet  # Expected: False.
+
+- 2025-12-17 1432 MSK Success Aligned runtime OpenAPI paths with SSoT for moderator endpoints.
+  - What: Renamed legacy /moderatortasks* to /moderator/tasks* and added 501 stubs for missing SSoT paths: /moderator/parsing-runs*, /moderator/resolved-domains, /moderator/domains/{domain}/hits, /moderator/urls/hits.
+  - Why: Contract compliance (api-contracts.yaml is SSoT) and OpenAPI-vs-SSoT diff must be zero.
+  - Verify: python -c ""import json,yaml,urllib.request as ur; ss=yaml.safe_load(open('api-contracts.yaml','r',encoding='utf-8'))['paths']; lv=json.load(ur.urlopen('http://127.0.0.1:8000/openapi.json'))['paths']; print('missing',sorted(set(ss)-set(lv))); print('extra',sorted(set(lv)-set(ss)))""  -> missing [] extra []
