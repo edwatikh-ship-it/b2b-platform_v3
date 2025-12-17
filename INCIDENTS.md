@@ -130,3 +130,8 @@ Verification (expected)
   Fix/mitigation: use body.status.value when persisting/returning DTO-compatible status.
   Verification: Invoke-RestMethod -Method Post http://127.0.0.1:8000/moderator/domains/pulscen.ru/decision with {status:'blacklist'} -> 200 and GET returns status='blacklist'.
 - 2025-12-17 01:12 MSK NOTE Enum serialization pitfall in FastAPI/Pydantic: never persist/return Enum via str(enum) (it becomes 'EnumClass.member'); use enum.value (or return the Enum and let Pydantic serialize) to match OpenAPI contract enums.
+- 2025-12-17 12:10:46 MSK PITFALL PowerShell host strips angle brackets.
+  Symptom: strings like X<abc>Y become XY in console output and in files; templates using <...> collapse to empty.
+  Root cause: current PowerShell host/output pipeline sanitizes '<...>' as HTML-like tags.
+  Fix/Mitigation: do not use <placeholders>; use {placeholders} (e.g. {original_filename}.bak.{timestamp}) in docs/templates.
+  Verification: $lt=[char]60; $gt=[char]62; $s="XabcY"; "STR=[]" => STR=[XY].
