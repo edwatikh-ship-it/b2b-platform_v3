@@ -37,7 +37,7 @@ schemas["RecipientsResponse"] = {
     "additionalProperties": False,
 }
 
-put_op = spec["paths"]["/userrequests/{requestId}/recipients"]["put"]
+put_op = spec["paths"]["/user/requests/{requestId}/recipients"]["put"]
 put_op["requestBody"]["content"]["application/json"]["schema"] = {
     "$ref": "#/components/schemas/UpdateRecipientsRequest"
 }

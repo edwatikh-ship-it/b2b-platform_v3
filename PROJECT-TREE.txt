@@ -1,5 +1,5 @@
 PROJECT TREE (key artifacts)
-Generated: 2025-12-17 16:25:22
+Generated: 2025-12-17 19:30:55
 
 .gitattributes
 .gitignore
@@ -144,3 +144,4 @@ tools\print_new_chat_prompt.ps1
 tools\pytest.ps1
 tools\set_limit_max_200.py
 tools\update_project_tree.ps1
+tools\validate_openapi_contract.py
