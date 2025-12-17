@@ -295,3 +295,5 @@ $ts MSK  Fixed Backup naming line in tools/print_new_chat_prompt.ps1.
 - 2025-12-17 18:20 MSK: SSoT api-contracts.yaml paths normalized (leading '/' added); runtime /openapi.json paths match (37/37).
 
 - 2025-12-17 18:21 MSK: SSoT api-contracts.yaml paths normalized (leading '/' added); runtime /openapi.json paths match (37/37).
+
+- 2025-12-17 18:23 MSK: NOTE: previous HANDOFF entry about OpenAPI paths was accidentally duplicated in two consecutive commits (5c6c80d, 22cade3); treat as a single milestone.
