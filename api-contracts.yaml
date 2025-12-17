@@ -1108,6 +1108,15 @@ paths:
         Поддерживает пагинацию и фильтрацию по статусу.
       operationId: list_parsing_runs_apiv1_moderator_parsing_runs_get
       parameters:
+      - name: requestId
+        in: query
+        required: false
+        description: Фильтр по requestId (для истории запусков внутри конкретной заявки)
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: RequestId
       - name: status
         in: query
         required: false
@@ -2617,6 +2626,12 @@ components:
           type: string
           title: RunId
           description: Уникальный идентификатор запуска.
+        requestid:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: RequestId
+          description: ID заявки (user request), если запуск был сделан из конкретной заявки. Null для ручного запуска "без заявки".
         key:
           type: string
           title: Key
@@ -2696,6 +2711,12 @@ components:
         runId:
           type: string
           title: RunId
+        requestid:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: RequestId
+          description: ID заявки (user request), если запуск был сделан из конкретной заявки. Null для ручного запуска "без заявки".
         key:
           type: string
           title: Key
