@@ -273,3 +273,6 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 $ts MSK  Fixed Backup naming line in tools/print_new_chat_prompt.ps1.
 - Replaced broken '<...>' placeholders (stripped by current PowerShell host) with safe placeholders: {original_filename}.bak.{timestamp}.
 - Verified: git diff, just new-chat-prompt output, pre-commit, commit+push (f2d25a7).
+2025-12-17 12:07:52 MSK  Normalized line-ending rules in .gitattributes (removed duplicates/conflicts; LF for .ps1/.md/.txt; CRLF for .bat/.cmd).
+- Applied: git add --renormalize .
+- Follow-up: added missing newline at EOF in .gitattributes (commit 27593e4).
