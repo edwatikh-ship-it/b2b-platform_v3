@@ -46,4 +46,8 @@ chat-bundle:
   powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\new-chat-bundle.ps1
 # Print the prompt to paste into a new chat
 new-chat-prompt:
-  powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\print_new_chat_prompt.ps1
+  @powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\new_chat_prompt.ps1
+# Alias: canonical prompt generator
+prompt:
+  @just new-chat-prompt
+# Alias: canonical prompt generator
