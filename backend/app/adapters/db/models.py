@@ -131,3 +131,27 @@ class DomainBlacklistUrlModel(Base):
     created_at: Mapped[object] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+
+class DomainDecisionModel(Base):
+    __tablename__ = "domain_decisions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    domain: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    card_inn: Mapped[str | None] = mapped_column(String(12), nullable=True)
+    card_name: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    card_email: Mapped[str | None] = mapped_column(String(320), nullable=True)
+    card_emails: Mapped[str | None] = mapped_column(Text, nullable=True)  # JSON string
+    card_phone: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    card_comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    created_at: Mapped[object] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[object] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
