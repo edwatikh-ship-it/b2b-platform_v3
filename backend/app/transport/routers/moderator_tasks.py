@@ -12,7 +12,7 @@ import uuid
 from urllib.parse import urlparse
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException
 from publicsuffix2 import get_sld
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -26,6 +26,7 @@ from app.transport.schemas.moderator_parsing import (
     ParsingResultsResponseDTO,
     ParsingRunStatus,
     ParsingStatusResponseDTO,
+    StartParsingRequestDTO,
     StartParsingResponseDTO,
 )
 
@@ -94,12 +95,15 @@ async def get_url_hits(url: str, limit: int = 100, offset: int = 0):
 )
 async def start_parsing(
     requestId: int,
+    payload: StartParsingRequestDTO | None = Body(None),
     session: AsyncSession = Depends(getdbsession),
 ):
     """
     Starts parsing for a request.
     MVP: request keys are mocked (later: fetch real keys from DB).
     """
+    depth = payload.depth if payload and payload.depth is not None else 10
+    source = payload.source.value if payload and payload.source is not None else "both"
     key_ids = [1, 2]
     keys_data = {
         1: {
@@ -129,7 +133,7 @@ async def start_parsing(
             async with httpx.AsyncClient(timeout=1800.0) as client:
                 resp = await client.post(
                     f"{PARSER_SERVICE_URL}/parse",
-                    json={"query": query, "depth": 1},
+                    json={"query": query, "depth": depth, "source": source},
                 )
                 resp.raise_for_status()
                 urls = resp.json().get("urls", [])

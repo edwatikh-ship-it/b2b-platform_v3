@@ -187,3 +187,16 @@ Verification (expected)
   - Fix/Mitigation: Restore HANDOFF.md from pre-change backup; remove the bad block; write the corrected single-line entry using .NET IO (WriteAllText/AppendAllText) with UTF-8 no BOM.
   - Verification: Select-String -Path .\HANDOFF.md -Pattern '](http://' -SimpleMatch => no matches; Select-String -Path .\HANDOFF.md -Pattern '2025-12-17 20:18 MSK' | Measure-Object => Count = 1.
 - 2025-12-17 23:10:43 MSK  Incident: PowerShell heredoc script for PROJECT-DOC.md edit failed (script ended at 'path.write_text(...)\nPY'). Action: switch to PowerShell-safe Plan B (temp .py file execution) and re-apply doc changes.
+## 2025-12-17 23:33 MSK  ruff F821 on ParsingRunSource
+
+Symptom:
+- just fmt / pre-commit failed: backend/app/transport/schemas/moderator_parsing.py: F821 Undefined name ParsingRunSource.
+
+Cause:
+- Enum ParsingRunSource was declared ниже StartParsingRequestDTO and annotations evaluated eagerly.
+
+Fix:
+- Added from __future__ import annotations to backend/app/transport/schemas/moderator_parsing.py (post-module docstring).
+
+Status:
+- Resolved, hooks green.

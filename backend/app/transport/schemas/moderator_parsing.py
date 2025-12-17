@@ -3,6 +3,8 @@ Moderator parsing DTOs.
 SSoT: api-contracts.yaml (StartParsingResponseDTO, ParsingStatusResponseDTO, ParsingResultsResponseDTO).
 """
 
+from __future__ import annotations
+
 from enum import Enum
 
 from pydantic import BaseModel, Field
@@ -29,8 +31,10 @@ class StartParsingResponseDTO(BaseModel):
 
 
 class StartParsingRequestDTO(BaseModel):
-    depth: int = Field(10, ge=1, le=50)
-    resume: bool = Field(True)
+    """SSoT: api-contracts.yaml#/components/schemas/StartParsingRequestDTO"""
+
+    depth: int | None = Field(None, ge=1, le=50)
+    source: ParsingRunSource | None = None
 
 
 class ParsingKeyStatusDTO(BaseModel):
@@ -55,6 +59,14 @@ class ParsingStatusResponseDTO(BaseModel):
 
     class Config:
         populate_by_name = True
+
+
+class ParsingRunSource(str, Enum):
+    """SSoT: api-contracts.yaml#/components/schemas/ParsingRunSource"""
+
+    google = "google"
+    yandex = "yandex"
+    both = "both"
 
 
 class ParsingSource(str, Enum):

@@ -306,3 +306,18 @@ $ts MSK  Fixed Backup naming line in tools/print_new_chat_prompt.ps1.
   - Why: make chat output consistent and machine-usable; prevent agent from learning unverified fixes.
   - Verified: ruff check backend; ruff format backend; pre-commit run --all-files (all Passed).
 - 2025-12-17  Docs: clarified parsing-results UI as unique domain list with accordion URLs; enforced blacklist filtering; added decisions D-009 (domain dedup + full URL list) and D-010 (captcha => fullscreen browser). Logged incident about PowerShell heredoc script failure and switched to Plan B.
+## 2025-12-17 23:33 MSK  Parsing source/depth (SSoT + backend wiring)
+
+Done:
+- Extended SSoT api-contracts.yaml: POST /moderator/requests/{requestId}/start-parsing now has requestBody StartParsingRequestDTO; added ParsingRunSource enum (google|yandex|both).
+- Backend: StartParsingRequestDTO updated to match SSoT (depth nullable, source nullable; removed resume).
+- Backend: start_parsing endpoint accepts body payload; defaults depth=10, source='both'; forwards to parser_service /parse with query/depth/source.
+- Tooling: just fmt and pre-commit run --all-files are green.
+
+Notes:
+- Parser_service currently only supports Yandex scraper; /parse ignores/does not accept source yet (next sprint item).
+
+Files touched:
+- api-contracts.yaml
+- backend/app/transport/schemas/moderator_parsing.py
+- backend/app/transport/routers/moderator_tasks.py

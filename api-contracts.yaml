@@ -850,6 +850,12 @@ paths:
       tags:
       - ModeratorTasks
       summary: Start Parsing
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartParsingRequestDTO'
       description: 'Starts parsing for a request.
 
         MVP: request keys are mocked (later: fetch real keys from DB).'
@@ -1893,6 +1899,36 @@ components:
       - failed
       title: ParsingRunStatus
       description: 'SSoT: api-contracts.yaml#/components/schemas/ParsingRunStatus'
+    StartParsingRequestDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        depth:
+          anyOf:
+          - type: integer
+            minimum: 1
+            maximum: 50
+          - type: 'null'
+          title: Depth
+          description: How many search result pages to fetch per key. Default 10.
+        source:
+          anyOf:
+          - $ref: '#/components/schemas/ParsingRunSource'
+          - type: 'null'
+          title: Source
+          description: Which search engine(s) to use for this parsing run.
+      title: StartParsingRequestDTO
+      description: 'SSoT: api-contracts.yaml#/components/schemas/StartParsingRequestDTO'
+
+    ParsingRunSource:
+      type: string
+      enum:
+      - google
+      - yandex
+      - both
+      title: ParsingRunSource
+      description: 'Search engine selector for parsing run (request).'
+
     ParsingSource:
       type: string
       enum:
