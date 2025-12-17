@@ -1,18 +1,18 @@
 <!-- write-test 2025-12-16T20:00:42.8821983+03:00 -->
-# B2B Platform Р Р†Р вЂљРІР‚Сњ PROJECT RULES (SSoT)
+# B2B Platform Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ PROJECT RULES (SSoT)
 
 Version: 1.3
 Date: 2025-12-15
 
 ## 1) SSoT (Single Source of Truth)
 - API (endpoints, DTOs, responses) = ONLY api-contracts.yaml at repo root: D:\b2bplatform\api-contracts.yaml.
-- If implementation and contract diverge Р Р†Р вЂљРІР‚Сњ it's an error. Align code to contract (or change contract intentionally).
-- Priority: api-contracts.yaml Р Р†РІР‚В РІР‚в„ў PROJECT-RULES.md Р Р†РІР‚В РІР‚в„ў PROJECT-DOC.md.
+- If implementation and contract diverge Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ it's an error. Align code to contract (or change contract intentionally).
+- Priority: api-contracts.yaml Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ PROJECT-RULES.md Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ PROJECT-DOC.md.
 - SSoT files must live in repo root D:\b2bplatform\ (no duplicates inside backend\).
 - Progress = state of GitHub main branch, not chat memory.
 
 ## 2) Architecture (fixed)
-transport Р Р†РІР‚В РІР‚в„ў usecases Р Р†РІР‚В РІР‚в„ў domain Р Р†РІР‚В РІР‚в„ў adapters
+transport Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ usecases Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ domain Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ adapters
 
 Short meaning:
 - transport: HTTP routes + input/output validation; no business decisions.
@@ -21,13 +21,18 @@ Short meaning:
 - adapters: DB/SMTP/HTTP clients and other integrations.
 
 ## 3) SAFETY GUARDS (mandatory before any repo changes)
+### Artifacts folder (mandatory)
+- Backups and temporary files MUST go under D:\b2bplatform\.tmp\ (do not clutter repo root).
+  - Backups: D:\b2bplatform\.tmp\backups\
+  - Temp:    D:\b2bplatform\.tmp\tmp\
+- Backup naming: <original_filename>.bak.<timestamp>
 Before any change:
 - Verify D:\b2bplatform\ exists and api-contracts.yaml is present.
 - Backup every changed file: *.bak.<timestamp>.
 - Show git status before and after.
 - Provide rollback: restore from .bak and/or git restore.
 
-## 4) PRE-FLIGHT before any Р Р†Р вЂљРЎС™fix routes/endpointsР Р†Р вЂљРЎСљ
+## 4) PRE-FLIGHT before any Р В Р вЂ Р В РІР‚С™Р РЋРЎв„ўfix routes/endpointsР В Р вЂ Р В РІР‚С™Р РЋРЎС™
 Do NOT guess defaults.
 
 First discover:
@@ -43,14 +48,14 @@ Run checks (expected results):
 3) python -c "import os; print(os.getenv('DATABASEURL'), os.getenv('DATABASE_URL'))"
    - Must be non-None only if routes/import-time DB requires it.
 
-If any check fails Р Р†Р вЂљРІР‚Сњ provide Plan B commands first (how to start backend / set env), then propose code changes.
+If any check fails Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ provide Plan B commands first (how to start backend / set env), then propose code changes.
 
-## 5) Р Р†Р вЂљРЎС™6 toolsР Р†Р вЂљРЎСљ standard (check availability first)
+## 5) Р В Р вЂ Р В РІР‚С™Р РЋРЎв„ў6 toolsР В Р вЂ Р В РІР‚С™Р РЋРЎС™ standard (check availability first)
 Tools: ruff, pre-commit, pyclean, uv, direnv, just.
 
 Rule:
 - Always check first: Get-Command ruff/pre-commit/pyclean/uv/direnv/just
-- If missing Р Р†Р вЂљРІР‚Сњ use Plan B (no assumptions).
+- If missing Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ use Plan B (no assumptions).
 
 Usage:
 - Lint/format:
@@ -80,8 +85,8 @@ Usage:
 - Text file writes: UTF-8 without BOM (unless strong reason). Prefer .NET WriteAllText with UTF8Encoding(false).
 
 ## 7) Progress logging (mandatory)
-- Success Р Р†РІР‚В РІР‚в„ў HANDOFF.md (append-only) + update PROJECT-TREE.txt + commit + push origin/main.
-- Failure Р Р†РІР‚В РІР‚в„ў INCIDENTS.md (append-only) + commit + push.
+- Success Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ HANDOFF.md (append-only) + update PROJECT-TREE.txt + commit + push origin/main.
+- Failure Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ INCIDENTS.md (append-only) + commit + push.
 
 HANDOFF/INCIDENTS format:
 - Datetime (MSK)
@@ -91,7 +96,7 @@ HANDOFF/INCIDENTS format:
 - Verification (command + expected output)
 
 ### Chat safety: Step 0 / Question gate (2025-12-15)
-- Step 0 for any new chat: run Р Р†Р вЂљРЎС™Detect backend + PRE-FLIGHTР Р†Р вЂљРЎСљ PowerShell script to discover BASE_URL and verify /{API_PREFIX}/health + /openapi.json.
+- Step 0 for any new chat: run Р В Р вЂ Р В РІР‚С™Р РЋРЎв„ўDetect backend + PRE-FLIGHTР В Р вЂ Р В РІР‚С™Р РЋРЎС™ PowerShell script to discover BASE_URL and verify /{API_PREFIX}/health + /openapi.json.
 - Do NOT assume BASE_URL / API_PREFIX. Use detection or explicit user confirmation.
 - Default: never auto-kill processes. Provide a separate explicit command to stop a PID if needed.
 - Question gate: if a critical question is asked (BASE_URL/API_PREFIX/DATABASEURL/etc) and no answer is given, do not proceed; repeat the question in one short line and wait.

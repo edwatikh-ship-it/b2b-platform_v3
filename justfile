@@ -41,3 +41,9 @@ clean:
 # Update curated project tree (key artifacts)
 tree:
     powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\update_project_tree.ps1
+# Dump context for a new chat (read-only, paste output into chat)
+chat-bundle:
+  powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\new-chat-bundle.ps1
+# Print the prompt to paste into a new chat
+new-chat-prompt:
+  powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\print_new_chat_prompt.ps1

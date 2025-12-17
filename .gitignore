@@ -40,4 +40,5 @@ parser_service/*.log
 
 # local debug scripts
 backend/tmp_db_check*.py
-
+# Local artifacts (backups/tmp) - do not commit
+.tmp/

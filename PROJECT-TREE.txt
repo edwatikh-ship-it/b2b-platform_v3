@@ -1,5 +1,5 @@
 PROJECT TREE (key artifacts)
-Generated: 2025-12-17 00:44:51
+Generated: 2025-12-17 11:50:37
 
 .gitattributes
 .gitignore
@@ -23,6 +23,7 @@ backend\alembic\versions\a291dc92b69a_create_users_and_otp_codes.py
 backend\alembic\versions\b21b2a3bb6ee_create_blacklist_domains.py
 backend\alembic\versions\bbff04c57403_create_attachments_table.py
 backend\alembic\versions\be4136aa1c68_request_recipients_defaults.py
+backend\alembic\versions\c4b1499dcaf9_create_domain_decisions.py
 backend\alembic\versions\c56fcd5c76e3_rename_userid_createdat_columns_in_user_.py
 backend\alembic\versions\de99d41dff72_create_user_blacklist_inn.py
 backend\alembic\versions\ea4ad222417f_create_request_recipients_table.py
@@ -133,10 +134,12 @@ README.md
 tools\append_handoff_incidents.ps1
 tools\check_suppliers_tables.py
 tools\log_success.ps1
+tools\new-chat-bundle.ps1
 tools\openapi_diff.py
 tools\patch_api_contracts_parser.py
 tools\patch_openapi_diff.py
 tools\preflight.ps1
+tools\print_new_chat_prompt.ps1
 tools\pytest.ps1
 tools\set_limit_max_200.py
 tools\update_project_tree.ps1
