@@ -1,83 +1,41 @@
 $ErrorActionPreference = "Stop"
 
-# ANSI red, with a safe fallback for terminals that do not render ANSI.
-$RED = [char]27 + "[31m"
-$RST = [char]27 + "[0m"
+Write-Host "B2B Platform: new chat prompt (generated)"
+Write-Host ""
+Write-Host "HARD RULES / GATES:"
+Write-Host "0) NO GUESSING. Facts first."
+Write-Host "1) SSoT: api-contracts.yaml is the only API source of truth."
+Write-Host "2) Safety: backups for any changed files + git status before/after."
+Write-Host ""
+Write-Host "PRE-FLIGHT (must run):"
+Write-Host "- Determine BASE_URL and API_PREFIX (do not assume)."
+Write-Host "- Invoke-RestMethod ""`$BASE_URL/`$API_PREFIX/health"" (or contract path) -> expect status ok."
+Write-Host "- Invoke-RestMethod ""`$BASE_URL/openapi.json"" | Out-Null -> expect 200."
+Write-Host "- python -c ""import os; print(os.getenv('DATABASEURL'), os.getenv('DATABASE_URL'))"""
+Write-Host ""
 
-function Mark-Doc([string]$name) {
-  # If ANSI is not supported, the escape codes will show as garbage;
-  # fallback markers still keep the name visible.
-  return "$RED$name$RST"
+Write-Host "----- BEGIN CHAT BUNDLE (paste into chat) -----"
+Write-Host ""
+
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$just = Get-Command just -ErrorAction SilentlyContinue
+if ($null -ne $just) {
+  Push-Location $repoRoot
+  try { & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $repoRoot "tools\new-chat-bundle.ps1") } finally { Pop-Location }
+} else {
+  Write-Host "WARN: 'just' not found in PATH; falling back to direct script call."
+  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $repoRoot "tools\new-chat-bundle.ps1")
 }
 
-$docs = @(
-  "api-contracts.yaml",
-  "PROJECT-RULES.md",
-  "PROJECT-DOC.md",
-  "PROJECT-TREE.txt",
-  "HANDOFF.md",
-  "INCIDENTS.md",
-  "DECISIONS.md"
-)
-
-$docsMarked = $docs
-
-$txt = @"
-You are starting work in the B2B Platform repo.
-
-HARD RULES / GATES (must follow):
-0) NO GUESSING. Facts first. If unknown -> run commands to discover -> STOP.
-
-1) SSoT:
-- API contracts = ONLY api-contracts.yaml (repo root).
-- Priority: api-contracts.yaml -> PROJECT-RULES.md -> PROJECT-DOC.md.
-- If runtime/implementation differs from api-contracts.yaml => treat as a bug; align code to contract (or change contract intentionally).
-
-2) Before asking to change any code:
-Ask the user to DRAG&DROP these files into the chat:
-- (See the red file list at the end of this prompt.)
-
-3) PRE-FLIGHT / FACTS (no guessing defaults):
-NO PLACEHOLDERS:
-- Do NOT paste placeholders like {BASE_URL} / {API_PREFIX}. First print the real values.
-
-A) Context dump:
-- PowerShell: Set-Location D:\b2bplatform; .\ctx.ps1
-
-B) BASE_URL:
-- Confirm the exact running base url (host:port). Do NOT assume.
-
-C) OpenAPI:
-- Invoke-RestMethod '$BASE_URL/openapi.json' | Out-Null  (expect 200)
-
-D) API_PREFIX (derive from OpenAPI paths):
-- If OpenAPI has "/health" -> API_PREFIX is empty -> health is "<BASE_URL>/health"
-- If OpenAPI has "/apiv1/health" -> API_PREFIX is "apiv1" -> health is "<BASE_URL>/apiv1/health"
-
-E) Health:
-- Invoke-RestMethod '$BASE_URL/health' (if API_PREFIX empty) OR '$BASE_URL/$API_PREFIX/health'
-
-F) DB env in CURRENT shell (only if needed by imports/routers):
-- python -c "import os; print(os.getenv('DATABASEURL'), os.getenv('DATABASE_URL'))"
-4) Repo changes safety (mandatory):
-- Backups and temporary files MUST go under D:\b2bplatform\.tmp\
-- Show git status before and after.
-- Provide rollback commands.
-- Write text files as UTF-8 without BOM.
-
-5) Patch safety (STOP-ON-MISMATCH):
-- Prefer deterministic patches.
-- If anchor not found => STOP and request a fresh snapshot.
-"@
-
-Write-Host $txt
-
 Write-Host ""
-Write-Host "FILES TO ATTACH (drag & drop into chat):" -ForegroundColor Red
-foreach ($d in $docs) {
-  Write-Host ("- " + $d) -ForegroundColor Red
-}
+Write-Host "----- END CHAT BUNDLE -----"
 
-# Fallback hint if ANSI looks ugly in user's terminal
+Write-Host "FILES TO ATTACH (drag & drop into chat):"
+Write-Host "- api-contracts.yaml"
+Write-Host "- PROJECT-RULES.md"
+Write-Host "- PROJECT-DOC.md"
+Write-Host "- PROJECT-TREE.txt"
+Write-Host "- HANDOFF.md"
+Write-Host "- INCIDENTS.md"
+Write-Host "- DECISIONS.md"
 Write-Host ""
-Write-Host "If red highlight is not visible in this terminal, treat highlighted doc names as plain text."

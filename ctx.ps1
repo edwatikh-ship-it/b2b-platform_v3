@@ -1,7 +1,7 @@
-﻿$ErrorActionPreference = "Continue"
+$ErrorActionPreference = "Continue"
 
 Write-Host "=== PWD ==="
-Get-Location
+Write-Host (Get-Location).Path
 
 Write-Host "`n=== SSoT presence ==="
 "api-contracts.yaml","PROJECT-RULES.md","PROJECT-DOC.md","HANDOFF.md","INCIDENTS.md","PROJECT-TREE.txt" | ForEach-Object {
@@ -26,4 +26,8 @@ Write-Host "`n=== DB env ==="
 python -c "import os; print('DATABASE_URL=', os.getenv('DATABASE_URL')); print('DATABASEURL=', os.getenv('DATABASEURL'))"
 
 Write-Host "`n=== Alembic quick (if backend configured) ==="
-python -m alembic current 2>&1 | Select-Object -First 40
+if (Test-Path (Join-Path (Get-Location) "alembic.ini")) {
+  python -m alembic current 2>&1 | Select-Object -First 40
+} else {
+  Write-Host "SKIPPED: alembic.ini missing (no migrations config in repo root)."
+}
