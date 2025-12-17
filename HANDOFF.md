@@ -291,3 +291,5 @@ $ts MSK  Fixed Backup naming line in tools/print_new_chat_prompt.ps1.
   - Why: avoid invalid pre-flight conclusions when backend is not started.
   - Verify: Select-String -Path .\PROJECT-RULES.md -Pattern "2\) Confirm backend is running" -Quiet
   - Expected: True
+
+- 2025-12-17 18:20 MSK: SSoT api-contracts.yaml paths normalized (leading '/' added); runtime /openapi.json paths match (37/37).
