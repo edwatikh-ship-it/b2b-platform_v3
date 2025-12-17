@@ -58,6 +58,26 @@ async def bring_to_front_safe(page) -> None:
         pass
 
 
+
+async def maximize_for_captcha(page) -> None:
+    # Best-effort: make captcha максимально заметной для модератора.
+    # 1) выводим вкладку вперед
+    await bring_to_front_safe(page)
+
+    # 2) растягиваем viewport под доступный экран
+    try:
+        vp = await page.evaluate("""() => ({ w: window.screen.availWidth, h: window.screen.availHeight })""")
+        if vp and vp.get('w') and vp.get('h'):
+            await page.set_viewport_size({'width': int(vp['w']), 'height': int(vp['h'])})
+    except Exception:
+        pass
+
+    # 3) пробуем fullscreen клавишей (может не сработать из-за политики браузера)
+    try:
+        await page.keyboard.press('F11')
+    except Exception:
+        pass
+
 async def dismiss_popups_best_effort(page) -> None:
     # “по умолчанию”, “выбрать город”, “принять”, “закрыть” и т.п.
     candidates = [
@@ -101,7 +121,7 @@ async def wait_for_captcha(page, engine_name: str) -> None:
             logging.warning(
                 "%s: captcha detected, waiting for manual solve", engine_name
             )
-            await bring_to_front_safe(page)
+            await maximize_for_captcha(page)
             print(f"{engine_name}: solve captcha in the browser, waiting...")
             await asyncio.sleep(2)
         else:
