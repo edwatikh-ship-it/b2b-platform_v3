@@ -59,3 +59,6 @@ backend:
 
 backend-noreload:
     just dev-noreload
+# Print the prompt (v2) to paste into a new chat (does NOT change old prompt)
+prompt2:
+  @powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\new_chat_prompt2.ps1
