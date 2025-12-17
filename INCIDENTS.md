@@ -135,3 +135,14 @@ Verification (expected)
   Root cause: current PowerShell host/output pipeline sanitizes '<...>' as HTML-like tags.
   Fix/Mitigation: do not use <placeholders>; use {placeholders} (e.g. {original_filename}.bak.{timestamp}) in docs/templates.
   Verification: $lt=[char]60; $gt=[char]62; $s="XabcY"; "STR=[]" => STR=[XY].
+
+- 2025-12-17 1422 MSK INCIDENT Stop-Process failed because PID variable was NULL during port 8000 cleanup.
+  - Symptom: Stop-Process : Cannot bind argument to parameter 'Id' because it is NULL; later health check failed after port/socket churn.
+  - Root cause: PID extraction expression returned NULL (fragile parsing of netstat output / race on Windows); socket states FIN_WAIT_2/CLOSE_WAIT were present.
+  - Fix/Mitigation: Extract PID only from LISTENING line via Select-String and regex/split; always print PID before Stop-Process.
+  - Verification: netstat -ano | Select-String ':8000' | Where-Object { $_.Line -match 'LISTENING' } -> shows PID; Get-Process -Id <pid> works; Stop-Process -Id <pid> frees port; just dev-noreload starts without WinError 10048.
+- 2025-12-17 1423 MSK INCIDENT PowerShell ConvertTo-Json -Depth > 100 failed while saving runtime openapi.json.
+  - Symptom: ConvertTo-Json : Maximum allowed depth is 100; Set-Content did not run; runtime file missing -> FileNotFoundError.
+  - Root cause: Windows PowerShell ConvertTo-Json has a hard max depth 100; pipeline abort prevents file creation.
+  - Fix/Mitigation: Do NOT use ConvertTo-Json for OpenAPI dumps; use Invoke-WebRequest -OutFile to save raw JSON.
+  - Verification: Invoke-WebRequest http://127.0.0.1:8000/openapi.json -OutFile .tmp\runtime-openapi.json; python -c "import json; json.load(open(r'.tmp\runtime-openapi.json','r',encoding='utf-8')); print('ok')" -> ok.
