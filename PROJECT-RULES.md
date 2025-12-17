@@ -262,3 +262,9 @@ QUESTION GATE:
   - it MUST be in a clearly named folder and ignored by git.
 - Before commit/push:
   - git status --porcelain must be clean (no accidental ?? files).
+
+## Chat workflow additions (2025-12-17)
+
+- Error handling (human): When an error occurs, explain it in plain non-IT language and provide a recommendation.
+- Incident logging timing: Always explain errors immediately, but write to INCIDENTS.md only after the issue is resolved (full picture: symptom, root cause, fix, verification).
+- Dependent steps gate: If a next command depends on the previous command output, do not provide that next command until the user pasted the output.

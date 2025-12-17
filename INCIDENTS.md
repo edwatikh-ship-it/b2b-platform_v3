@@ -181,3 +181,8 @@ Verification (expected)
   powershell -NoProfile -ExecutionPolicy Bypass -File .\.tmp\preflight.ps1
   # Expected: prints base_url, api_prefix, health_status=ok, and openapi_paths_with_parsing_runs.
 
+- 2025-12-17 20:45 MSK INCIDENT HANDOFF entry got corrupted by PowerShell/terminal auto-linking.
+  - Symptom: URLs in HANDOFF.md were auto-converted into [text](url) and sometimes split across lines, making verify commands non-copyable.
+  - Root cause: Console/host formatting + copy/paste introduced Markdown-like wrappers and line breaks; Add-Content preserved the corrupted text.
+  - Fix/Mitigation: Restore HANDOFF.md from pre-change backup; remove the bad block; write the corrected single-line entry using .NET IO (WriteAllText/AppendAllText) with UTF-8 no BOM.
+  - Verification: Select-String -Path .\HANDOFF.md -Pattern '](http://' -SimpleMatch => no matches; Select-String -Path .\HANDOFF.md -Pattern '2025-12-17 20:18 MSK' | Measure-Object => Count = 1.
