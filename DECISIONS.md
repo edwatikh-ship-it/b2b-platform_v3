@@ -75,3 +75,23 @@
   - Add domain hit logging: key->url->domain even for decided/blacklisted domains.
 
   - Use hidden search prefix "buy " only at search time; never store/display it as part of the business key.
+
+---
+
+## D-009  Parsing results dedup by domain (accordion)
+
+**Date:** 2025-12-17 23:13 MSK  
+**Decision:** In parsing-results shown to the moderator, the list is de-duplicated by domain (one domain shown once), and the domain accordion contains all collected URLs for that domain.  
+**Blacklist rule:** Blacklisted root-domains (and all subdomains) must not appear in parsing-results.  
+**Logs:** Full raw findings are preserved in logs/hits (key->url->domain), including duplicates and occurrences for already decided/blacklisted domains.
+
+
+
+---
+
+## D-010  Captcha requires fullscreen browser window
+
+**Date:** 2025-12-17 23:13 MSK  
+**Decision:** If a captcha challenge appears during parsing, the browser window must be automatically maximized (fullscreen) so the moderator can see it immediately and solve it quickly.
+
+

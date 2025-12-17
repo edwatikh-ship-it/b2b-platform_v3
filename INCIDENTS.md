@@ -186,3 +186,4 @@ Verification (expected)
   - Root cause: Console/host formatting + copy/paste introduced Markdown-like wrappers and line breaks; Add-Content preserved the corrupted text.
   - Fix/Mitigation: Restore HANDOFF.md from pre-change backup; remove the bad block; write the corrected single-line entry using .NET IO (WriteAllText/AppendAllText) with UTF-8 no BOM.
   - Verification: Select-String -Path .\HANDOFF.md -Pattern '](http://' -SimpleMatch => no matches; Select-String -Path .\HANDOFF.md -Pattern '2025-12-17 20:18 MSK' | Measure-Object => Count = 1.
+- 2025-12-17 23:10:43 MSK  Incident: PowerShell heredoc script for PROJECT-DOC.md edit failed (script ended at 'path.write_text(...)\nPY'). Action: switch to PowerShell-safe Plan B (temp .py file execution) and re-apply doc changes.

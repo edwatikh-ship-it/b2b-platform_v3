@@ -350,3 +350,11 @@ Common failure modes:
 - "No 'script_location' key found": alembic was started without the correct ini.
 - "Path doesn't exist: alembic": alembic.ini was used from the wrong working directory.
 - "ModuleNotFoundError: No module named app": PYTHONPATH is not set to repo\backend.
+
+### Moderator parsing results (accordion)
+
+- Parsing results shown to the moderator are a list of unique domains (one domain appears once).
+- Domains that match the global blacklist (root-domain rule, including all subdomains) MUST NOT appear in parsing-results at all.
+- Expanding a domain (accordion) shows all collected URLs under this domain (different paths are shown as separate URLs).
+- Full raw findings (including duplicates and key->url->domain hits) are preserved in logs for analytics/debugging.
+

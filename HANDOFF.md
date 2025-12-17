@@ -305,3 +305,4 @@ $ts MSK  Fixed Backup naming line in tools/print_new_chat_prompt.ps1.
   - What: created AGENT-KNOWLEDGE.md; updated PROJECT-RULES.md (Communication style section + Agent learning gate).
   - Why: make chat output consistent and machine-usable; prevent agent from learning unverified fixes.
   - Verified: ruff check backend; ruff format backend; pre-commit run --all-files (all Passed).
+- 2025-12-17  Docs: clarified parsing-results UI as unique domain list with accordion URLs; enforced blacklist filtering; added decisions D-009 (domain dedup + full URL list) and D-010 (captcha => fullscreen browser). Logged incident about PowerShell heredoc script failure and switched to Plan B.
