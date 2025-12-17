@@ -17,7 +17,7 @@ def test_send_returns_501():
     with TestClient(app) as client:
         rid = _first_request_id(client)
         r = client.post(
-            f"/userrequests/{rid}/send",
+            f"/user/requests/{rid}/send",
             json={"subject": "t", "body": "b", "attachrequestfile": True, "attachmentids": []},
         )
         assert r.status_code == 501, r.text
@@ -27,7 +27,7 @@ def test_send_new_returns_501():
     with TestClient(app) as client:
         rid = _first_request_id(client)
         r = client.post(
-            f"/userrequests/{rid}/send-new",
+            f"/user/requests/{rid}/send-new",
             json={"subject": "t", "body": "b", "attachrequestfile": True, "attachmentids": []},
         )
         assert r.status_code == 501, r.text
@@ -36,11 +36,11 @@ def test_send_new_returns_501():
 def test_messages_returns_501():
     with TestClient(app) as client:
         rid = _first_request_id(client)
-        r = client.get(f"/userrequests/{rid}/messages?limit=1&offset=0")
+        r = client.get(f"/user/requests/{rid}/messages?limit=1&offset=0")
         assert r.status_code == 501, r.text
 
 
 def test_delete_message_returns_501():
     with TestClient(app) as client:
-        r = client.delete("/usermessages/1")
+        r = client.delete("/user/messages/1")
         assert r.status_code == 501, r.text

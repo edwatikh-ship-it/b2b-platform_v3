@@ -300,3 +300,4 @@ $ts MSK  Fixed Backup naming line in tools/print_new_chat_prompt.ps1.
 - 2025-12-17: Added pre-commit hook validate-openapi-contract to ensure OpenAPI paths keys in api-contracts.yaml start with '/'.
 
 2025-12-17 MSK - Fixed user messaging routes: /user/requests/* and /user/messages/*; runtime OpenAPI verified on port 8010 (8000 occupied by unknown listener).
+- 2025-12-17 20:03 12S+03:00 Fixed integration tests paths to match SSoT/runtime: /user/requests and /user/messages. Verified: just test (39 passed, 1 skipped).

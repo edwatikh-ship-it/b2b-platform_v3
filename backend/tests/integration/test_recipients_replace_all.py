@@ -16,7 +16,7 @@ def test_recipients_replace_all_and_update_selected():
         rid = _first_request_id(client)
 
         r1 = client.put(
-            f"/userrequests/{rid}/recipients",
+            f"/user/requests/{rid}/recipients",
             json={
                 "recipients": [
                     {"supplierid": 10, "selected": True},
@@ -31,7 +31,7 @@ def test_recipients_replace_all_and_update_selected():
         ]
 
         r2 = client.put(
-            f"/userrequests/{rid}/recipients",
+            f"/user/requests/{rid}/recipients",
             json={
                 "recipients": [
                     {"supplierid": 10, "selected": True},
@@ -47,7 +47,7 @@ def test_recipients_replace_all_and_update_selected():
 
         # replace-all removes missing supplierid=20 completely
         r3 = client.put(
-            f"/userrequests/{rid}/recipients",
+            f"/user/requests/{rid}/recipients",
             json={"recipients": [{"supplierid": 10, "selected": True}]},
         )
         assert r3.status_code == 200, r3.text
