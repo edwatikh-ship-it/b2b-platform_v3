@@ -265,7 +265,8 @@ QUESTION GATE:
 
 ## Chat workflow additions (2025-12-17)
 
-- Agent learning gate: Update AGENT-KNOWLEDGE.md / INCIDENTS.md only after a verified fix (commands + expected output).
+- Agent learning gate: Update AGENT-KNOWLEDGE.md / INCIDENTS.md only after a verified fix
+- AGENT-KNOWLEDGE.md stores reusable patterns/playbooks (how to act). HANDOFF.md stores factual change log (what changed + verification). (commands + expected output).
 
 - Error handling (human): When an error occurs, explain it in plain non-IT language and provide a recommendation.
 - Incident logging timing: Always explain errors immediately, but write to INCIDENTS.md only after the issue is resolved (full picture: symptom, root cause, fix, verification).
