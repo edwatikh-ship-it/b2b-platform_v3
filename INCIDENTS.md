@@ -146,3 +146,9 @@ Verification (expected)
   - Root cause: Windows PowerShell ConvertTo-Json has a hard max depth 100; pipeline abort prevents file creation.
   - Fix/Mitigation: Do NOT use ConvertTo-Json for OpenAPI dumps; use Invoke-WebRequest -OutFile to save raw JSON.
   - Verification: Invoke-WebRequest http://127.0.0.1:8000/openapi.json -OutFile .tmp\runtime-openapi.json; python -c "import json; json.load(open(r'.tmp\runtime-openapi.json','r',encoding='utf-8')); print('ok')" -> ok.
+
+- 2025-12-17 1430 MSK INCIDENT PowerShell here-string quoting broke python -c patch attempt.
+  - Symptom: python -c @" ... "@ -> SyntaxError (e.g. r""backend\..."" became rbackend\...).
+  - Root cause: PowerShell here-string is not a safe way to pass multiline code into python -c; quoting/escapes get mangled.
+  - Fix/Mitigation: Write a temporary .py file via .NET WriteAllText (UTF-8 no BOM) into .tmp, then run python script.py.
+  - Verification: python .tmp\patch_moderator_tasks.py -> OK patched; git diff shows expected changes.
