@@ -52,7 +52,7 @@ def _is_port_open(host: str, port: int, timeout_sec: float = 0.2) -> bool:
         return False
 
 
-def ensure_cdp(timeout_sec: int = 10) -> dict[str, Any]:
+def ensure_cdp(timeout_sec: int = 10):
     # Port-only gate: Python HTTP access to /json/version can return 503 even when CDP is usable.
     if _is_port_open("127.0.0.1", 9222):
         return {"cdp": "port-open"}
@@ -89,13 +89,13 @@ def health() -> dict[str, str]:
 
 
 @app.post("/parse")
-async def parse(payload: ParseRequest)
+async def parse(payload: ParseRequest):
     # Guard: when client sends non-UTF-8 bytes, Cyrillic may arrive as "?????"
     if "?" in payload.query:
         raise HTTPException(
             status_code=400,
             detail="Query contains '?'. Likely encoding issue. Send Content-Type: application/json; charset=utf-8",
-        ) -> dict[str, Any]:
+        )
     try:
         _ = ensure_cdp(timeout_sec=15)
     except RuntimeError as e:
