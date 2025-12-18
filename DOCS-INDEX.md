@@ -19,3 +19,4 @@ This file explains what each top-level documentation file means and where it liv
 
 ## Where these files live
 All files above must live in the repo root D:\b2bplatform (SSoT rule: no duplicates in backend\).
+- TOOLS.md  documented repo tools registry.
