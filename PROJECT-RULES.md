@@ -204,6 +204,10 @@ HANDOFF/INCIDENTS entry format:
 
 ============================================================
 12) Assistant message format (chat)
+Ambiguity gate (HARD):
+- Before documenting a rule or giving a multi-step instruction, read the current target document section.
+- Check that wording is unambiguous (no multiple interpretations).
+- If ambiguity is detected: STOP, ask a clarifying question OR propose an exact rewrite, then wait for confirmation.
 ============================================================
 Any multi-step instruction MUST include:
 - WHY
