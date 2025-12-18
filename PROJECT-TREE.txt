@@ -1,5 +1,38 @@
 PROJECT TREE (key artifacts)
-Generated: 2025-12-18 22:38:47
+Generated: 2025-12-19 00:49:43
+
+KEY POINTS (what to edit, where)
+SSoT
+  api-contracts.yaml                       - API contract and DTO shapes (SSoT).
+Docs / rules
+  PROJECT-RULES.md                         - Process rules (SSoT for workflow).
+  PROJECT-DOC.md                           - Product/behavior documentation.
+  DECISIONS.md                             - Important decisions (fact-only).
+Logs (append-only)
+  HANDOFF.md                               - Success log with verification.
+  INCIDENTS.md                             - Failure log with fix + verification.
+Backend entrypoints
+  backend\app\main.py                       - FastAPI app wiring (routers, lifespan).
+Contract enforcement
+  backend\tests\contract\test_openapi_paths_match_contract.py - OpenAPI vs SSoT paths test.
+HTTP routers
+  backend\app\transport\routers\            - HTTP endpoints (FastAPI routers).
+DTO schemas
+  backend\app\transport\schemas\            - Request/response DTOs.
+Use cases
+  backend\app\usecases\                     - Business flows orchestration.
+Domain
+  backend\app\domain\                       - Pure models and ports.
+DB adapters
+  backend\app\adapters\db\                  - SQLAlchemy models/repositories/session.
+Migrations
+  backend\alembic\                          - Alembic config + migrations.
+Tooling
+  tools\preflight.ps1                       - Pre-flight checks (base url / openapi / deps).
+  tools\update_project_tree.ps1             - Regenerate PROJECT-TREE.txt (this script).
+  tools\validate_openapi_contract.py        - Contract validation helper.
+  tools\openapi_diff.py                     - Diff runtime OpenAPI vs SSoT.
+  tools\doc_edit.py                         - Deterministic doc patcher (anchors + backups).
 
 .gitattributes
 .gitignore

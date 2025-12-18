@@ -1,6 +1,32 @@
 # AGENT-KNOWLEDGE (digital trace)
 
 ## System map
+
+## How to find files (commands)
+Goal:
+- Stop guessing paths; always locate the current file in this repo.
+
+Routers (endpoints):
+- Get-ChildItem -Path .\backend\app\transport\routers -File -Filter "*.py" | Select-Object Name,FullName
+
+DTO schemas:
+- Get-ChildItem -Path .\backend\app\transport\schemas -File -Filter "*.py" | Select-Object Name,FullName
+
+Tests:
+- Get-ChildItem -Path .\backend\tests -Recurse -File -Filter "test_*.py" | Select-Object -First 50 FullName
+
+Tool scripts:
+- Get-ChildItem -Path .\tools -File | Select-Object Name,FullName
+
+Find a string across repo (PowerShell-safe):
+- Get-ChildItem -Path . -Recurse -File | Select-String -Pattern "operationId:" -SimpleMatch
+
+## Pitfalls catalog (short)
+- UTF-8 BOM from Set-Content/Out-File can break pytest/config parsing -> use .NET WriteAllText with UTF8Encoding(false). (See INCIDENTS.md entries about BOM.) 
+- ConvertTo-Json max depth 100 breaks OpenAPI dumps -> use Invoke-WebRequest -OutFile and validate JSON in Python. (See INCIDENTS.md.)
+- Bash heredoc syntax does not work in PowerShell -> use python -c or write a temp .py file via .NET WriteAllText. (See INCIDENTS.md.)
+- Do not use reserved PowerShell names like Host in params/vars -> rename (e.g., ServerHost). (See INCIDENTS.md.)
+- Resolve-Path fails for non-existing targets -> build paths with Join-Path instead. (See INCIDENTS.md.)
 - backend: FastAPI (API = endpoints), health: GET /health
 - parser_service: http://127.0.0.1:9001 (dependency = backend calls it)
 

@@ -84,12 +84,47 @@ foreach ($d in $includeDirs) {
 }
 $files = $items | Sort-Object
 
+$keyPoints = @()
+$keyPoints += "KEY POINTS (what to edit, where)"
+$keyPoints += "SSoT"
+$keyPoints += "  api-contracts.yaml                       - API contract and DTO shapes (SSoT)."
+$keyPoints += "Docs / rules"
+$keyPoints += "  PROJECT-RULES.md                         - Process rules (SSoT for workflow)."
+$keyPoints += "  PROJECT-DOC.md                           - Product/behavior documentation."
+$keyPoints += "  DECISIONS.md                             - Important decisions (fact-only)."
+$keyPoints += "Logs (append-only)"
+$keyPoints += "  HANDOFF.md                               - Success log with verification."
+$keyPoints += "  INCIDENTS.md                             - Failure log with fix + verification."
+$keyPoints += "Backend entrypoints"
+$keyPoints += "  backend\app\main.py                       - FastAPI app wiring (routers, lifespan)."
+$keyPoints += "Contract enforcement"
+$keyPoints += "  backend\tests\contract\test_openapi_paths_match_contract.py - OpenAPI vs SSoT paths test."
+$keyPoints += "HTTP routers"
+$keyPoints += "  backend\app\transport\routers\            - HTTP endpoints (FastAPI routers)."
+$keyPoints += "DTO schemas"
+$keyPoints += "  backend\app\transport\schemas\            - Request/response DTOs."
+$keyPoints += "Use cases"
+$keyPoints += "  backend\app\usecases\                     - Business flows orchestration."
+$keyPoints += "Domain"
+$keyPoints += "  backend\app\domain\                       - Pure models and ports."
+$keyPoints += "DB adapters"
+$keyPoints += "  backend\app\adapters\db\                  - SQLAlchemy models/repositories/session."
+$keyPoints += "Migrations"
+$keyPoints += "  backend\alembic\                          - Alembic config + migrations."
+$keyPoints += "Tooling"
+$keyPoints += "  tools\preflight.ps1                       - Pre-flight checks (base url / openapi / deps)."
+$keyPoints += "  tools\update_project_tree.ps1             - Regenerate PROJECT-TREE.txt (this script)."
+$keyPoints += "  tools\validate_openapi_contract.py        - Contract validation helper."
+$keyPoints += "  tools\openapi_diff.py                     - Diff runtime OpenAPI vs SSoT."
+$keyPoints += "  tools\doc_edit.py                         - Deterministic doc patcher (anchors + backups)."
+$keyPoints += ""
+
 $content = @()
 $content += "PROJECT TREE (key artifacts)"
 $content += "Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
 $content += ""
+$content += $keyPoints
 $content += $files
 
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText($out, ($content -join "`n"), $utf8NoBom)
-Write-Host "Wrote $OutFile with $($files.Count) paths."
