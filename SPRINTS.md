@@ -34,3 +34,15 @@ Next:
 - [ ] parser_service: accept source in /parse and implement google/yandex/both behavior (currently yandex-only).
 - [ ] backend: optionally propagate per-URL/per-group source into ParsingDomainGroupDTO.source (requires parser_service to return source metadata).
 
+
+## Next (handoff)  2025-12-18
+- Status: SSoT api-contracts.yaml paths == runtime OpenAPI paths (1:1).
+- Runtime: backend up on http://127.0.0.1:8000, APIPREFIX empty.
+- Verify:
+  - Invoke-RestMethod http://127.0.0.1:8000/health
+  - Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Out-Null
+  - (Invoke-RestMethod http://127.0.0.1:8000/openapi.json).paths.PSObject.Properties.Name | Sort-Object
+- Sprint tasks (pick top priority first):
+  - [ ] Choose next endpoint slice from api-contracts.yaml and implement minimal behavior (+ tests).
+  - [ ] Parserservice: support StartParsingRequestDTO.source (google/yandex/both); currently yandex-only.
+  - [ ] Consider propagating source metadata into ParsingDomainGroupDTO.source (needs parserservice output).
