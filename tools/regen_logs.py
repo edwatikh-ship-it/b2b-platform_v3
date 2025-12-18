@@ -18,7 +18,9 @@ PLACEHOLDER_SNIPS = [
     "<fix>",
     "<fix_or_mitigation>",
     "<expected>",
-]def read_text(p: Path) -> str:
+]
+
+def read_text(p: Path) -> str:
     return p.read_text(encoding="utf-8", errors="replace")
 
 def write_text(p: Path, s: str) -> None:
