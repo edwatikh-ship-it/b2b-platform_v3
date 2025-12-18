@@ -1,13 +1,3 @@
-# HANDOFF  B2B Platform
-
-Канонический лог успехов (сгенерён tools/regen_logs.py).
-Оригиналы сохраняются в _log_archive/ (timestamped).
-
-## Правило (DoD)
-- Успех  сюда: datetime MSK, what changed, verify cmd  expected.
-- Фейл  INCIDENTS.md (symptom/root cause/fix/verify).
-
-## Entries (append-only, logically)
 ## Logging rule (DoD)
 - Success -> HANDOFF.md (append-only, with verification command).
 - Failure -> INCIDENTS.md (append-only, with symptom/root cause/fix/verification).
@@ -26,7 +16,7 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 ## Entries (append-only)
 
 ## Entries
-- 2025-12-13 22:40 MSK Р В Р’В Р вЂ™Р’В Р В Р’В Р Р†Р вЂљР’В Р В Р’В Р вЂ™Р’В Р В Р вЂ Р В РІР‚С™Р РЋРІвЂћСћР В Р’В Р В РІР‚В Р В Р’В Р Р†Р вЂљРЎв„ўР В Р Р‹Р РЋРЎв„ў Verified API up: GET /api/v1/health -> 200 {"status":"ok"}; Swagger /docs and /openapi.json available. Verify: open URLs or `Invoke-RestMethod http://localhost:8000/api/v1/health`.
+- 2025-12-13 22:40 MSK Р В Р’В Р вЂ™Р’В Р В Р’В Р Р†Р вЂљР’В Р В Р’В Р вЂ™Р’В Р В Р вЂ Р В РІР‚С™Р РЋРІвЂћСћР В Р’В Р В РІР‚В Р В Р’В Р Р†Р вЂљРЎв„ўР В Р Р‹Р РЋРЎв„ў Verified API up: GET /api/v1/health -> 200 {"status":"ok"}; Swagger /docs and /openapi.json available. Verify: open URLs or `Invoke-RestMethod http://localhost:8000/api/v1/health`. 
 - 2025-12-13 22:55 MSK Р В Р’В Р вЂ™Р’В Р В Р’В Р Р†Р вЂљР’В Р В Р’В Р вЂ™Р’В Р В Р вЂ Р В РІР‚С™Р РЋРІвЂћСћР В Р’В Р В РІР‚В Р В Р’В Р Р†Р вЂљРЎв„ўР В Р Р‹Р РЋРЎв„ў Reset Postgres clean: dropped/recreated DB b2b_platform and role b2b_user; switched DATABASE_URL to 127.0.0.1; granted schema public CREATE/USAGE to b2b_user. Verify: `psql -U b2b_user -h 127.0.0.1 -d b2b_platform` works; `\dt` shows empty baseline before migrations.
 - 2025-12-13 23:00 MSK Р В Р’В Р вЂ™Р’В Р В Р’В Р Р†Р вЂљР’В Р В Р’В Р вЂ™Р’В Р В Р вЂ Р В РІР‚С™Р РЋРІвЂћСћР В Р’В Р В РІР‚В Р В Р’В Р Р†Р вЂљРЎв„ўР В Р Р‹Р РЋРЎв„ў Fixed Alembic revision generation by adding `backend/alembic/script.py.mako`; created baseline migration `3315ed698ecb_init.py`; applied `alembic upgrade head`. Verify: `SELECT * FROM alembic_version;` -> 3315ed698ecb.
 
@@ -62,6 +52,7 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 
 2025-12-13 23:43 MSK Extended RequestRepository with listing method: added list_requests(limit, offset) returning {items, total} from requests table (ordered by id desc). Verified: `python -c "from app.adapters.db.repositories import RequestRepository; print('repo ok')" -> repo ok. [file:5]
 
+2025-12-13 23:43 MSK Extended RequestRepository with listing method: added list_requests(limit, offset) returning {items, total} from requests table (ordered by id desc). Verified: `python -c "from app.adapters.db.repositories import RequestRepository; print('repo ok')" -> repo ok. [file:5]
 
 2025-12-13 23:44 MSK Implemented GET /api/v1/user/requests: updated app/transport/routers/requests.py to add list endpoint with limit/offset query params and RequestListResponseDTO response. Verified: `python -c "from app.transport.routers.requests import router; print('router ok')" -> router ok. [file:1]
 
@@ -105,6 +96,7 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 - 2025-12-14 16:25 MSK: Implemented UserMessaging recipients replace-all. Changes: api-contracts.yaml updated schemas UpdateRecipientsRequest + RecipientsResponse and PUT /apiv1/userrequests/{requestId}/recipients now returns 200 RecipientsResponse; backend implemented transport DTOs (app/transport/schemas/user_messaging.py), router PUT recipients (app/transport/routers/user_messaging.py), usecase (app/usecases/update_request_recipients.py), DB repo method replace_recipients (app/adapters/db/repositories.py), ORM model RequestRecipientModel fixes (app/adapters/db/models.py), and added integration test tests/integration/test_recipients_replace_all.py. DB: applied Alembic head be4136aa1c68. Verification: cd D:\b2bplatform\backend; python -m pytest -q -> 40 passed.- 2025-12-14 17:00 MSK Ran backend on port 8002 due to stuck 8000 listener; verified GET http://localhost:8002/docs = 200 and GET http://localhost:8002/apiv1/health returns status ok; tests green when run from backend folder: cd D:\b2bplatform\backend; .\.venv\Scripts\python.exe -m pytest -q => 40 passed.
 
 - 2025-12-14 17:25 MSK User blacklist by INN: added contract paths/schemas and enabled backend endpoints GET/POST/DELETE /apiv1/user/blacklist-inn. Verified: Invoke-RestMethod GET returned total=1 after POST and DELETE returned success=true on port 8002.
+- 2025-12-14 17:25 MSK User blacklist by INN: added contract paths/schemas and enabled backend endpoints GET/POST/DELETE /apiv1/user/blacklist-inn. Verified: Invoke-RestMethod GET returned total=1 after POST and DELETE returned success=true on port 8002.
 - 2025-12-14 17:36 MSK DB aligned: using role b2b_user and database b2b_platform; set DATABASEURL in backend\\.env. Verified: GET /apiv1/health = ok, GET /apiv1/user/blacklist-inn returns total=1.
 
 ## 2025-12-15 00:06:35 MSK
@@ -117,19 +109,23 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 ## 2025-12-15 00:09:24 MSK
 - What: Removed *.bak* artifacts and fixed update_project_tree.ps1 syntax; regenerated clean PROJECT-TREE.txt
 - Why: Keep repo clean and tree reliable for new chats
+- Verify: Select-String PROJECT-TREE.txt -Pattern '\.bak|\.tmp|~$' -Quiet
 - Expected: False
 - Now: Repo hygiene complete; ready for next feature
+- Next: Pick next endpoint from api-contracts.yaml and implement first slice
 ## 2025-12-15 00:11:01 MSK
 - What: Normalized line endings via .gitattributes and git renormalize
 - Why: Reduce CRLF/LF noise and keep repo consistent across Windows + Linux CI
 - Verify: git status (clean) + pre-commit run --all-files
 - Expected: Working tree clean; hooks pass; fewer CRLF/LF warnings
 - Now: Repo hygiene complete
+- Next: Pick next endpoint from api-contracts.yaml and implement first slice
 ## 2025-12-15 00:13:50 MSK
 - What: Removed legacy file 'Р В РІР‚СњР В Р’ВµР РЋР вЂљР В Р’ВµР В Р вЂ Р В РЎвЂў Р В РЎвЂ”Р РЋР вЂљР В РЎвЂўР В Р’ВµР В РЎвЂќР РЋРІР‚С™Р В Р’В°.txt' from repo
 - Why: We keep project structure in PROJECT-TREE.txt; unicode legacy file causes git noise
 - Verify: git status (after commit) shows clean working tree
 - Expected: Working tree clean; file removed from main
+- Now: Repo hygiene complete
 - Next: Return to product work: pick next endpoint from api-contracts.yaml
 
 
@@ -138,6 +134,7 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
 
 - 2025-12-14 11:47 MSK: Blacklist integration test aligned to current OpenAPI path /api/v1/user/blacklist/inn. Verified: D:\b2bplatform\backend\.venv\Scripts\python.exe -m pytest -q (all passed).
 
+- 2025-12-14 11:47 MSK: Blacklist integration test aligned to current OpenAPI path /api/v1/user/blacklist/inn. Verified: D:\b2bplatform\backend\.venv\Scripts\python.exe -m pytest -q (all passed).
 
 - 2025-12-14 11:48 MSK: Fixed Windows asyncpg 'Event loop is closed' in integration tests by adding FastAPI lifespan to dispose SQLAlchemy async engine on shutdown (app/main.py). Verified: D:\b2bplatform\backend\.venv\Scripts\python.exe -m pytest -q (all passed).
 
@@ -225,13 +222,25 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
   - Added repo-root ctx.ps1 helper to dump environment/tooling/git context before troubleshooting.
   Proof (recent commits):
   6283d0e docs: log ctx-first guardrails in handoff a60b1a8 docs: add ctx-first guardrails and ctx.ps1 helper 70a929a chore: add ctx.ps1 (context dump for chat)
+  Verification:
+  - powershell: Set-Location D:\b2bplatform; .\ctx.ps1
+  - powershell: Set-Location D:\b2bplatform; pre-commit run --all-files
   Expected:
   - ctx.ps1 prints cwd, SSoT presence, git status, tools, python/env, and alembic quick output.
   - pre-commit hooks pass (ruff + ruff-format).
 - 2025-12-16 14:36 MSK Success: Implemented chat-efficiency guardrails and a repo-root context dump helper.
+  What:
   - Added PROJECT-RULES requirement: every multi-step instruction must include WHY/EXPECT/IF FAIL + SA-note (provided in Russian in chat).
+  - Added CTX-FIRST / NO-PLACEHOLDERS / NO-RAW-SETCONTENT guardrails.
+  - Added repo-root ctx.ps1 helper to dump environment/tooling/git context before troubleshooting.
+  Proof (recent commits):
   d20e470 docs: log ctx-first guardrails milestone 6283d0e docs: log ctx-first guardrails in handoff a60b1a8 docs: add ctx-first guardrails and ctx.ps1 helper
+  Verification:
+  - powershell: Set-Location D:\b2bplatform; .\ctx.ps1
+  - powershell: Set-Location D:\b2bplatform; pre-commit run --all-files
+  Expected:
   - ctx.ps1 prints repo/env/tool context.
+  - pre-commit hooks pass (ruff + ruff-format).
 - 2025-12-16 14:41 MSK Note: The ctx-first guardrails milestone was logged multiple times (duplicate HANDOFF entries). Treat the latest entry as the source of truth; earlier duplicates can be ignored.
 
 - 2025-12-16 16:45 MSK: Success Hardened OpenAPI diff tooling. What: tools/openapi_diff.py now supports offline diff via --live-file (default .tmp/runtime-openapi.json) and optional --live-url; --help no longer triggers HTTP. Verified SSoT api-contracts.yaml paths match runtime OpenAPI (29 ok). Verification: python .\tools\openapi_diff.py --help; python .\tools\openapi_diff.py ->  openapi-diff.csv: 0 missing, 0 extra, 29 ok.
@@ -251,8 +260,11 @@ If a step failed: do NOT add an entry here; log it into INCIDENTS.md instead.
   - What: Implemented GET /moderator/pending-domains (list) and GET /moderator/pending-domains/{domain} (detail stub 404) with transport schemas PendingDomainListResponseDTO and PendingDomainDetailDTO, wired router in backend/app/main.py.
   - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
 - 2025-12-17 0021 MSK Correction Previous entry for ModeratorPendingDomains used a Markdown link in the verify command.
+  - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
 - 2025-12-17 0021 MSK Correction The ModeratorPendingDomains verify command should use a plain URL (no Markdown link).
+  - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
 - 2025-12-17 0022 MSK Correction ModeratorPendingDomains verify command (copy/paste):
+  - Verify: Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Select-String "/moderator/pending-domains"; and detail returns 404 for unknown domain.
 - 2025-12-17 00:44 MSK Implemented moderator domain decision endpoints.
   What: Added router moderator_domain_decision and schemas for DomainDecisionRequestDTO/ResponseDTO plus SupplierCardDTO, wired router in backend/app/main.py.
   Verified: ruff check backend; pre-commit run --all-files; runtime openapi.json contains /moderator/domains/{domain}/decision and /moderator/domains/{domain}/hits.- 2025-12-17 01:09 MSK Fixed moderator domain decision endpoints 500 caused by Enum stringification; now returns contract enum values. Verify: POST and GET http://127.0.0.1:8000/moderator/domains/pulscen.ru/decision -> 200 with status 'blacklist'.

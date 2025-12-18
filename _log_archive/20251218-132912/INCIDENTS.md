@@ -1,14 +1,3 @@
-# INCIDENTS  B2B Platform
-
-Канонический список инцидентов/граблей (сгенерён tools/regen_logs.py).
-Оригиналы сохраняются в _log_archive/ (timestamped).
-
-## Правило
-- Append-only по смыслу (история сохраняется через архивирование).
-- Формат: datetime MSK  symptom  root cause  fix/mitigation  verification (cmd  expected).
-- Без длинных логов/трейсбеков.
-
-## Entries (append-only, logically)
 # INCIDENTS вЂ” B2B Platform
 
 ## Rules (owned here)
@@ -23,6 +12,7 @@
 
 ## Entries (append-only)
 
+## Entries (append-only)
 # INCIDENTS.md Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ known issues / pitfalls (append-only)
 
 Rule:
@@ -30,6 +20,7 @@ Rule:
 - Format: datetime MSK Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ symptom Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ root cause Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ fix/mitigation Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ verification.
 - 1Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™3 lines per incident, no long stacktraces.
 
+## Entries (append-only)
 - 2025-12-13 23:49 MSK pytest on Windows failed with "Event loop is closed" when hitting Postgres via asyncpg in integration tests Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ root cause: global SQLAlchemy async engine not disposed on app shutdown Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ fix: FastAPI lifespan + `await engine.dispose()` in `app/main.py` Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ verification: `python -m pytest -q` -> `2 passed`.
 - 2025-12-13 23:49 MSK pytest on Windows failed with "Event loop is closed" when hitting Postgres via asyncpg Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ root cause: SQLAlchemy async engine created globally and not disposed on shutdown Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ fix: FastAPI lifespan + await engine.dispose() Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ verification: python -m pytest -q => 2 passed.
 
@@ -40,6 +31,8 @@ Rule:
 - 2025-12-14 00:05Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™00:24 MSK INCIDENT: DB/env mismatch and missing DATABASE_URL caused alembic/settings failures; actual role/db were b2b_user/b2b_platform. Fix: added DATABASE_URL to .env pointing to b2b_user/b2b_platform and created migration bbff04c57403 to add attachments table. Verified with alembic current + psql \dt.
 - 2025-12-14 00:35Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™00:36 MSK INCIDENT: pytest failed with unexpected line '\ufeff[pytest]' because pytest.ini was written with UTF-8 BOM; fix: rewrite pytest.ini as UTF-8 without BOM via .NET UTF8Encoding(false). Verified: pytest -q => 10 passed.
 - 2025-12-14 00:35Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™00:36 MSK INCIDENT: pytest.ini written with UTF-8 BOM caused pytest error (unexpected line '\ufeff[pytest]'). Fix: rewrite pytest.ini UTF-8 without BOM via .NET UTF8Encoding(false). Verified: pytest -q => 10 passed.
+- 2025-12-14 0016 MSK INCIDENT <symptom>. Root cause: <root_cause>. Fix/mitigation: <fix>. Verification: <command> -> <expected>.
+- 2025-12-14 01:23 MSK INCIDENT <symptom> Root cause: <root_cause> Fix/mitigation: <fix_or_mitigation> Verification: <command> -> <expected>
 - 2025-12-14 01:35 MSK INCIDENT Attachments API contract mismatch (paths + response field casing) caused 404/KeyError in integration tests Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ root cause: implementation/tests used '/api/v1/user/attachments' and camelCase DTO aliases (originalFilename), while SSoT requires '/api/v1/userattachments' and lowercase fields (originalfilename) Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ fix: aligned router prefix to '/userattachments', replaced Attachment DTO aliases to match api-contracts.yaml, updated integration tests to contract paths/fields Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ verification: .\.venv\Scripts\pytest.exe -q -k attachments -> 2 passed.
 - 2025-12-14 10:13 MSK Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ INCIDENT Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ api-contracts.yaml patching failed: (1) script looked for .\api-contracts.yaml from backend folder instead of repo root; (2) schemas insertion had broken indentation and made YAML invalid. Fix: rollback to .bak, reapply patcher v3 that inserts under '  schemas:' with correct indentation. Verification: python yaml.safe_load => OK; Select-String finds /user/blacklist/inn and '^  AddUserBlacklistInnRequest:'.
 
@@ -91,6 +84,7 @@ Verification: ruff + pre-commit available and pass ('ruff check', 'ruff format',
 - 2025-12-15 11:15 MSK INCIDENT PowerShell SSoT patching pitfalls: $ref inside strings caused parser error (PowerShell treated $ref as variable), and [regex]::Replace was called with RegexOptions which bound to matchTimeout overload and failed. Root cause: PowerShell variable interpolation + .NET Regex overload ambiguity. Fix/Mitigation: escape $ref as ` $ref `; create regex via New-Object Regex(pattern, [RegexOptions]::Singleline) and call .Replace(); prefer deterministic anchor-based patches or reusable tools/ scripts. Verification: patch runs without errors; git status shows expected files only; openapi.json loads 200.
 
 
+- 2025-12-15 18:26 MSK INCIDENT: OpenAPI diff script crashed in PowerShell with ParserError on '??'/'?.' and produced empty openapi-diff.csv (3 bytes) | root cause: used C# null-coalescing/safe-navigation operators not supported by PowerShell | fix: rewrote script without '??'/'?.' | verification: openapi-diff.csv = 11238 bytes and Group-Object (status, group) returns counts.
 - 2025-12-15 18:26 MSK INCIDENT: OpenAPI diff script crashed in PowerShell with ParserError on '??'/'?.' and produced empty openapi-diff.csv (3 bytes) | root cause: used C# null-coalescing/safe-navigation operators not supported by PowerShell | fix: rewrote script without '??'/'?.' | verification: openapi-diff.csv = 11238 bytes and Group-Object (status, group) returns counts.
 - 2025-12-15 19:29 MSK INCIDENT PowerShell $env:$name syntax error when loading backend.env. Root cause invalid dynamic env var assignment. Fix use Set-Item -Path "Env:${k}" -Value $v. Verification DATABASEURL loaded postgresql+asyncpg://... python -c "import os; print(os.getenv('DATABASEURL'))"
 - 2025-12-16 04:27 MSK INCIDENT Encoding / mojibake in PowerShell edits.
@@ -183,6 +177,7 @@ Verification (expected)
 - Symptom: Writing .tmp\preflight.ps1 failed when using Resolve-Path for a non-existing target file; later running script failed with VariableNotWritable for parameter named Host.
 - Root cause: Resolve-Path does not resolve non-existing file paths; $Host is a built-in read-only PowerShell variable, so param([string]$Host=...) attempts to assign to it and crashes.
 - Fix/Mitigation: Write file via an explicit absolute path (Join-Path + Get-Location) without Resolve-Path; rename Host parameter to ServerHost (avoid reserved built-ins); when putting ':' after a variable in a string use ${var} form.
+- Verification:
   powershell -NoProfile -ExecutionPolicy Bypass -File .\.tmp\preflight.ps1
   # Expected: prints base_url, api_prefix, health_status=ok, and openapi_paths_with_parsing_runs.
 
@@ -215,6 +210,8 @@ Status:
   - Plan B: update PROJECT-TREE.txt via:
     - powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\update_project_tree.ps1
   - Follow the process rule: Commands-first gate (HARD) + STOP until facts are pasted.
+- Verification:
+  - powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\update_project_tree.ps1
   - Expected: "Wrote PROJECT-TREE.txt with {N} paths."
 
 ## 2025-12-18 04:29 MSK  parser_service broke during hotfixing

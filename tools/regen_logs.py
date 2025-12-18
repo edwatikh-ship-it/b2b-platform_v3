@@ -8,9 +8,9 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE_ROOT = ROOT / "_log_archive"
 
-# ВАЖНО:
-# Удаляем только "болванки" вида <symptom>/<root_cause> и т.п.
-# НЕЛЬЗЯ удалять строки по подстроке "INCIDENT", иначе можно снести реальные записи.
+# Р’РђР–РќРћ:
+# РЈРґР°Р»СЏРµРј С‚РѕР»СЊРєРѕ "Р±РѕР»РІР°РЅРєРё" РІРёРґР° <symptom>/<root_cause> Рё С‚.Рї.
+# РќР•Р›Р¬Р—РЇ СѓРґР°Р»СЏС‚СЊ СЃС‚СЂРѕРєРё РїРѕ РїРѕРґСЃС‚СЂРѕРєРµ "INCIDENT", РёРЅР°С‡Рµ РјРѕР¶РЅРѕ СЃРЅРµСЃС‚Рё СЂРµР°Р»СЊРЅС‹Рµ Р·Р°РїРёСЃРё.
 PLACEHOLDER_SNIPS = [
     "INCIDENT <symptom>",
     "<symptom>",
@@ -18,9 +18,7 @@ PLACEHOLDER_SNIPS = [
     "<fix>",
     "<fix_or_mitigation>",
     "<expected>",
-]
-
-def read_text(p: Path) -> str:
+]def read_text(p: Path) -> str:
     return p.read_text(encoding="utf-8", errors="replace")
 
 def write_text(p: Path, s: str) -> None:
@@ -54,12 +52,12 @@ def make_handoff(src: str) -> str:
     header = [
         "# HANDOFF  B2B Platform",
         "",
-        "Канонический лог успехов (сгенерён tools/regen_logs.py).",
-        "Оригиналы сохраняются в _log_archive/ (timestamped).",
+        "РљР°РЅРѕРЅРёС‡РµСЃРєРёР№ Р»РѕРі СѓСЃРїРµС…РѕРІ (СЃРіРµРЅРµСЂС‘РЅ tools/regen_logs.py).",
+        "РћСЂРёРіРёРЅР°Р»С‹ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РІ _log_archive/ (timestamped).",
         "",
-        "## Правило (DoD)",
-        "- Успех  сюда: datetime MSK, what changed, verify cmd  expected.",
-        "- Фейл  INCIDENTS.md (symptom/root cause/fix/verify).",
+        "## РџСЂР°РІРёР»Рѕ (DoD)",
+        "- РЈСЃРїРµС…  СЃСЋРґР°: datetime MSK, what changed, verify cmd  expected.",
+        "- Р¤РµР№Р»  INCIDENTS.md (symptom/root cause/fix/verify).",
         "",
         "## Entries (append-only, logically)",
         "",
@@ -71,25 +69,25 @@ def make_incidents(src: str) -> str:
     header = [
         "# INCIDENTS  B2B Platform",
         "",
-        "Канонический список инцидентов/граблей (сгенерён tools/regen_logs.py).",
-        "Оригиналы сохраняются в _log_archive/ (timestamped).",
+        "РљР°РЅРѕРЅРёС‡РµСЃРєРёР№ СЃРїРёСЃРѕРє РёРЅС†РёРґРµРЅС‚РѕРІ/РіСЂР°Р±Р»РµР№ (СЃРіРµРЅРµСЂС‘РЅ tools/regen_logs.py).",
+        "РћСЂРёРіРёРЅР°Р»С‹ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РІ _log_archive/ (timestamped).",
         "",
-        "## Правило",
-        "- Append-only по смыслу (история сохраняется через архивирование).",
-        "- Формат: datetime MSK  symptom  root cause  fix/mitigation  verification (cmd  expected).",
-        "- Без длинных логов/трейсбеков.",
+        "## РџСЂР°РІРёР»Рѕ",
+        "- Append-only РїРѕ СЃРјС‹СЃР»Сѓ (РёСЃС‚РѕСЂРёСЏ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ С‡РµСЂРµР· Р°СЂС…РёРІРёСЂРѕРІР°РЅРёРµ).",
+        "- Р¤РѕСЂРјР°С‚: datetime MSK  symptom  root cause  fix/mitigation  verification (cmd  expected).",
+        "- Р‘РµР· РґР»РёРЅРЅС‹С… Р»РѕРіРѕРІ/С‚СЂРµР№СЃР±РµРєРѕРІ.",
         "",
         "## Entries (append-only, logically)",
         "",
     ]
     out = "\n".join(header) + "\n".join(lines).strip() + "\n"
 
-    # Safety check: чтобы не съесть файл
+    # Safety check: С‡С‚РѕР±С‹ РЅРµ СЃСЉРµСЃС‚СЊ С„Р°Р№Р»
     msk_lines = sum(1 for ln in out.splitlines() if " MSK" in ln)
     if msk_lines < 20:
         raise SystemExit(f"FATAL: too few MSK lines in INCIDENTS.md after regen: {msk_lines}")
 
-    # Дополнительная защита: должен остаться хотя бы один INCIDENT
+    # Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ Р·Р°С‰РёС‚Р°: РґРѕР»Р¶РµРЅ РѕСЃС‚Р°С‚СЊСЃСЏ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ INCIDENT
     if "incident" not in out.lower():
         raise SystemExit("FATAL: no 'INCIDENT' word found after regen (suspicious)")
 
