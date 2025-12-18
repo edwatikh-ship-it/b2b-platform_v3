@@ -310,3 +310,8 @@ QUESTION GATE:
   - Biz-note (for non-IT customer): what value it gives and why it matters.
 - HARD: NO FALSE PROMISES. If something is unknown, collect facts first or ask, then STOP.
 
+
+17 Documentation gate HARD
+- Any change to PROJECT-RULES.md, PROJECT-DOC.md, HANDOFF.md, INCIDENTS.md, AGENT-KNOWLEDGE.md MUST be done via an approved deterministic tool/script (preferred: tools/doc_edit.py subcommands when applicable).
+- If tools/doc_edit.py does not support the required change, use Plan B: edit via a temporary .py script or .NET WriteAllText UTF-8 without BOM (no PowerShell Set-Content / Out-File).
+- Proof is mandatory: git diff + Select-String/Get-Content snippet before commit/push.
