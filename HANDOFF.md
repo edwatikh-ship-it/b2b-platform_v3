@@ -357,3 +357,5 @@ Files touched:
 - 2025-12-18 22:38 MSK: Smoke-check: /health=200, /openapi.json=200, parser_service(9001)=404 (service responds).
 - 2025-12-18 23:47:52 MSK Success Added PROJECT-DOC.md runbook section 'PowerShell: UTF-8 JSON responses' (avoid Cyrillic mojibake and prevent here-string $variable interpolation). Verified: git show --oneline -1 shows commit 1365b2f; git status --porcelain is empty; python BOM check prints BOM_UTF8=False.
 - 2025-12-19 00:02 MSK Success Implemented /moderator/tasks and /moderator/tasks/{taskId} minimal 200 response (return {}). Verified python -m pytest -q backend\tests\integration\test_moderator_tasks.py - Expected 3 passed.
+
+- 2025-12-19 00:07 MSK Verified Moderator stubs return 501 Not Implemented: GET /moderator/parsing-runs, /moderator/resolved-domains, /moderator/urls/hits. Verify Invoke-WebRequest http://127.0.0.1:8000/moderator/parsing-runs?limit=1&offset=0, http://127.0.0.1:8000/moderator/resolved-domains?limit=1&offset=0, http://127.0.0.1:8000/moderator/urls/hits?url=https%3A%2F%2Fexample.com&limit=1&offset=0 - Expected 501 for each.
