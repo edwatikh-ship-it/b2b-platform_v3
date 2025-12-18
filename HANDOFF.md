@@ -338,3 +338,5 @@ Files touched:
   - Verify: git show --name-only b2a3a43
 - 2025-12-18 04:40 MSK docs: added "Documentation gate HARD" to PROJECT-RULES.md (deterministic edits for process docs + mandatory proof).
   - Verify: git show --name-status b2a3a43
+- 2025-12-18 05:20 MSK NOTE: duplicate HANDOFF entry at 2025-12-18 04:40 MSK was appended twice; treat the later one (with git show --name-status) as the correct verify command.
+  - Verify: git show --name-status d80054d
