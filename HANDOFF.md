@@ -356,3 +356,4 @@ Files touched:
 - 2025-12-18 22:35 MSK: Прогнал тесты (39 passed, 1 skipped). Обновил PROJECT-TREE.txt через just tree.
 - 2025-12-18 22:38 MSK: Smoke-check: /health=200, /openapi.json=200, parser_service(9001)=404 (service responds).
 - 2025-12-18 23:47:52 MSK Success Added PROJECT-DOC.md runbook section 'PowerShell: UTF-8 JSON responses' (avoid Cyrillic mojibake and prevent here-string $variable interpolation). Verified: git show --oneline -1 shows commit 1365b2f; git status --porcelain is empty; python BOM check prints BOM_UTF8=False.
+- 2025-12-19 00:02 MSK Success Implemented /moderator/tasks and /moderator/tasks/{taskId} minimal 200 response (return {}). Verified python -m pytest -q backend\tests\integration\test_moderator_tasks.py - Expected 3 passed.
