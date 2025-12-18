@@ -139,3 +139,18 @@ Preferred commands
 
 Verify
 - python prints ok and file is readable UTF-8.
+
+TITLE AGENT-KNOWLEDGE digital trace - 2025-12-18 2104 MSK Runbook: 503 to parserservice
+
+Trigger
+- Backend parsing-status (or start-parsing) reports 503 calling http://127.0.0.1:9001/parse.
+
+Checks
+- netstat -ano | Select-String -SimpleMatch ':9001'
+- Invoke-WebRequest http://127.0.0.1:9001 -UseBasicParsing -TimeoutSec 2 | Select-Object StatusCode
+
+Decision
+- If port 9001 is not reachable: fix environment (start parserservice / start Chrome CDP) BEFORE touching backend code.
+
+Verify
+- Invoke-WebRequest http://127.0.0.1:9001 -UseBasicParsing -TimeoutSec 2 - Expected 404/200.
