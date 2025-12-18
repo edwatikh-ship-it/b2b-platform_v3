@@ -5,8 +5,6 @@ import socket
 import subprocess
 import time
 from typing import Any
-
-import httpx
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
@@ -55,32 +53,10 @@ def _is_port_open(host: str, port: int, timeout_sec: float = 0.2) -> bool:
 
 
 def ensure_cdp(timeout_sec: int = 10) -> dict[str, Any]:
-    # Fast path: CDP already available.
-    try:
-        r = httpx.get(_cdp_version_url(), timeout=1.5)
-        r.raise_for_status()
-        return r.json()
-    except Exception:
-        pass
-
-    # If the port is already open, do NOT spawn a new Chrome.
-    # Another instance may be holding the port; spawning again only makes the state worse.
+    # Port-only gate: Python HTTP access to /json/version can return 503 even when CDP is usable.
     if _is_port_open("127.0.0.1", 9222):
-        last_err: str | None = None
-        deadline = time.time() + timeout_sec
-        while time.time() < deadline:
-            try:
-                r = httpx.get(_cdp_version_url(), timeout=1.5)
-                r.raise_for_status()
-                return r.json()
-            except Exception as e:
-                last_err = str(e)
-                time.sleep(0.25)
-        raise RuntimeError(
-            f"CDP port 9222 is open but /json/version is not ready. Last error: {last_err}"
-        )
+        return {"cdp": "port-open"}
 
-    # Port not open -> start Chrome.
     chrome_exe = _chrome_exe_path()
     user_data = _chrome_user_data_dir()
     profile = _chrome_profile_dir()
@@ -97,18 +73,13 @@ def ensure_cdp(timeout_sec: int = 10) -> dict[str, Any]:
     )  # noqa: S603
 
     deadline = time.time() + timeout_sec
-    last_err: str | None = None
     while time.time() < deadline:
-        try:
-            r = httpx.get(_cdp_version_url(), timeout=1.5)
-            r.raise_for_status()
-            return r.json()
-        except Exception as e:
-            last_err = str(e)
-            time.sleep(0.25)
+        if _is_port_open("127.0.0.1", 9222):
+            return {"cdp": "port-open"}
+        time.sleep(0.25)
 
     raise RuntimeError(
-        f"CDP did not start within {timeout_sec}s. Last error: {last_err}"
+        f"CDP did not start within {timeout_sec}s (port 9222 not reachable)."
     )
 
 
@@ -118,7 +89,13 @@ def health() -> dict[str, str]:
 
 
 @app.post("/parse")
-async def parse(payload: ParseRequest) -> dict[str, Any]:
+async def parse(payload: ParseRequest)
+    # Guard: when client sends non-UTF-8 bytes, Cyrillic may arrive as "?????"
+    if "?" in payload.query:
+        raise HTTPException(
+            status_code=400,
+            detail="Query contains '?'. Likely encoding issue. Send Content-Type: application/json; charset=utf-8",
+        ) -> dict[str, Any]:
     try:
         _ = ensure_cdp(timeout_sec=15)
     except RuntimeError as e:

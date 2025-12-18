@@ -104,3 +104,5 @@ Verify:
 - just fmt -> All checks passed!
 - pre-commit run --all-files -> Passed
 
+
+- 2025-12-18 0342 MSK Pattern Cyrillic mojibake in parserservice /parse (query becomes '?????'). Trigger: Russian words break but hardcoded Cyrillic like 'купить' is OK. Checks: retry request with Content-Type: application/json; charset=utf-8. Decision: document canonical PS command with charset and add server-side guard (return 400 with hint) when query contains '?'. Verify: Invoke-RestMethod http://127.0.0.1:9001/parse with charset returns correct URLs for query='цемент'.

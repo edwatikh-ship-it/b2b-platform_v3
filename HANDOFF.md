@@ -331,3 +331,5 @@ Files touched:
   - Verify:
     - pre-commit run --all-files
     - Expected: Passed (ruff, ruff-format, validate OpenAPI contract).
+
+- 2025-12-18 0342 MSK Success parserservice: Cyrillic query became '?????' when client sent JSON without charset; fixed by sending Content-Type: application/json; charset=utf-8. Verify: $body=@{ query='цемент'; depth=1 }|ConvertTo-Json -Depth 5; Invoke-RestMethod http://127.0.0.1:9001/parse -Method Post -ContentType 'application/json; charset=utf-8' -Body $body | ConvertTo-Json -Depth 1
