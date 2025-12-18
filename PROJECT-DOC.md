@@ -358,3 +358,25 @@ Common failure modes:
 - Expanding a domain (accordion) shows all collected URLs under this domain (different paths are shown as separate URLs).
 - Full raw findings (including duplicates and key->url->domain hits) are preserved in logs for analytics/debugging.
 
+
+
+### PowerShell: UTF-8 JSON responses
+
+Problem:
+PowerShell may display mojibake when reading response .Content from Invoke-WebRequest for UTF-8 JSON (e.g., Cyrillic shows as "ÑÐ...").
+
+Fix (preferred, no temp files):
+$resp = Invoke-WebRequest -UseBasicParsing -Uri "http://127.0.0.1:8000/user/requests/98" -Headers @{ "Accept"="application/json" }
+$reader = New-Object System.IO.StreamReader($resp.RawContentStream, [System.Text.Encoding]::UTF8, $true)
+$body = $reader.ReadToEnd()
+$reader.Dispose()
+$body
+
+Fix (byte-for-byte, with a file):
+$rawPath = Join-Path "D:\b2bplatform.tmp" ("http-body-" + (Get-Date -Format "yyyyMMdd-HHmmss") + ".bin")
+Invoke-WebRequest -UseBasicParsing -Uri "http://127.0.0.1:8000/user/requests/98" -Headers @{ "Accept"="application/json" } -OutFile $rawPath
+[System.Text.Encoding]::UTF8.GetString([System.IO.File]::ReadAllBytes($rawPath))
+
+Do/Don't:
+- DO use single-quoted here-strings @' ... '@ for docs/log entries to avoid variable interpolation (e.g., $resp).
+- DON'T use double-quoted here-strings @" ... "@ for docs/log entries when they contain $variables.
