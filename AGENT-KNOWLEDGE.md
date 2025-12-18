@@ -1,111 +1,108 @@
-# AGENT-KNOWLEDGE (reusable playbooks)
+# AGENT-KNOWLEDGE (digital trace)
 
-Version: 1.0
-Date: 2025-12-18
-Status: Active
+## System map
+- backend: FastAPI (API = endpoints), health: GET /health
+- parser_service: http://127.0.0.1:9001 (dependency = backend calls it)
 
-Purpose:
-- This file stores reusable troubleshooting and delivery patterns (how to act).
-- It must NOT duplicate HANDOFF.md (what changed) or INCIDENTS.md (what failed).
-- Keep entries short, actionable, and tool/command oriented.
+## Contracts (SSoT)
+- API & DTO: api-contracts.yaml (contract = agreed request/response shapes)
 
-SSoT reminder:
-- API shapes/endpoints: api-contracts.yaml
-- Process rules: PROJECT-RULES.md
-- Product rules: PROJECT-DOC.md
+## Runbooks (incident response)
+- TBD
 
+## Incident patterns
+### Just recipe verification (commands-first)
 
-## System map (local dev)
-
-- backend: FastAPI, health endpoint is GET /health.
-- parser_service: http://127.0.0.1:9001 (backend depends on it for parsing).
-
-
-## Golden rules (agent)
-
-- Facts first: never guess ports, prefixes, paths, env vars, or endpoint shapes.
-- SSoT order: api-contracts.yaml -> PROJECT-RULES.md -> PROJECT-DOC.md.
-- If something is unknown: collect facts via commands or ask, then STOP.
-- Keep “what changed” out of this file (put it into HANDOFF.md).
-
-
-## Playbooks
-
-### Playbook: Just recipe verification (commands-first)
 Trigger:
-- Need to suggest running `just <recipe>` or claim a recipe exists.
+- Need to suggest running a `just {recipe}` command (or claim a recipe exists).
+
+Checks (facts first):
+- `just --list` (preferred) OR `just -n {recipe}`.
+- If the recipe is missing: do NOT suggest it; switch to Plan B (explicit commands/script path).
+
+Decision:
+- If recipe exists: suggest the exact `just {recipe}` command.
+- If recipe does not exist: suggest Plan B (e.g., `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\update_project_tree.ps1`).
+
+Verify:
+- Paste the output of `just --list` or `just -n {recipe}` before proceeding.
+
+## Decisions pointers
+- See DECISIONS.md and PROJECT-DOC.md
+## 2025-12-17 23:37 MSK  Lesson: ruff F821 on forward type refs (Enum below DTO)
+
+Context:
+- backend/app/transport/schemas/moderator_parsing.py: StartParsingRequestDTO referenced ParsingRunSource declared later.
+
+Symptom (verified):
+- just fmt / ruff failed with: F821 Undefined name 'ParsingRunSource'.
+
+Fix (applied):
+- Added 'from __future__ import annotations' near top of module to defer evaluation of type annotations.
+
+Verification (verified):
+- just fmt 
+- pre-commit run --all-files 
+
+
+## 2025-12-17 23:40 MSK  Lesson: SSoT-first for API behavior (DECISIONS != contract)
+
+Context:
+- Requirement: moderator chooses parsing source google/yandex/both (mentioned in docs/decisions).
+- SSoT rule: API shapes are ONLY api-contracts.yaml.
+
+Action:
+- Verified api-contracts.yaml had no requestBody for POST /moderator/requests/{requestId}/start-parsing.
+- Updated api-contracts.yaml to add StartParsingRequestDTO + ParsingRunSource (google|yandex|both).
+- Only after SSoT update, aligned backend DTO + router to accept payload and forward to parser_service.
+
+Verification (verified):
+- pre-commit run --all-files -> Passed (ruff, ruff-format, validate OpenAPI contract).
+
+
+## 2025-12-17 23:40 MSK  Addendum: F821 verification outputs
+
+Expected:
+- just fmt -> 'All checks passed!' and 'files left unchanged'
+- pre-commit run --all-files -> all hooks 'Passed'
+
+
+## 2025-12-17 23:41 MSK  Pattern: AGENT-KNOWLEDGE vs HANDOFF
+
+Rule:
+- HANDOFF.md = what changed (facts + files + verification).
+- AGENT-KNOWLEDGE.md = reusable patterns (trigger  checks  decision  verify), no long change logs.
+
+Why:
+- Prevents duplication and keeps agent memory actionable.
+
+## 2025-12-17 23:41 MSK  Pattern: SSoT-first for API behavior (DECISIONS != contract)
+
+Trigger:
+- Requirement is described in DECISIONS/PROJECT-DOC, but not confirmed in api-contracts.yaml.
 
 Checks:
-- `just --list` (preferred), or `just -n <recipe>`.
+- git grep -n '<endpoint>' api-contracts.yaml
+- Confirm requestBody/DTO exists in api-contracts.yaml.
 
 Decision:
-- If recipe exists: suggest exact `just <recipe>`.
-- If missing: do NOT suggest it; provide Plan B explicit commands.
+- If contract lacks the shape, update api-contracts.yaml first (explicit commit), then align code.
 
 Verify:
-- Ask for pasted output of `just --list` or `just -n <recipe>` before continuing.
+- pre-commit run --all-files -> all hooks Passed.
 
+## 2025-12-17 23:41 MSK  Pattern: ruff F821 for forward type refs
 
-### Playbook: SSoT-first for API behavior
 Trigger:
-- A requirement is described in docs/chat, but not in api-contracts.yaml.
-
-Checks:
-- Confirm endpoint + request/response DTO exists in api-contracts.yaml.
-
-Decision:
-- If contract lacks the shape: update api-contracts.yaml first (explicit commit), then align backend.
-- If contract has the shape: align backend to contract.
-
-Verify:
-- Run contract validation / tests (project-specific).
-- Confirm runtime OpenAPI includes the path (GET /openapi.json) and contract diff is clean.
-
-
-### Playbook: PRE-FLIGHT before any routing/wiring claims
-Trigger:
-- About to debug “endpoint not found”, “route missing”, “OpenAPI incomplete”, or “prefix mismatch”.
-
-Checks (in the same shell):
-1) Discover BASE_URL (do not assume).
-2) `Invoke-RestMethod "$BASE_URL/openapi.json" | Out-Null` (expect 200).
-3) Derive API_PREFIX from OpenAPI paths (do not assume).
-4) `Invoke-RestMethod "$BASE_URL/health"` or `"$BASE_URL/$API_PREFIX/health"` (expect status="ok").
-5) If DB may be required at import-time:
-   `python -c "import os; print(os.getenv('DATABASEURL'), os.getenv('DATABASE_URL'))"`
-
-Decision:
-- If any check fails: fix runtime/env first (Plan B commands), do NOT propose code changes.
-
-Verify:
-- Repeat the checks above until green.
-
-
-### Playbook: Ruff F821 on forward type refs (Python typing)
-Trigger:
-- Ruff error F821 due to type annotation referencing a symbol defined later in the module.
+- Ruff error F821: type annotation references a symbol defined later in the module.
 
 Fix options:
-- Preferred: add `from __future__ import annotations` near the top of the module.
+- Preferred: add 'from __future__ import annotations' near the top of module.
 - Alternative: reorder declarations or use string annotations.
 
 Verify:
-- `ruff check`
-- `ruff format --check`
-- `pre-commit run --all-files`
+- just fmt -> All checks passed!
+- pre-commit run --all-files -> Passed
 
 
-### Playbook: Cyrillic mojibake in HTTP requests (Windows)
-Trigger:
-- Russian text in JSON request becomes `?????` on the server side.
-
-Checks:
-- Retry with explicit charset:
-  `-ContentType "application/json; charset=utf-8"`
-
-Decision:
-- Document a canonical PowerShell request example using charset.
-- Add a server-side guard for suspicious query containing '?' (return 400 with a hint).
-
-Verify:
-- Same request returns correct Cyrillic on the server side.
+- 2025-12-18 0342 MSK Pattern Cyrillic mojibake in parserservice /parse (query becomes '?????'). Trigger: Russian words break but hardcoded Cyrillic like 'купить' is OK. Checks: retry request with Content-Type: application/json; charset=utf-8. Decision: document canonical PS command with charset and add server-side guard (return 400 with hint) when query contains '?'. Verify: Invoke-RestMethod http://127.0.0.1:9001/parse with charset returns correct URLs for query='цемент'.

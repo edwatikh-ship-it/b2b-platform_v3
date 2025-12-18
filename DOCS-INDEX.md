@@ -1,5 +1,14 @@
 # DOCS INDEX (SSoT-aware)
 
+Note (process):
+- Real-time documentation is mandatory: discussed + accepted = documented immediately.
+- "Done" requires Doc-gate DoD: update the right root docs + add verification (HANDOFF/INCIDENTS) so the project is deployable from repo state.
+
+
+Note (process):
+- Real-time documentation is mandatory: if something is discussed and accepted, it must be recorded immediately in the appropriate root doc (PROJECT-RULES / PROJECT-DOC / DECISIONS / HANDOFF / INCIDENTS), and PROJECT-TREE.txt must be updated when files change.
+
+
 This file explains what each top-level documentation file means and where it lives.
 
 ## SSoT priority
@@ -19,4 +28,3 @@ This file explains what each top-level documentation file means and where it liv
 
 ## Where these files live
 All files above must live in the repo root D:\b2bplatform (SSoT rule: no duplicates in backend\).
-- TOOLS.md  documented repo tools registry.
