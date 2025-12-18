@@ -1,5 +1,5 @@
 PROJECT TREE (key artifacts)
-Generated: 2025-12-18 00:52:13
+Generated: 2025-12-18 13:12:12
 
 .gitattributes
 .gitignore
@@ -133,16 +133,19 @@ PROJECT-TREE.txt
 README.md
 tools\append_handoff_incidents.ps1
 tools\check_suppliers_tables.py
+tools\doc_edit.py
 tools\log_success.ps1
 tools\new_chat_prompt.ps1
 tools\new_chat_prompt2.ps1
 tools\new-chat-bundle.ps1
 tools\openapi_diff.py
+tools\parserservice-dev.ps1
 tools\patch_api_contracts_parser.py
 tools\patch_openapi_diff.py
 tools\preflight.ps1
 tools\print_new_chat_prompt.ps1
 tools\pytest.ps1
 tools\set_limit_max_200.py
+tools\start_chrome_cdp.ps1
 tools\update_project_tree.ps1
 tools\validate_openapi_contract.py
