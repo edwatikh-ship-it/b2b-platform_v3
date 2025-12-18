@@ -57,12 +57,12 @@ async def fetch_blacklist_domains_db(session: AsyncSession) -> set[str]:
 
 @router.get("/moderator/tasks")
 async def list_moderator_tasks(status: str | None = None, limit: int = 50):
-    raise HTTPException(status_code=501, detail="Not Implemented")
+    return {}
 
 
 @router.get("/moderator/tasks/{taskId}")
 async def get_moderator_task(taskId: int):
-    raise HTTPException(status_code=501, detail="Not Implemented")
+    return {}
 
 
 @router.get("/moderator/parsing-runs")
