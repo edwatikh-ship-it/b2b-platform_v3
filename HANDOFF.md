@@ -351,3 +351,4 @@ Files touched:
   - Select-String -Path .\PROJECT-RULES.md -Pattern "Doc-gate DoD" -Quiet                          # Expected True
   - Select-String -Path .\DOCS-INDEX.md -Pattern "Doc-gate DoD" -Quiet                             # Expected True
   - pre-commit run --all-files                                                                     # Expected PASS
+- 2025-12-18 2101 MSK Success Documented parsing/parserservice + PowerShell pitfalls from chat into INCIDENTS.md and AGENT-KNOWLEDGE.md (append-only) to prevent repeats. Verify: Select-String -Path .\INCIDENTS.md -SimpleMatch -Pattern '2025-12-18 2101 MSK' -Quiet - Expected True; Select-String -Path .\AGENT-KNOWLEDGE.md -SimpleMatch -Pattern '2025-12-18 2101 MSK Runbook Parsing failed 503' -Quiet - Expected True. Files: INCIDENTS.md, AGENT-KNOWLEDGE.md.

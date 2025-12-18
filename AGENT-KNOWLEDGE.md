@@ -106,3 +106,36 @@ Verify:
 
 
 - 2025-12-18 0342 MSK Pattern Cyrillic mojibake in parserservice /parse (query becomes '?????'). Trigger: Russian words break but hardcoded Cyrillic like 'купить' is OK. Checks: retry request with Content-Type: application/json; charset=utf-8. Decision: document canonical PS command with charset and add server-side guard (return 400 with hint) when query contains '?'. Verify: Invoke-RestMethod http://127.0.0.1:9001/parse with charset returns correct URLs for query='цемент'.
+
+TITLE AGENT-KNOWLEDGE digital trace - 2025-12-18 2101 MSK Runbook Parsing failed 503 to parserservice
+
+Trigger
+- parsing-status shows status failed and error contains 503 for http://127.0.0.1:9001/parse.
+
+Checks (facts-first)
+- netstat -ano | Select-String -SimpleMatch ':9001'
+- Invoke-WebRequest http://127.0.0.1:9001 -UseBasicParsing -TimeoutSec 2 | Select-Object StatusCode
+- If backend is running, capture payload: Invoke-RestMethod http://127.0.0.1:8000/moderator/requests/1/parsing-status | ConvertTo-Json -Depth 20
+
+Decision
+- If port 9001 is not LISTENING or HTTP unreachable: fix environment (start parserservice / start CDP) BEFORE touching backend code.
+- Only debug backend logic after parserservice is reachable.
+
+Verify
+- Invoke-WebRequest http://127.0.0.1:9001 -UseBasicParsing -TimeoutSec 2 - Expected StatusCode 404/200.
+- Re-run parsing-status - Expected status not failed due to 503.
+
+TITLE AGENT-KNOWLEDGE digital trace - 2025-12-18 2101 MSK Pattern OpenAPI dump and PowerShell safety
+
+Trigger
+- Need to save runtime openapi.json for diffing or contract checks.
+
+Rule
+- Do NOT use ConvertTo-Json for OpenAPI dumps (depth limit 100) and avoid Set-Content/Out-File for important UTF-8 docs.
+
+Preferred commands
+- Invoke-WebRequest http://127.0.0.1:8000/openapi.json -OutFile .\.tmp\runtime-openapi.json
+- python -c "import json; json.load(open('.\\.tmp\\runtime-openapi.json','r',encoding='utf-8')); print('ok')"
+
+Verify
+- python prints ok and file is readable UTF-8.
