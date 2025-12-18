@@ -340,3 +340,5 @@ Files touched:
   - Verify: git show --name-status b2a3a43
 - 2025-12-18 05:20 MSK NOTE: duplicate HANDOFF entry at 2025-12-18 04:40 MSK was appended twice; treat the later one (with git show --name-status) as the correct verify command.
   - Verify: git show --name-status d80054d
+
+- 2025-12-18 05:23 MSK Status: SSoT api-contracts.yaml paths match runtime OpenAPI; backend up on http://127.0.0.1:8000 (APIPREFIX empty). Verify: Invoke-RestMethod http://127.0.0.1:8000/health; Invoke-RestMethod http://127.0.0.1:8000/openapi.json | Out-Null; (Invoke-RestMethod http://127.0.0.1:8000/openapi.json).paths.PSObject.Properties.Name | Sort-Object
