@@ -214,3 +214,24 @@ Status:
   - powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\update_project_tree.ps1
   - Expected: "Wrote PROJECT-TREE.txt with {N} paths."
 
+## 2025-12-18 04:29 MSK  parser_service broke during hotfixing
+
+### Symptoms
+- just parser failed with SyntaxError after main.py was rewritten into a single line.
+- SyntaxError in /parse handler (missing ':'), and stray ') -> dict[str, Any]:' after raise HTTPException(...).
+- After syntax fixes, POST /parse returned HTTP 503 until Chrome CDP was started.
+
+### Root causes
+- PowerShell rewrite of git show HEAD:... collapsed line breaks when writing the file.
+- Invalid Python committed in main.py around /parse handler.
+- Regex patching caused collateral syntax damage (ensure_cdp colon/annotation).
+- Runtime dependency missing: Chrome CDP not listening on port 9222.
+
+### Fix / mitigation
+- Restore parser_service/app/main.py to valid syntax.
+- Start Chrome with --remote-debugging-port=9222 and isolated user-data-dir.
+- Add auto CDP start via just recipe.
+
+### Verification
+- GET http://127.0.0.1:9001/health -> { "status": "ok" }
+- POST http://127.0.0.1:9001/parse with Content-Type application/json; charset=utf-8 -> JSON with urls
