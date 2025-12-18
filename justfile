@@ -1,3 +1,6 @@
+# Chrome CDP (9222) for parser_service
+chrome-cdp:
+  powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\start_chrome_cdp.ps1
 set shell := ["powershell.exe", "-NoProfile", "-Command"]
 
 # Backend (reload)
@@ -9,7 +12,7 @@ dev-noreload:
   cd backend; $env:PYTHONPATH="D:\b2bplatform\backend"; .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 # Parser service
-parser:
+parser: chrome-cdp
   cd parser_service; python -m uvicorn app.main:app --host 127.0.0.1 --port 9001
 
 # Start both (two windows)
