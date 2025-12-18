@@ -1,32 +1,40 @@
 # B2B Platform PROJECT RULES (SSoT)
 
-Version: 1.4
-Date: 2025-12-17
+Version: 2.0
+Date: 2025-12-18
 
 This document is SSoT for the development process (not for API).
 Priority order (SSoT): api-contracts.yaml -> PROJECT-RULES.md -> PROJECT-DOC.md.
 
-================================================================
+============================================================
 HARD RULE 0: NO GUESSING / FACTS FIRST (ABSOLUTE)
-================================================================
+============================================================
 - Any debugging, commands, patches, refactors, API changes, or docs edits MUST start with facts.
-- Forbidden: guessing file names, paths, base urls, prefixes, ports, env vars, endpoints, or shapes.
-- Forbidden language: "probably", "likely", "should be", "it must be", when not proven by commands/output.
-- If something is unknown: run commands to discover it, or ask the user and STOP.
+- Forbidden: guessing file names, paths, base URLs, prefixes, ports, env vars, endpoints, or response shapes.
+- Forbidden language: "probably", "likely", "should be", "it must be" unless proven by commands/output.
+- If something is unknown: run commands to discover it OR ask the user a precise question and STOP.
 
-================================================================
+============================================================
+HARD RULE 1: COMMANDS-ONLY CHAT (COPY/PASTE POWERSHELL)
+============================================================
+- Every actionable instruction MUST be provided as PowerShell commands the user can copy-paste.
+- Do not write "edit file X" without providing the exact command(s) that perform the change safely.
+- If a next step depends on previous output: request the output first, then provide the next commands.
+- Placeholders are forbidden (no <FILE>, <PORT>, http://host:port). If unknown: discover via commands first.
+
+============================================================
 1) SSoT (Single Source of Truth)
-================================================================
-- API (endpoints, DTOs, responses) = ONLY api-contracts.yaml at repo root:
+============================================================
+- API (endpoints, DTOs, responses) = ONLY:
   D:\b2bplatform\api-contracts.yaml
 - If implementation and contract diverge: it is an error.
   Fix by aligning code to the contract OR change the contract intentionally (with explicit commit).
 - SSoT files must live in repo root D:\b2bplatform\ only.
   Forbidden: duplicates inside backend\.
 
-================================================================
+============================================================
 2) Architecture (fixed)
-================================================================
+============================================================
 Layer order is fixed and MUST NOT be violated:
 transport -> usecases -> domain -> adapters
 
@@ -36,24 +44,29 @@ Meaning:
 - domain: pure models/rules (no FastAPI/SQLAlchemy).
 - adapters: DB/SMTP/HTTP clients and integrations.
 
-================================================================
+============================================================
 3) SAFETY GUARDS (MANDATORY BEFORE ANY REPO CHANGE)
-================================================================
+============================================================
 Before changing any tracked file:
+
 1) Verify repo root and SSoT presence:
    - Set-Location D:\b2bplatform
    - Test-Path .\api-contracts.yaml
    - Test-Path .\PROJECT-RULES.md
+
 2) Show git status BEFORE and AFTER:
    - git status -sb
+
 3) Backup every changed file BEFORE editing:
    - Backups MUST go to: D:\b2bplatform\.tmp\backups\
    - Backup name: <file>.bak.<timestamp>
+
 4) Rollback MUST be provided:
    - Restore from .bak OR `git restore <path>`
+
 5) Encoding rule (mandatory):
    - Text files must be UTF-8 without BOM.
-   - Forbidden for important files: Set-Content / Out-File rewrites (encoding risk).
+   - Forbidden for important files: Set-Content / Out-File full rewrites (encoding risk).
    - Preferred: deterministic patch OR .NET WriteAllText with UTF8Encoding(false).
 
 Artifacts policy (mandatory):
@@ -61,14 +74,15 @@ Artifacts policy (mandatory):
 - Allowed locations only:
   - D:\b2bplatform\.tmp\backups\
   - D:\b2bplatform\.tmp\tmp\
-- Forbidden: creating/keeping repo-root tmp\ folder.
+- Forbidden: creating/keeping any other repo-root tmp folders.
 
-================================================================
+============================================================
 4) PRE-FLIGHT (MANDATORY BEFORE ROUTE/WIRING/ENDPOINT CLAIMS)
-================================================================
+============================================================
 Do NOT assume defaults. BASE_URL and API_PREFIX MUST be discovered.
 
 FACTS to collect (in THIS shell):
+
 1) Runtime base URL (BASE_URL):
    - Plan A: read from launch config / env.
    - Plan B: ask the user for the exact running host:port.
@@ -76,7 +90,7 @@ FACTS to collect (in THIS shell):
 2) Confirm backend is running:
    - If backend is NOT running: do NOT run HTTP checks yet.
    - Provide only start commands (just dev / just dev-noreload or Plan B), then re-run this PRE-FLIGHT.
-   - Ensure you run checks against the actually running instance (host:port from the start command output).
+   - Ensure checks target the actually running instance (host:port from the start command output).
 
 3) Runtime OpenAPI must be reachable:
    - Invoke-RestMethod "$BASE_URL/openapi.json" | Out-Null
@@ -99,9 +113,9 @@ If any PRE-FLIGHT check fails:
 - Provide only Plan B commands to fix environment/services first.
 - Do NOT propose code changes.
 
-================================================================
+============================================================
 5) Standard tooling: "6 tools" (check availability first)
-================================================================
+============================================================
 Tools: ruff, pre-commit, pyclean, uv, direnv, just
 
 Rule:
@@ -129,18 +143,19 @@ Usage:
   - Prefer direnv
   - Plan B: set env vars explicitly in the SAME shell as the running command
 
-================================================================
+============================================================
 6) Windows / PowerShell pitfalls (MANDATORY)
-================================================================
+============================================================
 - Forbidden: bash heredoc in PowerShell (python - << PY).
 - PowerShell: $ref inside strings must be escaped.
 - Prefer Windows-safe commands. Avoid fragile quoting.
 - Regex: avoid [regex]::Replace overload pitfalls; prefer Regex object then .Replace.
+- ConvertTo-Json has a hard max depth (100). Do not use it to dump OpenAPI.
 - Always write text as UTF-8 without BOM.
 
-================================================================
+============================================================
 7) Progress logging (MANDATORY)
-================================================================
+============================================================
 Success:
 - Append-only: HANDOFF.md
 - Update: PROJECT-TREE.txt
@@ -156,59 +171,58 @@ HANDOFF/INCIDENTS entry format:
 - Root cause
 - Fix/Mitigation
 - Verification command + expected output
+- Files touched (paths)
 
-Chat safety / question gate:
-- If a critical fact is missing (BASE_URL, API_PREFIX, env vars, target file content):
-  ask up to 3 bold questions OR provide commands to discover the facts, then STOP.
-
-================================================================
-8) Language policy (SSoT docs)
-================================================================
-- SSoT docs language is English (ASCII preferred).
-- docs-ru/ is NOT SSoT (explanations only).
+============================================================
+8) Language policy (docs)
+============================================================
+- Repository documentation language is English only.
+- Russian is allowed only for live chat communication.
 - Append-only logs: one entry = one language, no forced translation.
 
-================================================================
+============================================================
 9) PowerShell path safety (MANDATORY)
-================================================================
+============================================================
 - Always anchor scripts to repo root:
   - Set-Location D:\b2bplatform OR use $PSScriptRoot + Join-Path
 - Do not use Resolve-Path for non-existing targets.
 - Any script that changes directory MUST restore it (Push-Location/Pop-Location).
 
-================================================================
+============================================================
 10) Mandatory preflight script (START HERE)
-================================================================
+============================================================
 - Before any work (dev/debug) and before any commit: run:
   - Set-Location D:\b2bplatform
   - .\tools\preflight.ps1 -BackendBaseUrl "<actual base url>"
 - If preflight fails: fix environment/services first. Do NOT commit/push.
 
-================================================================
+============================================================
 11) One-click dev run (justfile)
-================================================================
+============================================================
 - Canonical local run uses repo-root justfile.
 - If just is missing: use Plan B manual uvicorn commands from justfile docs.
 
-================================================================
-12) Assistant Response Format (WHY/EXPECT/IF FAIL/SA-note)
-================================================================
+============================================================
+12) Assistant message format (chat)
+============================================================
 Any multi-step instruction MUST include:
 - WHY
 - EXPECT
 - IF FAIL
-- SA-note
 
-================================================================
+Additionally, every message must include two short explanations:
+- Customer mode (plain Russian, no IT terms, focus on value/outcome).
+- Junior analyst mode (simplified explanation + small metaphor).
+
+============================================================
 13) CTX-FIRST + NO-PLACEHOLDERS (STRICT)
-================================================================
+============================================================
 - CTX-FIRST: run .\ctx.ps1 from repo root and paste output before fixes.
-- NO-PLACEHOLDERS: commands must not contain placeholders like <FILE>, <PORT>, http://host:port.
-  If unknown: first run a command that prints the real value, then proceed.
+- NO-PLACEHOLDERS: commands must not contain placeholders. If unknown: discover first.
 
-================================================================
+============================================================
 14) Anti-Guessing Protocol (FACT-LOCK) (HARD)
-================================================================
+============================================================
 The assistant MUST NOT propose any patch/refactor/API change unless ALL items are present:
 
 1) Repo root & SSoT presence:
@@ -221,7 +235,7 @@ The assistant MUST NOT propose any patch/refactor/API change unless ALL items ar
 
 3) Runtime base:
    - Invoke-RestMethod "$BASE_URL/openapi.json" | Out-Null (expect 200)
-   - API_PREFIX is derived from OpenAPI paths (no assumptions).
+   - API_PREFIX is derived from OpenAPI paths (no assumptions)
 
 4) DB env in CURRENT shell:
    - python -c "import os; print(os.getenv('DATABASEURL'), os.getenv('DATABASE_URL'))"
@@ -240,22 +254,14 @@ STOP-ON-MISMATCH (PATCH SAFETY):
 - Fallback/guess patches are forbidden.
 
 ATOMIC CROSS-LAYER CHANGES:
-- If a change modifies a data shape between layers:
-  patch ALL impacted ends in the same instruction block. Partial rollouts forbidden.
-
-WINDOWS-SAFE EXECUTION ONLY:
-- Prefer .py/.sql temp files via WriteAllText, then run them.
-- Avoid fragile quoting.
+- If a change modifies a data shape between layers: patch ALL impacted ends in the same instruction block.
 
 VERIFY OR ROLLBACK (MANDATORY):
 - Each patch instruction MUST include backups + git status + rollback + verification commands.
 
-QUESTION GATE:
-- If critical facts are unknown: ask up to 3 bold questions or provide discovery commands, then STOP.
-
-================================================================
+============================================================
 15) Draft files policy (NO REPO TRASH)
-================================================================
+============================================================
 - New files created during experiments are TEMP by default.
 - Preferred WIP location: D:\b2bplatform__WIP\
 - If a draft must be in repo temporarily:
@@ -263,55 +269,30 @@ QUESTION GATE:
 - Before commit/push:
   - git status --porcelain must be clean (no accidental ?? files).
 
-## Chat workflow additions (2025-12-17)
+============================================================
+16) Freedom + confirmation (structure evolution)
+============================================================
+- The assistant may propose new docs/folder structure to improve maintainability.
+- Any deletion or merging of existing docs/log files requires explicit user confirmation.
 
-- Agent learning gate: Update AGENT-KNOWLEDGE.md / INCIDENTS.md only after a verified fix
-- AGENT-KNOWLEDGE.md stores reusable patterns/playbooks (how to act). HANDOFF.md stores factual change log (what changed + verification). (commands + expected output).
+============================================================
+17) Documentation style guide (single style, fact-only)
+============================================================
+All operational documentation must follow the same style:
 
-- Error handling (human): When an error occurs, explain it in plain non-IT language and provide a recommendation.
-- Incident logging timing: Always explain errors immediately, but write to INCIDENTS.md only after the issue is resolved (full picture: symptom, root cause, fix, verification).
-- Dependent steps gate: If a next command depends on the previous command output, do not provide that next command until the user pasted the output.
+A) "RUNBOOK" entries (how to run / debug):
+- Goal
+- Preconditions
+- Commands (PowerShell)
+- Expected output
+- If fail (Plan B)
+- Artifacts touched (files/paths)
 
-================================================================
-16) Communication style (project)
-- Chat output format (HARD):
-  - Write in the same structured style as the agreed example: short, readable, with emojis (in moderation).
-  - For each step (or group of related commands), always include:
-    - WHY
-    - EXPECT
-    - IF FAIL
-  - After each step, always add 2 mentoring notes:
-    - SA-note (for system analyst): architecture link, artifacts, alternatives.
-    - Biz-note (for customer): value in plain language.
-
-- Commands-first gate (HARD):
-  - If the assistant needs any fact/output/log/file snippet to continue, it MUST provide the exact commands to collect it.
-  - After giving discovery commands, the assistant MUST STOP and wait for the pasted output (no guessing).
-
-- Docs-first gate (HARD):
-  - No answers or decisions without checking SSoT/docs first.
-  - SSoT priority: api-contracts.yaml -> PROJECT-RULES.md -> PROJECT-DOC.md.
-  - If the needed doc fragment is not in the chat context, request it with commands (Get-Content / Select-String) and STOP.
-
-- Evidence gate for documentation (HARD):
-  - If we "document" something (PROJECT-RULES.md / PROJECT-DOC.md / DECISIONS.md / AGENT-KNOWLEDGE.md / HANDOFF.md / INCIDENTS.md),
-    the assistant MUST request confirming output (e.g., git diff, Select-String, Get-Content -Tail) and MUST NOT proceed without it.
-
-- Success discipline reminder:
-  - After successful change: append-only HANDOFF.md (with verify command), update PROJECT-TREE.txt, commit + push origin/main.
-
-================================================================
-- Tone: friendly "like a bro" (no flattery, only sober assessment).
-- Emojis: allowed.
-- Plain language: explain for non-IT stakeholders.
-- Terminology: when using terms like API/DTO/pending/runbook, add short meaning in parentheses.
-- After each multi-step instruction: add 2 short mentoring notes:
-  - SA-note (for system analyst): purpose, architecture link, artifacts changed, alternatives.
-  - Biz-note (for non-IT customer): what value it gives and why it matters.
-- HARD: NO FALSE PROMISES. If something is unknown, collect facts first or ask, then STOP.
-
-
-17 Documentation gate HARD
-- Any change to PROJECT-RULES.md, PROJECT-DOC.md, HANDOFF.md, INCIDENTS.md, AGENT-KNOWLEDGE.md MUST be done via an approved deterministic tool/script (preferred: tools/doc_edit.py subcommands when applicable).
-- If tools/doc_edit.py does not support the required change, use Plan B: edit via a temporary .py script or .NET WriteAllText UTF-8 without BOM (no PowerShell Set-Content / Out-File).
-- Proof is mandatory: git diff + Select-String/Get-Content snippet before commit/push.
+B) "LOG" entries (HANDOFF/INCIDENTS):
+- Timestamp (MSK)
+- Context (what feature/endpoint/service)
+- Symptom or Change
+- Root cause (if known)
+- Fix/Mitigation
+- Verification commands + expected output
+- Files touched
