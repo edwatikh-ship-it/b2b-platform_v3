@@ -78,3 +78,15 @@ Canonical success log (append-only).
 - 2025-12-16 16:45 MSK: Hardened OpenAPI diff tooling (offline file + optional live URL), and validated runtime OpenAPI vs SSoT. Verified: `python .\tools\openapi_diff.py` writes openapi-diff.csv with 0 missing/extra and expected ok count. [file:4]
 
 - 2025-12-16 19:09 MSK: Aligned moderator tasks routes to SSoT (stubs returning 501). Verified: `/openapi.json` contains `/moderatortasks`; GET returns 501. [file:4]
+
+## 2025-12-18 18:45:36 MSK  Stabilized new-chat prompt generator
+- Changed: tools/print_new_chat_prompt.ps1 now prints safer copy/paste steps, includes explicit BASE_URL guidance, and uses -Pattern "<anchor>".
+- Verification: Ran powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\print_new_chat_prompt.ps1 and confirmed prompt output contains <anchor>.
+- Files: tools/print_new_chat_prompt.ps1, INCIDENTS.md, HANDOFF.md.
+
+
+## 2025-12-18 18:50:45 MSK  New chat prompt stabilized
+- Changed: tools/print_new_chat_prompt.ps1 rewritten; now prints -Pattern "<anchor>" and explicit BASE_URL steps.
+- Verification: powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\print_new_chat_prompt.ps1 shows <anchor>.
+- Files: tools/print_new_chat_prompt.ps1, HANDOFF.md, INCIDENTS.md.
+

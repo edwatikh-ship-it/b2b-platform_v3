@@ -253,3 +253,10 @@ Status:
 ### Verification
 - GET http://127.0.0.1:9001/health -> { "status": "ok" }
 - POST http://127.0.0.1:9001/parse with Content-Type application/json; charset=utf-8 -> JSON with urls
+
+## 2025-12-18 18:50:41 MSK  Prompt script shipped with empty placeholder
+- Symptom: print_new_chat_prompt.ps1 printed -Pattern "", causing repeated patch failures.
+- Root cause: empty placeholder + interactive paste confusion during fixes.
+- Fix: rewrite tools/print_new_chat_prompt.ps1; use -Pattern "<anchor>"; add BASE_URL guidance; ensure final newline.
+- Verification: running script prints the line with <anchor>.
+
