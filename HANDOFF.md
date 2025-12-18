@@ -336,3 +336,5 @@ Files touched:
 
 - 2025-12-18 04:40 MSK docs: added "Documentation gate HARD" to PROJECT-RULES.md (deterministic doc edits + proof requirement).
   - Verify: git show --name-only b2a3a43
+- 2025-12-18 04:40 MSK docs: added "Documentation gate HARD" to PROJECT-RULES.md (deterministic edits for process docs + mandatory proof).
+  - Verify: git show --name-status b2a3a43
