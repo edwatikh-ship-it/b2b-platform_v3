@@ -1,7 +1,7 @@
 # HANDOFF.ETALON  B2B Platform
 
 Зачем: быстрый вход в проект + единый формат логов без дублей.
-Источник истории: HANDOFF.md (append-only архив, см. HANDOFF.ORIG.*.md).
+Источник истории: HANDOFF.md (append-only архив) + HANDOFF.ORIG.*.md (снимок оригинала).
 
 ## Правило (DoD)
 - Успех  сюда: datetime MSK, what changed, verify cmd  expected.

@@ -1,7 +1,7 @@
 # INCIDENTS.ETALON  B2B Platform
 
-Зачем: единый список граблей/инцидентов, чтобы не повторять ошибки.
-Источник истории: INCIDENTS.md (append-only архив, см. INCIDENTS.ORIG.*.md).
+Зачем: единый список инцидентов/граблей, чтобы не повторять ошибки.
+Источник истории: INCIDENTS.md (append-only архив) + INCIDENTS.ORIG.*.md (снимок оригинала).
 
 ## Правило
 - Append-only.
