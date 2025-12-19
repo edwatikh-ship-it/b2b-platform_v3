@@ -364,3 +364,5 @@ Files touched:
 - 2025-12-19 09:05 MSK Success Aligned suppliers search integration test to root paths; updated .gitignore. Verify pre-commit run --all-files; python -m pytest -q tests\integration\test_suppliers_search.py - Expected pre-commit PASS, pytest shows 2 passed.
 
 - 2025-12-19 09:25 MSK Removed legacy /apiv1 prefix rule from PROJECT-RULES.md and removed apiv1 token from tools/patch_api_contracts_parser.py operationIds. Verify: Select-String -Path .\PROJECT-RULES.md -SimpleMatch -Pattern "/apiv1/health" => no output; Select-String -Path .\tools\patch_api_contracts_parser.py -SimpleMatch -Pattern "apiv1" => no output. Files touched: PROJECT-RULES.md; tools\patch_api_contracts_parser.py.
+
+- 2025-12-19 10:14 MSK Success: Stored chat handoff PDF bundle at D:\b2bplatform.tmp\20251219-100909 (chat.pdf + meta.json). chat.pdf SHA256=96138BF1AC78B8AFF312929402C1755DDDA632276FEFAAEE761431604039E110. Repo state clean. Verification: Test-Path D:\b2bplatform.tmp\20251219-100909\chat.pdf => True; git status -sb => '## main...origin/main'.
