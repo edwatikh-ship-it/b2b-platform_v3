@@ -55,3 +55,32 @@
 - If parsing partially fails, already collected results are preserved.
 - Resume is per keyId: next start-parsing should parse only failed keys and continue from the page where the key failed (successful keys are not re-parsed).
 - Comment on blacklist add is optional.
+## Future UI notes (not implemented yet)
+
+### Moderator UI: parsing desk
+- Goal: Moderator needs a working desk to run parsing, review domains/URLs, make decisions (4 statuses), and gradually build the supplier base.
+- Parsing start: Manual action in moderator UI (button like "Get URLs"). No auto-start for MVP.
+
+### Results UI (accordion)
+- Results shown to the moderator are grouped by domain (accordion): domain -> list of URLs.
+- Domains that match the global root-domain blacklist MUST NOT appear in parsing results at all (server-side filtering).
+- For each domain/URL, UI should show which keys produced it (key -> url -> domain mapping).
+
+### Domain decisions (4 statuses)
+- Green: Create Supplier card (required: INN, company name, email; URL auto-filled from parsed domain/URL).
+- Purple: Create Reseller/Trading Organization card (same required fields; marked/flagged as reseller for users).
+- Black: Add domain to global blacklist (root-domain; blocks subdomains); optional comment.
+- Yellow: Pending decision queue; domain stays visible until decided.
+
+### History and logging
+- Each manual parsing run should be stored in history (list + details).
+- Even if a domain is already decided/blacklisted, log every occurrence: key -> url -> domain (so moderator can see which keys keep producing that domain).
+
+### Resume behavior (per key)
+- If parsing partially fails, already collected results are preserved.
+- Resume is per keyId: next start-parsing should parse only failed keys and continue from the page where the key failed (successful keys are not re-parsed).
+
+### TBD (explicitly not done)
+- UI screens themselves (layouts, fields, filters, sorting) are not implemented yet.
+- Blacklist UI as accordion with per-domain captured URLs and optional comment is not implemented yet.
+- Full moderator parsing run history UI is not implemented yet.
