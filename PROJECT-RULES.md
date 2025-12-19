@@ -122,6 +122,10 @@ Before changing any tracked file:
    - Text files must be UTF-8 without BOM.
    - Forbidden for important files: Set-Content / Out-File rewrites (encoding risk).
    - Preferred: deterministic patch OR .NET WriteAllText with UTF8Encoding(false).
+  - Logging tools policy (PowerShell):
+    - When appending to HANDOFF.md / INCIDENTS.md, use: & .\tools\append_handoff_incidents.ps1 ...
+    - Do NOT use: powershell.exe -File .\tools\append_handoff_incidents.ps1 ... (argument binding issues for string[]).
+    - Any literal text containing $ (examples: $env:NAME, $true, $false) MUST be passed in single quotes to avoid interpolation.
 
 Artifacts policy (mandatory):
 - Temporary files and backups MUST NOT clutter repo root.
