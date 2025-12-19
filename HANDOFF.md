@@ -362,3 +362,5 @@ Files touched:
 
 
 - 2025-12-19 00:07 MSK Verified Moderator stubs return 501 Not Implemented: GET /moderator/parsing-runs, /moderator/resolved-domains, /moderator/urls/hits. Verify Invoke-WebRequest http://127.0.0.1:8000/moderator/parsing-runs?limit=1&offset=0 ; Invoke-WebRequest http://127.0.0.1:8000/moderator/resolved-domains?limit=1&offset=0 ; Invoke-WebRequest http://127.0.0.1:8000/moderator/urls/hits?url=https%3A%2F%2Fexample.com&limit=1&offset=0 - Expected 501 for each.
+
+- 2025-12-19 09:05 MSK Success Aligned suppliers search integration test to root paths; updated .gitignore. Verify pre-commit run --all-files; python -m pytest -q tests\integration\test_suppliers_search.py - Expected pre-commit PASS, pytest shows 2 passed.
