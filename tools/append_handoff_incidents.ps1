@@ -45,8 +45,8 @@ if ($WithTimestamp) {
 }
 
 if ($DryRun) {
-  Write-Host "DRY-RUN target: $targetPath"
-  Write-Host $body
+  Write-Output "DRY-RUN target: $targetPath"
+  Write-Output $body
   exit 0
 }
 
@@ -54,4 +54,4 @@ $existingBytes = [System.IO.File]::ReadAllBytes($targetPath)
 $entryBytes    = $utf8NoBom.GetBytes($body)
 [System.IO.File]::WriteAllBytes($targetPath, $existingBytes + $entryBytes)
 
-Write-Host "Appended OK: $targetPath"
+Write-Output "Appended OK: $targetPath"
