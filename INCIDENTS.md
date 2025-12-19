@@ -370,3 +370,13 @@ Root cause: backups were created in repo root instead of approved temp backup lo
 Fix/Mitigation: moved .\.backups\* to D:\b2bplatform.tmp\backups\.backups and removed repo-root .\.backups; keep future backups only under .\.tmp or D:\b2bplatform.tmp.
 Verification: Test-Path .\.backups => False; (Get-ChildItem D:\b2bplatform.tmp\backups\.backups -Recurse -File | Measure-Object).Count => 33; git status --porcelain => empty.
 Related: CRLF->LF warnings can appear because .gitattributes enforces *.md eol=lf; avoid noisy diffs by writing via .NET WriteAllText UTF8Encoding(false).
+- 2025-12-19 16:42 MSK: 2025-12-19 16:38 MSK INCIDENT Command copy/paste glued two commands into one, producing: git status --Set-Location ...
+Symptom: git error unknown option Set-Location.
+Root cause: console copy/paste inserted Set-Location token into the same line as git status.
+Fix/Mitigation: run one command per line; avoid pasting wrapped/multi-line blocks; prefer short commands.
+Verification: git status -sb works; git status --porcelain is empty.
+- 2025-12-19 16:42 MSK: 2025-12-19 16:39 MSK INCIDENT Wrong guard check during patching: script expected Write-Host but file contained none.
+Symptom: RuntimeException No Write-Host found. Refuse to patch.
+Root cause: patch guard relied on guessed string match instead of current facts.
+Fix/Mitigation: before patching run Invoke-ScriptAnalyzer and Select-String anchors; only patch when anchors exist (STOP-ON-MISMATCH).
+Verification: Invoke-ScriptAnalyzer on the target file returns no findings; Select-String -SimpleMatch Write-Host returns no matches.
