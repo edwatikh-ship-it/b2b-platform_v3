@@ -368,3 +368,10 @@ Files touched:
 - 2025-12-19 10:14 MSK Success: Stored chat handoff PDF bundle at D:\b2bplatform.tmp\20251219-100909 (chat.pdf + meta.json). chat.pdf SHA256=96138BF1AC78B8AFF312929402C1755DDDA632276FEFAAEE761431604039E110. Repo state clean. Verification: Test-Path D:\b2bplatform.tmp\20251219-100909\chat.pdf => True; git status -sb => '## main...origin/main'.
 
 - 2025-12-19 10:26 MSK Success: Preflight facts captured. BASE_URL=http://127.0.0.1:8000. GET /health => 200 {"status":"ok"}. GET /openapi.json => 200 (OpenAPI 3.1.0). GET /moderator/urls/hits?url=https%3A%2F%2Fexample.com&limit=1&offset=0 => 200 {"items":[],"total":0,"limit":1,"offset":0}. Verification: git status -sb; Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8000/health; Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8000/openapi.json; Invoke-WebRequest -UseBasicParsing "http://127.0.0.1:8000/moderator/urls/hits?url=https%3A%2F%2Fexample.com&limit=1&offset=0". Files touched: HANDOFF.md.
+- 2025-12-19 12:02 MSK HANDOFF Smoke: moderator parsing (3 endpoints) + hits (2 endpoints) on http://127.0.0.1:8000, no 501 observed.
+  Verification:
+    Invoke-WebRequest "http://127.0.0.1:8000/health" -UseBasicParsing | Select-Object -ExpandProperty StatusCode -> Expected: 200
+    Invoke-RestMethod "http://127.0.0.1:8000/moderator/requests/118/parsing-status" | ConvertTo-Json -Depth 20 -> Expected: status=succeeded
+    Invoke-RestMethod "http://127.0.0.1:8000/moderator/requests/118/parsing-results" | ConvertTo-Json -Depth 20 -> Expected: results array present
+    Invoke-WebRequest "http://127.0.0.1:8000/moderator/urls/hits?url=https%3A%2F%2Fexample.com&limit=1&offset=0" -UseBasicParsing | Select-Object -ExpandProperty StatusCode -> Expected: 200
+    Invoke-WebRequest "http://127.0.0.1:8000/moderator/domains/example.com/hits?limit=1&offset=0" -UseBasicParsing | Select-Object -ExpandProperty StatusCode -> Expected: 200
