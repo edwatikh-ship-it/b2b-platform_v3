@@ -266,3 +266,93 @@ Status:
   Root cause: In PowerShell, '&' is an operator; unquoted URLs containing '&' are parsed as commands.
   Fix/Mitigation: Always wrap the full URL in double quotes (or escape '&' as ""&"") when using Invoke-WebRequest/Invoke-RestMethod.
   Verification: Invoke-WebRequest "http://127.0.0.1:8000/moderator/domains/example.com/hits?limit=1&offset=0" -UseBasicParsing | Select-Object -ExpandProperty StatusCode -> Expected: 200 (and no 501).
+
+## 2025-12-19 15:05 MSK  Incident: nvm-windows installed but node/npm not found; DEP0169 from Playwright driver
+
+Symptom:
+- After installing nvm-windows and running 
+vm use 22.21.1, 
+ode / 
+pm were not recognized (where.exe node -> no matches).
+- nvm commands failed with ERROR open \settings.txt when NVM_HOME/NVM_SYMLINK env vars were missing.
+- Playwright runs print Node deprecation warning [DEP0169] url.parse() pointing to ...playwright\\driver\\package\\lib\\server\\utils\\network.js:50 even on Node 22 LTS.
+
+Root cause:
+- NVM_HOME/NVM_SYMLINK were not set initially, so %NVM_HOME% / %NVM_SYMLINK% entries in PATH expanded to empty and nvm looked for \\settings.txt.
+- NVM_SYMLINK path must be a link target managed by nvm; if it is a physical directory, 
+vm use fails (activation error).
+- Without elevated rights, nvm-windows did not auto-create the symlink directory reliably; workaround was required.
+
+Fix / mitigation:
+- Set NVM_HOME to C:\\Users\\admin\\AppData\\Local\\nvm and create settings.txt.
+- Set NVM_SYMLINK to C:\\Users\\admin\\AppData\\Local\\nvm-link\\nodejs.
+- Create junction manually: mklink /J C:\\Users\\admin\\AppData\\Local\\nvm-link\\nodejs C:\\Users\\admin\\AppData\\Local\\nvm\\v22.21.1.
+- Add C:\\Users\\admin\\AppData\\Local\\nvm-link\\nodejs to User PATH.
+- For Playwright console noise: run with NODE_OPTIONS=--no-deprecation to suppress DEP0169 (Playwright 1.57.0 is latest available in current pip index).
+
+Verification commands + expected output:
+- where.exe node -> path under ...\\nvm-link\\nodejs\\node.exe
+- 
+ode -v -> v22.21.1
+- 
+pm -v -> prints a version
+- python -m pip index versions playwright -> LATEST: 1.57.0
+- set NODE_OPTIONS=--no-deprecation (or PowerShell $env:NODE_OPTIONS="--no-deprecation") and run scraper -> no [DEP0169] output, scrape completes.
+
+Files touched:
+- INCIDENTS.md
+
+### 2025-12-19 15:06 MSK  Correction: wrapped/broken command formatting
+
+The previous entry had wrapped command names (e.g. 
+vm use split into m use, 
+ode -> ode, 
+pm -> pm) due to console line-wrapping.
+
+Correct verification commands (copy-paste safe):
+- nvm debug
+- cmd.exe /c "mklink /J C:\Users\admin\AppData\Local\nvm-link\nodejs C:\Users\admin\AppData\Local\nvm\v22.21.1"
+- where.exe node
+- node -v
+- npm -v
+- python -m pip index versions playwright
+- PowerShell: $env:NODE_OPTIONS="--no-deprecation" then run scraper (expect no DEP0169 output)
+
+### 2025-12-19 15:07 MSK  Correction: copy-paste safe commands (no line wraps)
+
+Notes:
+- This is a formatting correction only (append-only). Use the commands below.
+
+Commands:
+nvm debug
+cmd.exe /c "mklink /J C:\Users\admin\AppData\Local\nvm-link\nodejs C:\Users\admin\AppData\Local\nvm\v22.21.1"
+where.exe node
+node -v
+npm -v
+python -m pip index versions playwright
+
+To suppress Playwright DEP0169 noise for this scraper run:
+PowerShell: ="--no-deprecation"
+PowerShell: python .\parser_service\app\yandex_playwright_scrape.py
+PowerShell: Remove-Item Env:\NODE_OPTIONS
+
+### 2025-12-19 15:08 MSK  Correction: PowerShell literal text for $env:NODE_OPTIONS
+
+Correct commands (copy-paste safe):
+$env:NODE_OPTIONS="--no-deprecation"
+python .\parser_service\app\yandex_playwright_scrape.py
+Remove-Item Env:\NODE_OPTIONS
+
+- 2025-12-19 15:33 MSK: INCIDENT: PowerShell log entries were corrupted by console line-wrapping and variable expansion in @"..."@ here-strings.
+Mitigation: Use tools\\append_handoff_incidents.ps1 with -Lines (string[]) and call it via '&' from the current PowerShell session (avoid powershell.exe -File).
+Verification commands:
+  where.exe node
+  node -v
+  npm -v
+  $env:NODE_OPTIONS="--no-deprecation"
+  python .\\parser_service\\app\\yandex_playwright_scrape.py
+  Remove-Item Env:\\NODE_OPTIONS
+- 2025-12-19 15:35 MSK: CORRECTION: Use single-quoted strings when passing $-prefixed text to -Lines to prevent interpolation.
+PowerShell: $env:NODE_OPTIONS="--no-deprecation"
+PowerShell: python .\parser_service\app\yandex_playwright_scrape.py
+PowerShell: Remove-Item Env:\NODE_OPTIONS
