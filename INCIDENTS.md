@@ -380,3 +380,8 @@ Symptom: RuntimeException No Write-Host found. Refuse to patch.
 Root cause: patch guard relied on guessed string match instead of current facts.
 Fix/Mitigation: before patching run Invoke-ScriptAnalyzer and Select-String anchors; only patch when anchors exist (STOP-ON-MISMATCH).
 Verification: Invoke-ScriptAnalyzer on the target file returns no findings; Select-String -SimpleMatch Write-Host returns no matches.
+- 2025-12-19 16:56 MSK: PITFALL: UTF-8 files may display mojibake in CP866 console (chcp 866) when using Get-Content; do NOT re-encode the file.
+Symptom: Russian text shows as РќРР... in Get-Content output.
+Root cause: console code page/output encoding mismatch (cp866 / us-ascii) while file bytes are valid UTF-8.
+Fix/Mitigation: view via [Text.Encoding]::UTF8.GetString([IO.File]::ReadAllBytes(path)) or use Windows Terminal/VS Code/PowerShell 7 with UTF-8.
+Verification: UTF8.GetString shows correct Cyrillic while Get-Content may not in cp866.
