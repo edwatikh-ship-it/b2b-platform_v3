@@ -356,3 +356,12 @@ Verification commands:
 PowerShell: $env:NODE_OPTIONS="--no-deprecation"
 PowerShell: python .\parser_service\app\yandex_playwright_scrape.py
 PowerShell: Remove-Item Env:\NODE_OPTIONS
+- 2025-12-19 15:40 MSK: INCIDENT: Calling tools\\append_handoff_incidents.ps1 via powershell.exe -File with -Lines caused PositionalParameterNotFound / argument binding failures.
+Root cause: Argument passing to powershell.exe -File is brittle for string[] parameters; prefer invoking the script from the current session.
+Fix/Mitigation:
+  Use: & .\\tools\\append_handoff_incidents.ps1 ...
+  For $-prefixed literals in -Lines: use single quotes.
+Verification (copy-paste safe):
+  & .\\tools\\append_handoff_incidents.ps1 -Target INCIDENTS -WithTimestamp -DryRun -Lines @('PowerShell: ="--no-deprecation"')
+- 2025-12-19 15:43 MSK: CORRECTION to 15:40 entry: verification line must keep $env:... as literal (use single quotes).
+  & .\tools\append_handoff_incidents.ps1 -Target INCIDENTS -WithTimestamp -DryRun -Lines @('PowerShell: $env:NODE_OPTIONS="--no-deprecation"')
