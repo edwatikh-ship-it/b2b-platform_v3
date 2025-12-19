@@ -49,3 +49,6 @@ backend/tmp_db_check*.py
 
 # Runtime storage (local-only)
 storage/
+# Logs (root)
+parser.log
+*.log
