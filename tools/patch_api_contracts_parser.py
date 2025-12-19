@@ -22,7 +22,7 @@ start_parsing_path = r"""/moderator/requests/{requestId}/start-parsing:
     tags:
     - ModeratorTasks
     summary: Start Parsing
-    operationId: start_parsing_apiv1_moderator_requests__requestId__start_parsing_post
+    operationId: start_parsing_moderator_requests__requestId__start_parsing_post
     parameters:
     - name: requestId
       in: path
@@ -56,7 +56,7 @@ status_path = r"""/moderator/requests/{requestId}/parsing-status:
     tags:
     - ModeratorTasks
     summary: Get Parsing Status
-    operationId: get_parsing_status_apiv1_moderator_requests__requestId__parsing_status_get
+    operationId: get_parsing_status_moderator_requests__requestId__parsing_status_get
     parameters:
     - name: requestId
       in: path
@@ -84,7 +84,7 @@ results_path = r"""/moderator/requests/{requestId}/parsing-results:
     tags:
     - ModeratorTasks
     summary: Get Parsing Results
-    operationId: get_parsing_results_apiv1_moderator_requests__requestId__parsing_results_get
+    operationId: get_parsing_results_moderator_requests__requestId__parsing_results_get
     parameters:
     - name: requestId
       in: path

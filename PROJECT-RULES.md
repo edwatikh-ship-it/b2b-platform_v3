@@ -152,8 +152,6 @@ FACTS to collect (in THIS shell):
 4) API_PREFIX detection rule:
    - Detect prefix from runtime OpenAPI paths. Do NOT assume apiv1.
    - If OpenAPI includes "/health": API_PREFIX is empty.
-   - If OpenAPI includes "/apiv1/health": API_PREFIX is "apiv1".
-
 5) Health check:
    - Invoke-RestMethod "$BASE_URL/$API_PREFIX/health" (or "$BASE_URL/health" if API_PREFIX is empty)
    - Expect: JSON with status="ok" (or contract equivalent).
