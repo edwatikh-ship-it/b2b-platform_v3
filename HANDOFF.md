@@ -375,3 +375,4 @@ Files touched:
     Invoke-RestMethod "http://127.0.0.1:8000/moderator/requests/118/parsing-results" | ConvertTo-Json -Depth 20 -> Expected: results array present
     Invoke-WebRequest "http://127.0.0.1:8000/moderator/urls/hits?url=https%3A%2F%2Fexample.com&limit=1&offset=0" -UseBasicParsing | Select-Object -ExpandProperty StatusCode -> Expected: 200
     Invoke-WebRequest "http://127.0.0.1:8000/moderator/domains/example.com/hits?limit=1&offset=0" -UseBasicParsing | Select-Object -ExpandProperty StatusCode -> Expected: 200
+- 2025-12-19 13:12 12S+03:00 Success Docs: rewrote PROJECT-DOC.md to keep only readable parsing notes and added future moderator UI notes (not implemented yet). Verify: git show --name-only HEAD -- -> Expected: shows PROJECT-DOC.md.
