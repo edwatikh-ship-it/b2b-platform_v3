@@ -365,3 +365,8 @@ Verification (copy-paste safe):
   & .\\tools\\append_handoff_incidents.ps1 -Target INCIDENTS -WithTimestamp -DryRun -Lines @('PowerShell: ="--no-deprecation"')
 - 2025-12-19 15:43 MSK: CORRECTION to 15:40 entry: verification line must keep $env:... as literal (use single quotes).
   & .\tools\append_handoff_incidents.ps1 -Target INCIDENTS -WithTimestamp -DryRun -Lines @('PowerShell: $env:NODE_OPTIONS="--no-deprecation"')
+- 2025-12-19 16:26 MSK: Repo hygiene: repo-root .backups folder was created (untracked) with 33 files; violates artifacts policy.
+Root cause: backups were created in repo root instead of approved temp backup location.
+Fix/Mitigation: moved .\.backups\* to D:\b2bplatform.tmp\backups\.backups and removed repo-root .\.backups; keep future backups only under .\.tmp or D:\b2bplatform.tmp.
+Verification: Test-Path .\.backups => False; (Get-ChildItem D:\b2bplatform.tmp\backups\.backups -Recurse -File | Measure-Object).Count => 33; git status --porcelain => empty.
+Related: CRLF->LF warnings can appear because .gitattributes enforces *.md eol=lf; avoid noisy diffs by writing via .NET WriteAllText UTF8Encoding(false).
