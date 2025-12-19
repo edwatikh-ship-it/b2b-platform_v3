@@ -46,3 +46,6 @@ backend/tmp_db_check*.py
 # --- repo hygiene (artifacts) ---
 .tmp/
 .backups*/
+
+# Runtime storage (local-only)
+storage/
