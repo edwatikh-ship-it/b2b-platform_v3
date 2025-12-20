@@ -88,3 +88,8 @@
 - UI screens themselves (layouts, fields, filters, sorting) are not implemented yet.
 - Blacklist UI as accordion with per-domain captured URLs and optional comment is not implemented yet.
 - Full moderator parsing run history UI is not implemented yet.
+## Docs hygiene note (legacy mojibake)
+Added: 2025-12-20 11:52:48 MSK.
+Fact: HANDOFF.md and INCIDENTS.md contain historical mojibake/garbled sequences from earlier edits; full decoding is TBD.
+Rule: Do not bulk-rewrite append-only logs to 'clean' encoding without verified decoding; prefer adding corrections/notes and keep SSoT files (api-contracts.yaml) clean.
+Verification: Select-String -Path .\api-contracts.yaml -SimpleMatch -Pattern 'Ð\x','Ñ\x' -Quiet -> Expected: False.
