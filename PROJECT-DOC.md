@@ -19,26 +19,29 @@
 - parser_service: collects raw URLs per key by querying search engines up to Depth pages.
 - backend: normalizes domains, applies root-domain blacklist filtering, and groups results by domain before returning them to the moderator endpoints.
 
-## Parsing MVP: depth, blacklist, accordion
+## Decisions (ADR)
 
-### Depth = search pages (no URL cap)
-- Depth controls how many search result pages are fetched per key in the search engine (Yandex/Google).
-- There is no explicit "max URLs per key" cap in MVP: the number of URLs depends on the engine output for the selected number of pages.
-- Depth should have a sane default (MVP) and a hard upper bound to reduce captcha/rate-limit risk; tune later.
+### D-007 — Parsing results as domain accordion
+- Date: 2025-12-16 00:29 MSK
+- Decision: /moderator/requests/{requestId}/parsing-results returns results grouped by domain: each group contains domain and urls[] (accordion UI).
+- Why: Moderator sees unique domains without noise, but can expand to view all URLs per domain.
+- Consequences: Contract updated (ParsingDomainGroupDTO, ParsingResultsByKeyDTO.groups). Backend stores and returns grouped results.
 
-### Blacklist domains = root-domain rule
-- The blacklist stores root domains (example: pulscen.ru).
-- A blacklisted root domain blocks itself AND all its subdomains (spb.pulscen.ru, msk.pulscen.ru, etc).
-- Filtering must be server-side: blacklisted domains/URLs must not appear in moderator parsing results at all.
+### D-008 — Parsing execution mode (MVP sync, target async)
+- Date: 2025-12-16 00:29 MSK
+- Decision: MVP keeps synchronous start-parsing (request waits for parser_service; timeout increased to allow manual captcha). Target: start-parsing returns quickly with status=running/queued and parsing runs in background; UI polls parsing-status/results.
+- Why: Avoid client/proxy timeouts and improve UX/reliability.
+- Consequences: Later introduce background task runner (in-process for MVP, then queue) without changing API semantics.
 
-### "Accordion" UI grouping (domain -> urls)
-- Moderator UI shows parsing results grouped by domain (accordion): one domain row, expandable list of URLs.
-- Grouping happens after blacklist filtering.
-- Domain in results may include subdomains; blacklist matching must normalize URL hostname to root-domain.
+### D-009 — Parsing results dedup by domain (accordion)
+- Date: 2025-12-17 23:13 MSK
+- Decision: In parsing-results shown to the moderator, the list is de-duplicated by domain; the accordion contains all collected URLs for that domain.
+- Blacklist rule: Blacklisted root-domains (and all subdomains) must not appear in parsing-results.
+- Logs: Full raw findings are preserved in logs/hits (key->url->domain), including duplicates and occurrences for already decided/blacklisted domains.
 
-### Suggested pipeline (where logic lives)
-- parser_service: queries search engines up to Depth pages and returns raw URLs per key.
-- backend: normalizes domains, applies root-domain blacklist filtering, groups results into accordion structure, and returns it via API.
+### D-010 — Captcha requires fullscreen browser window
+- Date: 2025-12-17 23:13 MSK
+- Decision: If a captcha challenge appears during parsing, the browser window must be automatically maximized (fullscreen) so the moderator can see it immediately and solve it quickly.
 
 ## Moderator LK decisions (parsing + blacklist + resume)
 
@@ -55,6 +58,7 @@
 - If parsing partially fails, already collected results are preserved.
 - Resume is per keyId: next start-parsing should parse only failed keys and continue from the page where the key failed (successful keys are not re-parsed).
 - Comment on blacklist add is optional.
+
 ## Future UI notes (not implemented yet)
 
 ### Moderator UI: parsing desk
