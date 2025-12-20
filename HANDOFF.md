@@ -2,7 +2,7 @@
 - Success -> HANDOFF.md (append-only, with verification command).
 - Failure -> INCIDENTS.md (append-only, with symptom/root cause/fix/verification).
 
-# HANDOFF  B2B Platform
+# HANDOFF — B2B Platform
 
 ## How to use
 Append-only progress log for successful milestones.
