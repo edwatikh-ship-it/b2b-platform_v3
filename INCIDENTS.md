@@ -390,3 +390,12 @@ Symptom: ...
 Root cause: ...
 Fix/Mitigation: ...
 Verification: <command> - Expected <output>
+- 2025-12-20 07:33:01 MSK
+  Context: docs / Windows line endings
+  Symptom: git add warned: CRLF will be replaced by LF (DOCS-INDEX.md).
+  Root cause: inconsistent line endings (CRLF vs LF) in working copy vs repo rules.
+  Fix/Mitigation: Normalize line-ending policy via .gitattributes and run git add --renormalize . when line-ending noise appears again.
+  Verification commands + expected output:
+    - git status -sb  -> clean
+    - git diff --name-only  -> empty
+  Files touched: HANDOFF.md, INCIDENTS.md
