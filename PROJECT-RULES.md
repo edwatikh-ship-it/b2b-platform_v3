@@ -1,4 +1,4 @@
-# B2B Platform PROJECT RULES (SSoT)
+﻿# B2B Platform PROJECT RULES (SSoT)
 
 Version: 2.3
 Date: 2025-12-18
@@ -460,3 +460,5 @@ B) LOG entries (HANDOFF / INCIDENTS)
 - Fix/Mitigation
 - Verification commands + expected output
 - Files touched
+
+- Rule: Любой клиент parserservice, который шлёт кириллицу в query, обязан использовать UTF-8 и заголовок Content-Type: application/json; charset=utf-8. При появлении '?????' или 'Р В Р...' сначала проверить charset клиента, а не править parserservice или api-contracts.yaml.
