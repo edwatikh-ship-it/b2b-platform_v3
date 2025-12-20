@@ -384,3 +384,4 @@ Files touched:
   Verification: pwsh -NoLogo -NoProfile -File .\quicklog.ps1 -Mode Success -Context quicklog -Message ok -Verify ok
   Expected: PASS
   Files touched: quicklog.ps1
+- 2025-12-20 11:46:59 MSK Success Fixed mojibake in SSoT api-contracts.yaml AttachmentDTO.description (removed Ð\\x/Ñ\\x garbage; replaced with ASCII note about lower-without-separators vs snake_case). Verification: Select-String -Path .\api-contracts.yaml -SimpleMatch -Pattern 'Ð\\x','Ñ\\x' -Quiet -> Expected: False. Files touched: api-contracts.yaml.
