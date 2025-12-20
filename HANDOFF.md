@@ -392,3 +392,8 @@ POST /moderator/domains/metall.ru/decision(pending) → success
 POST /moderator/domains/metall.ru/decision(supplier,carddata) → success
 GET /moderator/domains/metall.ru/decision → supplier verified
 GET /moderator/pending-domains → [] (resolved)
+
+- 2025-12-21 0231 MSK ✅ Endpoint SSoT tooling COMPLETE.
+  - just list-endpoints → все пути api-contracts.yaml
+  - just endpoint-status PATH → 200/501 status
+  - just stub-endpoint PATH → TODO stub+test
