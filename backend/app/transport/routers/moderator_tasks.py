@@ -82,7 +82,7 @@ async def start_parsing(
     parsing_storage._runs[run_id] = parsing_storage._runs.pop(
         list(parsing_storage._runs.keys())[-1]
     )
-    parsing_storage._runs[run_id]["requestId"] = requestId
+
     parsing_storage.update_run_status(run_id, "running")
 
     key_statuses = []
