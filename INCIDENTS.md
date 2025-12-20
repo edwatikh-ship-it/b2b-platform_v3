@@ -32,8 +32,8 @@
 - 2025-12-20 11:11:32 MSK NOTE: Legacy mojibake/garbled section (old incidents) was intentionally removed from INCIDENTS.md by explicit owner approval to keep docs readable. Backup stored under D:\\b2bplatform.tmp.
 2025-12-20 113642 MSK INCIDENT Root docs contain mojibake (garbled Cyrillic sequences like 'Р В Р’В...' and 'Ð\x..') in HANDOFF.md and api-contracts.yaml.
 Root cause: Previous edit/save operation corrupted UTF-8 text (encoding mismatch / bad tool).
-Fix/Mitigation: Removed mojibake artifacts and rewrote files as UTF-8 without BOM using .NET WriteAllText.
-Verification: Select-String -Path .\HANDOFF.md -SimpleMatch -Pattern 'Р В Р’В' -Quiet -> False; Select-String -Path .\api-contracts.yaml -SimpleMatch -Pattern 'Ð\x' -Quiet -> False.
+Fix/Mitigation: api-contracts.yaml mojibake was removed. HANDOFF.md and other append-only logs still contain historical mojibake sequences; do NOT attempt bulk rewrite without verified decoding (TBD).
+Verification: Select-String -Path .\api-contracts.yaml -SimpleMatch -Pattern 'Ð\x','Ñ\x' -Quiet -> Expected: False. Select-String -Path .\HANDOFF.md -SimpleMatch -Pattern 'РІР‚','Р В' -Quiet -> Expected: may be True (historical mojibake remains in append-only log).
 Files touched: HANDOFF.md, api-contracts.yaml
 2025-12-20 114022 MSK INCIDENT Process failure: docs were assumed 'OK' without running a mojibake scan.
 Symptom: Later scan found garbled sequences in HANDOFF.md and api-contracts.yaml.
