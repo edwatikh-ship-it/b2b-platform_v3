@@ -12,6 +12,9 @@ from app.transport.routers.moderator_blacklist_domains import (
 from app.transport.routers.moderator_domain_decision import (
     router as moderator_domain_decision_router,
 )
+from app.transport.routers.moderator_parsing_runs import (
+    router as moderator_parsing_runs_router,
+)
 from app.transport.routers.moderator_pending_domains import (
     router as moderator_pending_domains_router,
 )
@@ -46,6 +49,7 @@ def create_app() -> FastAPI:
     app.include_router(moderator_blacklist_domains_router)
     app.include_router(user_blacklist_inn_router)
     app.include_router(moderator_pending_domains_router)
+    app.include_router(moderator_parsing_runs_router)
 
     return app
 
