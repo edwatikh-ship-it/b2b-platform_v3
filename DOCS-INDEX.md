@@ -28,3 +28,4 @@ This file explains what each top-level documentation file means and where it liv
 
 ## Where these files live
 All files above must live in the repo root D:\b2bplatform (SSoT rule: no duplicates in backend\).
+- COMMAND-DELIVERY-PROTOCOL.md: Chat-to-PowerShell command delivery rules (no aliases, no placeholders, one command per line, safety checklist).
