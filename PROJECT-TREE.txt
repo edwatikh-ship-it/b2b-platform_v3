@@ -1,5 +1,5 @@
 PROJECT TREE (key artifacts)
-Generated: 2025-12-20 11:02:42
+Generated: 2025-12-20 12:23:44
 
 KEY POINTS (what to edit, where)
 SSoT
