@@ -1473,11 +1473,13 @@ components:
       - sizebytes
       - createdat
       title: AttachmentDTO
-      description: "SSoT: api-contracts.yaml /components/schemas/Attachment\n\nÐ\x92\
-        Ð\x90Ð\x96Ð\x9DÐ\x9E:\n- Ð½Ð°Ñ\x80Ñ\x83Ð¶Ñ\x83 Ð¾Ñ\x82Ð´Ð°Ñ\x91Ð¼ lower-without-separators:\
-        \ originalfilename, contenttype, sizebytes, storagekey, isdeleted, createdat\n\
-        - Ð²Ð½Ñ\x83Ñ\x82Ñ\x80Ð¸ Ð´ÐµÑ\x80Ð¶Ð¸Ð¼ snake_case: original_filename, content_type,\
-        \ size_bytes, storage_key, is_deleted, created_at"
+      description: "SSoT: api-contracts.yaml#/components/schemas/AttachmentDTO
+
+NOTE:
+- API response fields use lower-without-separators:
+  originalfilename, contenttype, sizebytes, storagekey, isdeleted, createdat
+- Internally keep snake_case:
+  original_filename, content_type, size_bytes, storage_key, is_deleted, created_at"
     AttachmentListResponseDTO:
       properties:
         items:
