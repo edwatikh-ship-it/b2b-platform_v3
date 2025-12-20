@@ -386,3 +386,9 @@ Files touched:
   Files touched: quicklog.ps1
 - 2025-12-20 11:46:59 MSK Success Fixed mojibake in SSoT api-contracts.yaml AttachmentDTO.description (removed \\x/\\x garbage; replaced with ASCII note about lower-without-separators vs snake_case). Verification: Select-String -Path .\api-contracts.yaml -SimpleMatch -Pattern '\\x','\\x' -Quiet -> Expected: False. Files touched: api-contracts.yaml.
 2025-12-20 Parsing MVP done: /start-parsing → succeeded → parsing-results domains
+2025-12-20 Domain Decisions MVP done: metall.ru → pending → supplier
+
+POST /moderator/domains/metall.ru/decision(pending) → success
+POST /moderator/domains/metall.ru/decision(supplier,carddata) → success
+GET /moderator/domains/metall.ru/decision → supplier verified
+GET /moderator/pending-domains → [] (resolved)
