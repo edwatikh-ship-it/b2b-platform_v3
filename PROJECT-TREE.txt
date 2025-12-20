@@ -1,5 +1,5 @@
 PROJECT TREE (key artifacts)
-Generated: 2025-12-20 12:23:44
+Generated: 2025-12-21 02:23:32
 
 KEY POINTS (what to edit, where)
 SSoT
@@ -84,12 +84,14 @@ backend\app\domain\ports_auth.py
 backend\app\main.py
 backend\app\transport\__init__.py
 backend\app\transport\errors.py
+backend\app\transport\parsing.py
 backend\app\transport\routers\__init__.py
 backend\app\transport\routers\attachments.py
 backend\app\transport\routers\auth.py
 backend\app\transport\routers\health.py
 backend\app\transport\routers\moderator_blacklist_domains.py
 backend\app\transport\routers\moderator_domain_decision.py
+backend\app\transport\routers\moderator_parsing_runs.py
 backend\app\transport\routers\moderator_pending_domains.py
 backend\app\transport\routers\moderator_suppliers.py
 backend\app\transport\routers\moderator_tasks.py
@@ -107,6 +109,7 @@ backend\app\transport\schemas\health.py
 backend\app\transport\schemas\moderator_blacklist_domains.py
 backend\app\transport\schemas\moderator_domain_decision.py
 backend\app\transport\schemas\moderator_parsing.py
+backend\app\transport\schemas\moderator_parsing_runs.py
 backend\app\transport\schemas\moderator_pending_domains.py
 backend\app\transport\schemas\requests.py
 backend\app\transport\schemas\supplier_cards.py
