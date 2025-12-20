@@ -65,3 +65,21 @@ backend-noreload:
 # Print the prompt (v2) to paste into a new chat (does NOT change old prompt)
 prompt2:
   @powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\new_chat_prompt2.ps1
+/endpoint-status PATH:
+    #!/usr/bin/env pwsh -NoProfile -ExecutionPolicy Bypass
+    $path = "{{PATH}}"
+    echo "Status: /$path"
+    try {
+        $r = Invoke-RestMethod "http://127.0.0.1:8000$path?limit=1" -ErrorAction Stop
+        echo "  → 200 OK (implemented)"
+    } catch {
+        if ($_.Exception.Response.StatusCode -eq 501) {
+            echo "  → 501 Not Implemented (stub OK)"
+        } else {
+            echo "  → {{$_.Exception.Response.StatusCode}} ERROR"
+        }
+    }
+
+/stub-endpoint PATH:
+    #!/usr/bin/env pwsh -NoProfile -ExecutionPolicy Bypass
+    echo "TODO: create 501 stub + test for {{PATH}}"
