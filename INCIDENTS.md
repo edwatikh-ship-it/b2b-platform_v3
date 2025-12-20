@@ -30,3 +30,14 @@
 - 2025-12-20 11:04:15 MSK CORRECTION: In 2025-12-20 10:41:26 MSK entry about Select-String recursion, the correct verification is: Get-ChildItem -Recurse -File | Select-String -SimpleMatch -Pattern 'PARSERSERVICEURL' (no empty pattern).
 
 - 2025-12-20 11:11:32 MSK NOTE: Legacy mojibake/garbled section (old incidents) was intentionally removed from INCIDENTS.md by explicit owner approval to keep docs readable. Backup stored under D:\\b2bplatform.tmp.
+2025-12-20 113642 MSK INCIDENT Root docs contain mojibake (garbled Cyrillic sequences like 'Р В Р’В...' and 'Ð\x..') in HANDOFF.md and api-contracts.yaml.
+Root cause: Previous edit/save operation corrupted UTF-8 text (encoding mismatch / bad tool).
+Fix/Mitigation: Removed mojibake artifacts and rewrote files as UTF-8 without BOM using .NET WriteAllText.
+Verification: Select-String -Path .\HANDOFF.md -SimpleMatch -Pattern 'Р В Р’В' -Quiet -> False; Select-String -Path .\api-contracts.yaml -SimpleMatch -Pattern 'Ð\x' -Quiet -> False.
+Files touched: HANDOFF.md, api-contracts.yaml
+2025-12-20 114022 MSK INCIDENT Process failure: docs were assumed 'OK' without running a mojibake scan.
+Symptom: Later scan found garbled sequences in HANDOFF.md and api-contracts.yaml.
+Root cause: Missing mandatory preflight check (Select-String scan) before confirming doc state.
+Fix/Mitigation: Add mandatory doc-scan step before any 'docs OK' statement; block progress until scan is clean.
+Verification: Run the doc scan (see commands below) and require zero matches before confirming.
+Files touched: INCIDENTS.md
