@@ -400,6 +400,6 @@ GET /moderator/pending-domains → [] (resolved)
 ## ✅ Parser Service (новое)
 
 - **FastAPI + Playwright CDP** для скрейпинга Yandex
-- Запуск: `cd parser_service && uvicorn app.main:app --port 8001 --reload`
+- Запуск: `cd B2B/parser_service && uvicorn app.main:app --port 8001 --reload`
 - Health: http://localhost:8001/health ✅
 - Docs: http://localhost:8001/docs ✅
