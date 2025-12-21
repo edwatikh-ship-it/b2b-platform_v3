@@ -35,7 +35,7 @@ openapi.json
 
 
 # Logs
-parser_service/*.log
+# parser_service/*.log (moved to app/)
 
 
 # local debug scripts
