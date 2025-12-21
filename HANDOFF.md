@@ -397,3 +397,9 @@ GET /moderator/pending-domains → [] (resolved)
   - just list-endpoints → все пути api-contracts.yaml
   - just endpoint-status PATH → 200/501 status
   - just stub-endpoint PATH → TODO stub+test
+## ✅ Parser Service (новое)
+
+- **FastAPI + Playwright CDP** для скрейпинга Yandex
+- Запуск: `cd parser_service && uvicorn app.main:app --port 8001 --reload`
+- Health: http://localhost:8001/health ✅
+- Docs: http://localhost:8001/docs ✅
