@@ -1,0 +1,6 @@
+# Logs
+*.log
+parser_service/*.log
+
+# Env
+.env
